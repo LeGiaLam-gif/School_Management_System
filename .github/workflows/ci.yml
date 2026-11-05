@@ -25,7 +25,7 @@ jobs:
         with:
           php-version: ${{ env.PHP_VERSION }}
           coverage: none
-      - uses: ramsey/composer-install@v3
+      - uses: ramsey/composer-install@v4
       - run: vendor/bin/pint --test
 
   analyse:
@@ -39,7 +39,7 @@ jobs:
         with:
           php-version: ${{ env.PHP_VERSION }}
           coverage: none
-      - uses: ramsey/composer-install@v3
+      - uses: ramsey/composer-install@v4
       - run: vendor/bin/phpstan analyse --memory-limit=1G --no-progress
 
   audit:
@@ -51,7 +51,7 @@ jobs:
         with:
           php-version: ${{ env.PHP_VERSION }}
           coverage: none
-      - uses: ramsey/composer-install@v3
+      - uses: ramsey/composer-install@v4
       - run: composer audit
 
   assets:
@@ -92,7 +92,7 @@ jobs:
           php-version: ${{ env.PHP_VERSION }}
           extensions: mbstring, intl, pdo_mysql, pdo_sqlite, bcmath
           coverage: none
-      - uses: ramsey/composer-install@v3
+      - uses: ramsey/composer-install@v4
       - name: Chuan bi .env
         run: cp .env.example .env && php artisan key:generate
       - name: Chay test (SQLite in-memory)
