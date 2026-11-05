@@ -22,7 +22,7 @@ COPY app/Modules ./app/Modules
 RUN npm run build
 
 # ---- 3. Nen PHP-FPM ----------------------------------------------------------
-FROM php:8.3-fpm-bookworm AS base
+FROM php:8.5-fpm-bookworm AS base
 RUN apt-get update && apt-get install -y --no-install-recommends \
         git unzip libzip-dev libicu-dev libonig-dev default-mysql-client \
     && docker-php-ext-install pdo_mysql bcmath intl zip opcache pcntl \
