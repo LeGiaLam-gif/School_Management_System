@@ -1,0 +1,129 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+env:
+  PHP_VERSION: "8.3"
+
+jobs:
+  lint:
+    name: Laravel Pint
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ env.PHP_VERSION }}
+          coverage: none
+      - uses: ramsey/composer-install@v3
+      - run: vendor/bin/pint --test
+
+  analyse:
+    name: Larastan
+    runs-on: ubuntu-latest
+    # Sprint 0: sinh baseline (vendor/bin/phpstan analyse --generate-baseline) roi bo dong duoi de chan merge.
+    continue-on-error: true
+    steps:
+      - uses: actions/checkout@v4
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ env.PHP_VERSION }}
+          coverage: none
+      - uses: ramsey/composer-install@v3
+      - run: vendor/bin/phpstan analyse --memory-limit=1G --no-progress
+
+  audit:
+    name: Composer audit
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ env.PHP_VERSION }}
+          coverage: none
+      - uses: ramsey/composer-install@v3
+      - run: composer audit
+
+  assets:
+    name: Build asset
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - run: npm install --no-audit --no-fund
+      - run: npm run build
+
+  test:
+    name: Test (${{ matrix.db }})
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        db: [sqlite, mysql]
+    services:
+      mysql:
+        image: mysql:8
+        env:
+          MYSQL_ROOT_PASSWORD: root
+          MYSQL_DATABASE: sms_testing
+        ports:
+          - 3306:3306
+        options: >-
+          --health-cmd="mysqladmin ping -h 127.0.0.1 -proot"
+          --health-interval=5s
+          --health-timeout=5s
+          --health-retries=20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ env.PHP_VERSION }}
+          extensions: mbstring, intl, pdo_mysql, pdo_sqlite, bcmath
+          coverage: none
+      - uses: ramsey/composer-install@v3
+      - name: Chuan bi .env
+        run: cp .env.example .env && php artisan key:generate
+      - name: Chay test (SQLite in-memory)
+        if: matrix.db == 'sqlite'
+        run: php artisan test
+      - name: Chay test (MySQL 8)
+        if: matrix.db == 'mysql'
+        run: php artisan test
+        env:
+          DB_CONNECTION: mysql
+          DB_HOST: 127.0.0.1
+          DB_PORT: 3306
+          DB_DATABASE: sms_testing
+          DB_USERNAME: root
+          DB_PASSWORD: root
+
+  docker:
+    name: Build Docker image
+    # Chi build khi da merge vao nhanh chinh (muc 10).
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    needs: [lint, audit, assets, test]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: docker/setup-buildx-action@v3
+      - uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: docker/php/Dockerfile
+          target: production
+          push: false
+          tags: sms-app:${{ github.sha }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max

@@ -1,0 +1,140 @@
+# SMS - Docker Compose (muc 5.7). Dung mot lenh:  docker compose up -d --build
+# Cau hinh qua .env (copy tu .env.example). Dich vu co profile `dev` chi dung khi phat trien.
+
+x-app: &app
+  build:
+    context: .
+    dockerfile: docker/php/Dockerfile
+    target: dev
+  image: sms-app:dev
+  restart: unless-stopped
+  env_file: .env
+  working_dir: /var/www/html
+  volumes:
+    - .:/var/www/html
+  networks:
+    - sms
+
+services:
+  nginx:
+    image: nginx:stable
+    restart: unless-stopped
+    ports:
+      - "${APP_PORT:-8080}:80"
+    volumes:
+      - .:/var/www/html:ro
+      - ./docker/nginx/default.conf:/etc/nginx/conf.d/default.conf:ro
+    depends_on:
+      app:
+        condition: service_healthy
+    networks:
+      - sms
+
+  app:
+    <<: *app
+    environment:
+      RUN_MIGRATIONS: "true"
+    depends_on:
+      mysql:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    healthcheck:
+      # entrypoint tao storage/framework/.ready sau khi migrate --seed xong.
+      test: ["CMD-SHELL", "test -f storage/framework/.ready"]
+      interval: 5s
+      timeout: 3s
+      retries: 60
+      start_period: 10s
+
+  queue:
+    <<: *app
+    command: php artisan queue:work --tries=3 --timeout=90 --sleep=3
+    depends_on:
+      app:
+        condition: service_healthy
+
+  scheduler:
+    <<: *app
+    command: php artisan schedule:work
+    depends_on:
+      app:
+        condition: service_healthy
+
+  mysql:
+    image: mysql:8
+    restart: unless-stopped
+    command: --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci
+    environment:
+      MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD:-root_secret}
+      MYSQL_DATABASE: ${DB_DATABASE:-sms}
+      MYSQL_USER: ${DB_USERNAME:-sms}
+      MYSQL_PASSWORD: ${DB_PASSWORD:-secret}
+    ports:
+      - "${FORWARD_DB_PORT:-3307}:3306"
+    volumes:
+      - db_data:/var/lib/mysql
+      - ./docker/mysql/init:/docker-entrypoint-initdb.d:ro
+    healthcheck:
+      test: ["CMD-SHELL", "mysqladmin ping -h 127.0.0.1 -uroot -p$$MYSQL_ROOT_PASSWORD --silent"]
+      interval: 5s
+      timeout: 5s
+      retries: 30
+      start_period: 20s
+    networks:
+      - sms
+
+  redis:
+    image: redis:7
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+    networks:
+      - sms
+
+  mailpit:
+    image: axllent/mailpit
+    profiles: ["dev"]
+    restart: unless-stopped
+    ports:
+      - "${FORWARD_MAILPIT_DASHBOARD_PORT:-8025}:8025"
+    networks:
+      - sms
+
+  phpmyadmin:
+    image: phpmyadmin
+    profiles: ["dev"]
+    restart: unless-stopped
+    environment:
+      PMA_HOST: mysql
+      PMA_USER: root
+      PMA_PASSWORD: ${DB_ROOT_PASSWORD:-root_secret}
+    ports:
+      - "${FORWARD_PHPMYADMIN_PORT:-8081}:80"
+    depends_on:
+      mysql:
+        condition: service_healthy
+    networks:
+      - sms
+
+  vite:
+    image: node:22-alpine
+    profiles: ["dev"]
+    working_dir: /var/www/html
+    command: sh -c "npm install && npm run dev"
+    ports:
+      - "${VITE_PORT:-5173}:5173"
+    volumes:
+      - .:/var/www/html
+    networks:
+      - sms
+
+networks:
+  sms:
+    driver: bridge
+
+volumes:
+  db_data:

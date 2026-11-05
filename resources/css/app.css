@@ -1,0 +1,9 @@
+@import 'bootstrap/dist/css/bootstrap.min.css';
+
+body {
+    background-color: #f5f6f8;
+}
+
+.sms-brand {
+    letter-spacing: 0.02em;
+}

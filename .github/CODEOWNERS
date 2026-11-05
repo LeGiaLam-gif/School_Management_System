@@ -1,0 +1,7 @@
+# Moi PR can it nhat mot nguoi trong danh sach review (ket hop branch protection tren main).
+# Co the tach theo thu muc khi nhom lon hon, vi du:
+#   /app/Modules/Grading/   @ten-thanh-vien
+*                           @LeGiaLam-gif
+/docs/                      @LeGiaLam-gif
+/docker/                    @LeGiaLam-gif
+/.github/                   @LeGiaLam-gif
