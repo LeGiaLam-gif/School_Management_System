@@ -10,7 +10,5 @@ class AttendanceFinalized
 {
     use Dispatchable, SerializesModels;
 
-    public function __construct(public readonly ClassSession $session)
-    {
-    }
+    public function __construct(public readonly ClassSession $session) {}
 }

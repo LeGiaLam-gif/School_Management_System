@@ -31,7 +31,8 @@ jobs:
   analyse:
     name: Larastan
     runs-on: ubuntu-latest
-    # Sprint 0: sinh baseline (vendor/bin/phpstan analyse --generate-baseline) roi bo dong duoi de chan merge.
+    # Da co phpstan-baseline.neon: loi cu duoc chap nhan, loi MOI se bi bat.
+    # Sau khi commit composer.lock (co dinh phien ban phpstan/larastan), bo dong duoi de job nay chan merge.
     continue-on-error: true
     steps:
       - uses: actions/checkout@v4

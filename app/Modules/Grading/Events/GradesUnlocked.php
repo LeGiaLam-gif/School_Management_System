@@ -13,6 +13,5 @@ class GradesUnlocked
     public function __construct(
         public readonly ClassSection $classSection,
         public readonly string $reason,
-    ) {
-    }
+    ) {}
 }

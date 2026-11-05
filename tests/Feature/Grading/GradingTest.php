@@ -29,7 +29,7 @@ class GradingTest extends TestCase
         $this->seedRoles();
     }
 
-    private function result(Student $student, Course $course, Semester $semester, float $point, bool $published = true, bool $passed = true): FinalResult
+    private function makeResult(Student $student, Course $course, Semester $semester, float $point, bool $published = true, bool $passed = true): FinalResult
     {
         $section = ClassSection::factory()->for($course)->for($semester)->status(ClassSectionStatus::GradesPublished)->create();
         $enrollment = Enrollment::factory()->create(['student_id' => $student->id, 'class_section_id' => $section->id]);
@@ -61,9 +61,9 @@ class GradingTest extends TestCase
         $b = Course::factory()->credits(2)->create();
         $hidden = Course::factory()->credits(4)->create();
 
-        $this->result($student, $a, $semester, 4.0);
-        $this->result($student, $b, $semester, 2.0);
-        $this->result($student, $hidden, $semester, 0.0, published: false);
+        $this->makeResult($student, $a, $semester, 4.0);
+        $this->makeResult($student, $b, $semester, 2.0);
+        $this->makeResult($student, $hidden, $semester, 0.0, published: false);
 
         // (4*3 + 2*2) / 5 = 3.2 ; ket qua chua cong bo khong duoc tinh.
         $this->assertSame(3.2, app(StudentGpaQuery::class)->cumulativeGpa($student));
@@ -75,8 +75,8 @@ class GradingTest extends TestCase
         $s1 = Semester::factory()->create();
         $s2 = Semester::factory()->create();
 
-        $this->result($student, Course::factory()->credits(3)->create(), $s1, 4.0);
-        $this->result($student, Course::factory()->credits(3)->create(), $s2, 2.0);
+        $this->makeResult($student, Course::factory()->credits(3)->create(), $s1, 4.0);
+        $this->makeResult($student, Course::factory()->credits(3)->create(), $s2, 2.0);
 
         $query = app(StudentGpaQuery::class);
 
@@ -98,9 +98,9 @@ class GradingTest extends TestCase
         $failed = Course::factory()->create();
         $unpublished = Course::factory()->create();
 
-        $this->result($student, $passed, $semester, 3.0);
-        $this->result($student, $failed, $semester, 0.0, passed: false);
-        $this->result($student, $unpublished, $semester, 3.0, published: false);
+        $this->makeResult($student, $passed, $semester, 3.0);
+        $this->makeResult($student, $failed, $semester, 0.0, passed: false);
+        $this->makeResult($student, $unpublished, $semester, 3.0, published: false);
 
         $ids = app(PassedCoursesProvider::class)->passedCourseIds($student->id);
 
@@ -113,9 +113,9 @@ class GradingTest extends TestCase
         $other = Student::factory()->create();
         $semester = Semester::factory()->create();
 
-        $own = $this->result($student, Course::factory()->create(), $semester, 3.0);
-        $unpublished = $this->result($student, Course::factory()->create(), $semester, 3.0, published: false);
-        $foreign = $this->result($other, Course::factory()->create(), $semester, 3.0);
+        $own = $this->makeResult($student, Course::factory()->create(), $semester, 3.0);
+        $unpublished = $this->makeResult($student, Course::factory()->create(), $semester, 3.0, published: false);
+        $foreign = $this->makeResult($other, Course::factory()->create(), $semester, 3.0);
 
         $user = $student->user;
 

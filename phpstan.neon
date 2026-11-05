@@ -1,5 +1,6 @@
 includes:
     - vendor/larastan/larastan/extension.neon
+    - phpstan-baseline.neon
 
 parameters:
     paths:
@@ -8,3 +9,14 @@ parameters:
     level: 5
     treatPhpDocTypesAsCertain: false
     tmpDir: .phpstan.cache
+    # Larastan suy ra cot cua Model tu migration; migration nam trong tung module.
+    databaseMigrationsPath:
+        - database/migrations
+        - app/Modules/Academic/Database/Migrations
+        - app/Modules/Announcement/Database/Migrations
+        - app/Modules/Attendance/Database/Migrations
+        - app/Modules/Enrollment/Database/Migrations
+        - app/Modules/Grading/Database/Migrations
+        - app/Modules/Identity/Database/Migrations
+        - app/Modules/Reporting/Database/Migrations
+        - app/Modules/Teaching/Database/Migrations

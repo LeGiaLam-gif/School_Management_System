@@ -9,9 +9,7 @@ use Illuminate\Support\Facades\DB;
 
 class CourseService
 {
-    public function __construct(private readonly PrerequisiteCycleDetector $cycles)
-    {
-    }
+    public function __construct(private readonly PrerequisiteCycleDetector $cycles) {}
 
     /**
      * Thay the tap tien quyet cua hoc phan; tu choi neu tao vong lap.

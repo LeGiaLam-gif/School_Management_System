@@ -15,9 +15,7 @@ use App\Shared\Enums\SessionStatus;
  */
 class AttendanceService
 {
-    public function __construct(private readonly AbsenceRateCalculator $absence)
-    {
-    }
+    public function __construct(private readonly AbsenceRateCalculator $absence) {}
 
     /**
      * Thong ke chuyen can cua mot dang ky (FR-ATT-02).

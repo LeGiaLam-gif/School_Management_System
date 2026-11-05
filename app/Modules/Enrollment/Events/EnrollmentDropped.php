@@ -10,7 +10,5 @@ class EnrollmentDropped
 {
     use Dispatchable, SerializesModels;
 
-    public function __construct(public readonly Enrollment $enrollment)
-    {
-    }
+    public function __construct(public readonly Enrollment $enrollment) {}
 }

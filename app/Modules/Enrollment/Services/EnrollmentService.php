@@ -22,9 +22,7 @@ use Illuminate\Support\Facades\DB;
  */
 class EnrollmentService
 {
-    public function __construct(private readonly EnrollmentRuleChecker $rules)
-    {
-    }
+    public function __construct(private readonly EnrollmentRuleChecker $rules) {}
 
     public function register(Student $student, int $classSectionId): Enrollment
     {

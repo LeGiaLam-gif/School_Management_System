@@ -12,6 +12,5 @@ final class GpaEntry
         public readonly int $credits,
         public readonly float $gpaPoint,
         public readonly int $publishedAt, // unix timestamp, dung de chon "lan gan nhat" khi hoc lai
-    ) {
-    }
+    ) {}
 }

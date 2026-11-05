@@ -13,7 +13,5 @@ class EnrollmentCreated
 {
     use Dispatchable, SerializesModels;
 
-    public function __construct(public readonly Enrollment $enrollment)
-    {
-    }
+    public function __construct(public readonly Enrollment $enrollment) {}
 }

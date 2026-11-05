@@ -15,6 +15,5 @@ final class EnrollmentContext
         public readonly Student $student,
         public readonly ClassSection $classSection,
         public readonly CarbonInterface $at,
-    ) {
-    }
+    ) {}
 }

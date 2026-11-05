@@ -1,0 +1,211 @@
+parameters:
+	ignoreErrors:
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$name\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Modules/Announcement/Database/Seeders/AnnouncementDemoSeeder.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$user_id\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Modules/Announcement/Database/Seeders/AnnouncementDemoSeeder.php
+
+		-
+			message: '#^Call to an undefined method Illuminate\\Database\\Eloquent\\Model\:\:isTaughtBy\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: app/Modules/Announcement/Policies/AnnouncementPolicy.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$lecturer\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Modules/Attendance/Database/Seeders/AttendanceDemoSeeder.php
+
+		-
+			message: '#^Call to an undefined method Illuminate\\Database\\Eloquent\\Model\:\:auditFilter\(\)\.$#'
+			identifier: method.notFound
+			count: 3
+			path: app/Modules/Attendance/Models/AttendanceRecord.php
+
+		-
+			message: '#^Unsafe usage of new static\(\)\.$#'
+			identifier: new.static
+			count: 1
+			path: app/Modules/Attendance/Models/AttendanceRecord.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$classSection\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Modules/Attendance/Policies/AttendancePolicy.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$id\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Modules/Attendance/Policies/AttendancePolicy.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$student_id\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Modules/Attendance/Policies/AttendancePolicy.php
+
+		-
+			message: '#^Call to an undefined method Illuminate\\Database\\Eloquent\\Model\:\:isTaughtBy\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: app/Modules/Attendance/Policies/AttendancePolicy.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$is_current\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Modules/Enrollment/Database/Seeders/EnrollmentDemoSeeder.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$start_date\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Modules/Enrollment/Database/Seeders/EnrollmentDemoSeeder.php
+
+		-
+			message: '#^Call to an undefined method Illuminate\\Database\\Eloquent\\Relations\\HasMany\:\:active\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: app/Modules/Enrollment/Database/Seeders/EnrollmentDemoSeeder.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$id\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Modules/Enrollment/Policies/EnrollmentPolicy.php
+
+		-
+			message: '#^Call to an undefined method Illuminate\\Database\\Eloquent\\Model\:\:isTaughtBy\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: app/Modules/Enrollment/Policies/EnrollmentPolicy.php
+
+		-
+			message: '#^Call to an undefined method Illuminate\\Database\\Eloquent\\Model\:\:canDropOn\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: app/Modules/Enrollment/Services/EnrollmentService.php
+
+		-
+			message: '#^Cannot call method acceptsEnrollment\(\) on string\.$#'
+			identifier: method.nonObject
+			count: 1
+			path: app/Modules/Enrollment/Services/Rules/ClassOpenRule.php
+
+		-
+			message: '#^Call to an undefined method Illuminate\\Database\\Eloquent\\Model\:\:isRegistrationOpen\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: app/Modules/Enrollment/Services/Rules/RegistrationWindowRule.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$end_date\.$#'
+			identifier: property.notFound
+			count: 4
+			path: app/Modules/Grading/Database/Seeders/GradingDemoSeeder.php
+
+		-
+			message: '#^Call to an undefined method Illuminate\\Database\\Eloquent\\Model\:\:auditFilter\(\)\.$#'
+			identifier: method.notFound
+			count: 3
+			path: app/Modules/Grading/Models/FinalResult.php
+
+		-
+			message: '#^Unsafe usage of new static\(\)\.$#'
+			identifier: new.static
+			count: 1
+			path: app/Modules/Grading/Models/FinalResult.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$classSection\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Modules/Grading/Policies/GradePolicy.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$id\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Modules/Grading/Policies/GradePolicy.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$student_id\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Modules/Grading/Policies/GradePolicy.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$classSection\.$#'
+			identifier: property.notFound
+			count: 2
+			path: app/Modules/Grading/Queries/StudentGpaQuery.php
+
+		-
+			message: '#^Cannot call method getTimestamp\(\) on string\.$#'
+			identifier: method.nonObject
+			count: 1
+			path: app/Modules/Grading/Queries/StudentGpaQuery.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$classSection\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Modules/Grading/Services/FinalResultPassedCoursesProvider.php
+
+		-
+			message: '#^Called ''env'' outside of the config directory which returns null when the config is cached, use ''config''\.$#'
+			identifier: larastan.noEnvCallsOutsideOfConfig
+			count: 4
+			path: app/Modules/Identity/Database/Seeders/SuperAdminSeeder.php
+
+		-
+			message: '#^Call to an undefined method Illuminate\\Database\\Eloquent\\Model\:\:auditFilter\(\)\.$#'
+			identifier: method.notFound
+			count: 3
+			path: app/Modules/Identity/Models/User.php
+
+		-
+			message: '#^Unsafe usage of new static\(\)\.$#'
+			identifier: new.static
+			count: 1
+			path: app/Modules/Identity/Models/User.php
+
+		-
+			message: '#^Cannot call method copy\(\) on string\.$#'
+			identifier: method.nonObject
+			count: 3
+			path: app/Modules/Teaching/Database/Seeders/TeachingDemoSeeder.php
+
+		-
+			message: '#^Parameter \#4 \$startDate of class App\\Modules\\Teaching\\Support\\ScheduleSlot constructor expects DateTimeInterface, string given\.$#'
+			identifier: argument.type
+			count: 1
+			path: app/Modules/Teaching/Models/ClassSchedule.php
+
+		-
+			message: '#^Parameter \#5 \$endDate of class App\\Modules\\Teaching\\Support\\ScheduleSlot constructor expects DateTimeInterface, string given\.$#'
+			identifier: argument.type
+			count: 1
+			path: app/Modules/Teaching/Models/ClassSchedule.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$id\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Modules/Teaching/Models/ClassSection.php
+
+		-
+			message: '#^Cannot call method acceptsEnrollment\(\) on string\.$#'
+			identifier: method.nonObject
+			count: 1
+			path: app/Modules/Teaching/Policies/ClassSectionPolicy.php

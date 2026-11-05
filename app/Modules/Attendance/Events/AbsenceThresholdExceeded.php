@@ -16,6 +16,5 @@ class AbsenceThresholdExceeded
     public function __construct(
         public readonly Enrollment $enrollment,
         public readonly float $rate,
-    ) {
-    }
+    ) {}
 }

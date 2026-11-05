@@ -14,9 +14,7 @@ use Illuminate\Routing\Controller;
  */
 class AuthController extends Controller
 {
-    public function __construct(private readonly AuthService $auth)
-    {
-    }
+    public function __construct(private readonly AuthService $auth) {}
 
     public function showLogin(): View
     {

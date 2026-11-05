@@ -14,9 +14,7 @@ use Illuminate\Support\Collection;
  */
 class StudentGpaQuery
 {
-    public function __construct(private readonly GpaCalculator $calculator)
-    {
-    }
+    public function __construct(private readonly GpaCalculator $calculator) {}
 
     public function cumulativeGpa(Student $student): ?float
     {

@@ -4,6 +4,7 @@ namespace App\Shared\Audit;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 /**
  * Diem ghi audit duy nhat. Service goi truc tiep cho hanh dong co ly do
@@ -12,9 +13,7 @@ use Illuminate\Http\Request;
  */
 class AuditLogger
 {
-    public function __construct(private readonly Request $request)
-    {
-    }
+    public function __construct(private readonly Request $request) {}
 
     /**
      * @param  array<string, mixed>|null  $old
@@ -28,7 +27,7 @@ class AuditLogger
         ?string $reason = null,
     ): AuditLog {
         return AuditLog::create([
-            'user_id' => $this->request->user()?->getAuthIdentifier(),
+            'user_id' => Auth::id(),
             'action' => $action,
             'auditable_type' => $auditable?->getMorphClass(),
             'auditable_id' => $auditable?->getKey(),

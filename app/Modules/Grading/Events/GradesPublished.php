@@ -13,7 +13,5 @@ class GradesPublished
 {
     use Dispatchable, SerializesModels;
 
-    public function __construct(public readonly ClassSection $classSection)
-    {
-    }
+    public function __construct(public readonly ClassSection $classSection) {}
 }

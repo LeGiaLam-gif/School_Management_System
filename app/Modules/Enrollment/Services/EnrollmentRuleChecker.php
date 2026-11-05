@@ -14,9 +14,7 @@ class EnrollmentRuleChecker
     /**
      * @param  iterable<EnrollmentRule>  $rules
      */
-    public function __construct(private readonly iterable $rules)
-    {
-    }
+    public function __construct(private readonly iterable $rules) {}
 
     public function ensureEligible(EnrollmentContext $context): void
     {
