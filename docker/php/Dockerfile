@@ -12,7 +12,7 @@ COPY . .
 RUN composer dump-autoload --optimize --no-dev --no-scripts
 
 # ---- 2. Build asset (Vite + Bootstrap) --------------------------------------
-FROM node:22-alpine AS assets
+FROM node:26-alpine AS assets
 WORKDIR /app
 COPY package.json package-lock.json* ./
 RUN npm install --no-audit --no-fund
