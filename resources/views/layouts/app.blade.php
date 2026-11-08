@@ -7,24 +7,17 @@
     <title>@yield('title', config('app.name'))</title>
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
-<body>
+<body class="sms-body" x-data="{ sidebarOpen: window.innerWidth >= 768 }">
     @auth
-        <nav class="navbar navbar-expand-md navbar-dark bg-primary mb-4">
-            <div class="container">
-                <a class="navbar-brand sms-brand" href="{{ route('home') }}">{{ config('app.name') }}</a>
-                <div class="ms-auto d-flex align-items-center gap-3 text-white">
-                    <span class="small">{{ auth()->user()->name }}</span>
-                    <form method="POST" action="{{ route('logout') }}">
-                        @csrf
-                        <button type="submit" class="btn btn-sm btn-outline-light">Đăng xuất</button>
-                    </form>
-                </div>
+        <div class="sms-app-shell" :class="{ 'sidebar-collapsed': !sidebarOpen }">
+            @include('layouts.partials.sidebar')
+            <div class="sms-main-column">
+                @include('layouts.partials.header')
+                @include('layouts.partials.content')
             </div>
-        </nav>
+        </div>
+    @else
+        @include('layouts.partials.content')
     @endauth
-
-    <main class="container pb-5">
-        @yield('content')
-    </main>
 </body>
 </html>
