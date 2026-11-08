@@ -2,6 +2,7 @@
 
 use App\Modules\Identity\Controllers\AuthController;
 use App\Modules\Identity\Controllers\DashboardController;
+use App\Modules\Identity\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
 
 Route::middleware('guest')->group(function () {
@@ -13,6 +14,7 @@ Route::post('/logout', [AuthController::class, 'logout'])->middleware('auth')->n
 
 Route::middleware(['auth', 'active'])->group(function () {
     Route::get('/', [DashboardController::class, 'home'])->name('home');
+    Route::get('/profile', [ProfileController::class, 'show'])->name('profile.show');
 
     // Lop 1: role middleware. Lop 2 (Policy theo doi tuong) nam trong controller cua tung module.
     Route::get('/admin', [DashboardController::class, 'admin'])->middleware('role:admin')->name('admin.home');
