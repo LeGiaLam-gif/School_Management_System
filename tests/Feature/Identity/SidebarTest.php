@@ -35,11 +35,85 @@ class SidebarTest extends TestCase
                 ->assertOk()
                 ->assertSee($dashboard['label'])
                 ->assertSee('aria-label="Ẩn hoặc hiện thanh điều hướng"', false)
-                ->assertSee('images/logo.png')
-                ->assertSee('Hồ sơ cá nhân');
+                ->assertSee('images/logo.png');
 
-            $this->assertSame(1, substr_count($response->getContent(), route('profile.show')));
+            preg_match('/<nav class="sms-sidebar-nav".*?<\/nav>/s', $response->getContent(), $matches);
+            $sidebar = $matches[0] ?? '';
+            $profileRoute = $role === RoleName::Student->value ? 'student.profile' : 'profile.show';
+
+            $this->assertNotSame('', $sidebar);
+            $this->assertSame(1, substr_count($sidebar, route($profileRoute)));
         }
+    }
+
+    public function test_student_sidebar_shows_student_navigation_with_unavailable_modules_disabled(): void
+    {
+        $student = User::factory()->student()->create();
+
+        $response = $this->actingAs($student)
+            ->get(route('student.home'))
+            ->assertOk()
+            ->assertSee('Hồ sơ cá nhân');
+
+        preg_match('/<nav class="sms-sidebar-nav".*?<\/nav>/s', $response->getContent(), $matches);
+        $sidebar = $matches[0] ?? '';
+
+        $this->assertNotSame('', $sidebar);
+        $this->assertStringContainsString(route('student.profile'), $sidebar);
+
+        foreach (['Chương trình đào tạo', 'Đăng ký học phần', 'Thời khóa biểu', 'Điểm &amp; GPA', 'Chuyên cần', 'Thông báo'] as $label) {
+            $this->assertStringContainsString($label, $sidebar);
+        }
+
+        $this->assertStringContainsString('class="sms-sidebar-link sms-sidebar-link-disabled" aria-disabled="true"', $sidebar);
+        $this->assertStringNotContainsString('href="#"', $sidebar);
+    }
+
+    public function test_student_dashboard_uses_the_shared_welcome_design_and_student_details(): void
+    {
+        $student = User::factory()->student()->create([
+            'name' => 'Nguyen Thi Mai',
+            'code' => 'SV00002',
+        ]);
+
+        $this->actingAs($student)
+            ->get(route('student.home'))
+            ->assertOk()
+            ->assertSee('class="sms-welcome-card"', false)
+            ->assertSee('Chào mừng, Nguyen Thi Mai')
+            ->assertSee('SV00002')
+            ->assertSee('HỆ THỐNG QUẢN LÝ ĐÀO TẠO')
+            ->assertSee('Khóa tuyển sinh')
+            ->assertSee('Ngành học')
+            ->assertSee('Trạng thái')
+            ->assertSee('Điểm', false)
+            ->assertSee('Thời khóa biểu', false)
+            ->assertSee('Chức năng chưa khả dụng')
+            ->assertDontSee('>Học vụ<', false)
+            ->assertDontSee('>Kết quả<', false)
+            ->assertDontSee('href="#"', false)
+            ->assertDontSee('btn-outline-success', false)
+            ->assertDontSee('Xem kết quả học tập')
+            ->assertDontSee('Đăng ký môn học')
+            ->assertSee(route('student.profile'));
+    }
+
+    public function test_non_student_sidebar_does_not_show_student_navigation(): void
+    {
+        $lecturer = User::factory()->lecturer()->create();
+
+        $response = $this->actingAs($lecturer)
+            ->get(route('lecturer.home'))
+            ->assertOk()
+            ->assertSee(route('profile.show'));
+
+        preg_match('/<nav class="sms-sidebar-nav".*?<\/nav>/s', $response->getContent(), $matches);
+        $sidebar = $matches[0] ?? '';
+
+        $this->assertNotSame('', $sidebar);
+        $this->assertStringNotContainsString(route('student.profile'), $sidebar);
+        $this->assertStringNotContainsString('Đăng ký học phần', $sidebar);
+        $this->assertStringNotContainsString('Thời khóa biểu', $sidebar);
     }
 
     public function test_guest_does_not_see_authenticated_sidebar(): void

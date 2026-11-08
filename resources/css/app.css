@@ -133,6 +133,15 @@ body.sms-body {
     color: #c47b45;
 }
 
+.sms-sidebar-link-disabled {
+    color: #9aa6a1;
+    cursor: not-allowed;
+}
+
+.sms-sidebar-link-disabled .sms-sidebar-icon {
+    color: #aab8b0;
+}
+
 .sms-sidebar-footer {
     display: flex;
     flex-direction: column;
@@ -335,10 +344,110 @@ body.sms-body {
     background: #fff;
 }
 
-.student-badge-card {
+.sms-student-profile-page .card {
+    border-color: #e0e9e1;
+    border-radius: 15px;
+    box-shadow: 0 6px 18px rgba(43, 62, 54, 0.045) !important;
+}
+
+.sms-student-profile-page .card-header {
+    color: var(--sms-teal-dark);
+    background: #f7faf7 !important;
+}
+
+.sms-student-profile-page .text-primary {
+    color: var(--sms-teal-dark) !important;
+}
+
+.sms-student-profile-page .bg-primary {
+    background-color: rgba(55, 139, 120, 0.12) !important;
+}
+
+.sms-student-profile-page .form-control:focus {
+    border-color: #80b6a7;
+    box-shadow: 0 0 0 0.2rem rgba(55, 139, 120, 0.16);
+}
+
+.sms-student-profile-page .btn-primary {
     color: #fff;
-    background: linear-gradient(135deg, #0d6efd 0%, #0b5ed7 100%);
-    border-radius: 0.75rem;
+    background-color: var(--sms-teal);
+    border-color: var(--sms-teal);
+}
+
+.sms-student-profile-page .btn-primary:hover {
+    background-color: var(--sms-teal-dark);
+    border-color: var(--sms-teal-dark);
+}
+
+.sms-student-profile-page .btn-outline-primary {
+    color: var(--sms-teal-dark);
+    border-color: #78ad9d;
+}
+
+.sms-student-profile-page .btn-outline-primary:hover {
+    color: #fff;
+    background-color: var(--sms-teal);
+    border-color: var(--sms-teal);
+}
+
+.sms-student-avatar {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 80px;
+    height: 80px;
+    color: var(--sms-teal-dark);
+    background: #e6f1eb;
+    border-radius: 50%;
+}
+
+.sms-student-shortcut-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 48px;
+    height: 48px;
+    border-radius: 13px;
+    font-size: 23px;
+}
+
+.sms-student-card-title {
+    color: var(--sms-ink);
+    text-decoration: none;
+    transition: color 140ms ease;
+}
+
+.sms-student-card-title:hover,
+.sms-student-card-title:focus-visible {
+    color: var(--sms-teal-dark);
+    text-decoration: underline;
+    text-underline-offset: 3px;
+}
+
+.sms-module-unavailable {
+    color: var(--sms-muted);
+    font-size: 11px;
+}
+
+.sms-student-profile-shortcut {
+    position: absolute;
+    z-index: 1;
+    right: clamp(24px, 3vw, 42px);
+    bottom: 28px;
+    padding: 8px 12px;
+    color: #fff;
+    background: rgba(255, 255, 255, 0.14);
+    border: 1px solid rgba(255, 255, 255, 0.48);
+    border-radius: 9px;
+    font-size: 11px;
+    font-weight: 650;
+    text-decoration: none;
+    transition: background-color 140ms ease, color 140ms ease;
+}
+
+.sms-student-profile-shortcut:hover {
+    color: var(--sms-teal-dark);
+    background: #fff;
 }
 
 .sms-welcome-card {
@@ -694,6 +803,11 @@ body.sms-body {
         padding: 22px;
     }
 
+    .sms-student-profile-shortcut {
+        right: 22px;
+        bottom: 18px;
+    }
+
     .sms-welcome-art {
         width: 105px;
         margin-right: -12px;
@@ -749,6 +863,13 @@ body.sms-body {
 
     .sms-welcome-card p {
         font-size: 11px;
+    }
+
+    .sms-student-profile-shortcut {
+        right: 14px;
+        bottom: 12px;
+        padding: 6px 8px;
+        font-size: 9px;
     }
 
     .sms-workspace-card {
