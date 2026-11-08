@@ -8,22 +8,42 @@
     };
 @endphp
 
-<nav class="border rounded bg-white p-3" aria-label="Điều hướng chính">
-    <div class="nav nav-pills flex-column gap-1">
+<aside id="app-sidebar" class="sms-sidebar" x-show="sidebarOpen" x-cloak>
+    <a class="sms-sidebar-brand" href="{{ route('home') }}" aria-label="Hexa Tech Academy - trang chủ">
+        <img src="{{ asset('images/logo.png') }}" alt="" class="sms-logo">
+        <span>Hexa Tech <strong>Academy</strong></span>
+    </a>
+    <nav class="sms-sidebar-nav" aria-label="Điều hướng chính">
+        <div class="sms-sidebar-nav-heading">
+            <button
+                class="sms-sidebar-toggle"
+                type="button"
+                @click="sidebarOpen = !sidebarOpen"
+                :aria-expanded="sidebarOpen.toString()"
+                aria-controls="app-sidebar"
+                aria-label="Ẩn hoặc hiện thanh điều hướng"
+            >
+                <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+                    <path d="M3 6h18M3 12h18M3 18h18" />
+                </svg>
+            </button>
+        </div>
         @if ($dashboard)
             <a
-                class="nav-link d-flex align-items-center gap-2 {{ request()->routeIs($dashboard['route']) ? 'active' : 'text-dark' }}"
+                class="sms-sidebar-link {{ request()->routeIs($dashboard['route']) ? 'active' : '' }}"
                 href="{{ route($dashboard['route']) }}"
             >
                 <svg class="sms-sidebar-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
-                    <path d="M3 10.5 12 3l9 7.5" />
-                    <path d="M5.5 9.5V21h13V9.5M9 21v-7h6v7" />
+                    <rect x="3" y="3" width="8" height="8" rx="2" />
+                    <rect x="13" y="3" width="8" height="5" rx="2" />
+                    <rect x="13" y="10" width="8" height="11" rx="2" />
+                    <rect x="3" y="13" width="8" height="8" rx="2" />
                 </svg>
                 {{ $dashboard['label'] }}
             </a>
         @endif
         <a
-            class="nav-link d-flex align-items-center gap-2 {{ request()->routeIs('profile.show') ? 'active' : 'text-dark' }}"
+            class="sms-sidebar-link {{ request()->routeIs('profile.show') ? 'active' : '' }}"
             href="{{ route('profile.show') }}"
         >
             <svg class="sms-sidebar-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
@@ -32,5 +52,9 @@
             </svg>
             Hồ sơ cá nhân
         </a>
+    </nav>
+    <div class="sms-sidebar-footer">
+        <span>Hệ thống quản lý đào tạo</span>
+        <strong>Hexa Tech Academy</strong>
     </div>
-</nav>
+</aside>

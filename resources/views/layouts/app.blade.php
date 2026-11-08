@@ -7,11 +7,17 @@
     <title>@yield('title', config('app.name'))</title>
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
-<body x-data="{ sidebarOpen: true }">
+<body class="sms-body" x-data="{ sidebarOpen: window.innerWidth >= 768 }">
     @auth
-        @include('layouts.partials.header')
+        <div class="sms-app-shell" :class="{ 'sidebar-collapsed': !sidebarOpen }">
+            @include('layouts.partials.sidebar')
+            <div class="sms-main-column">
+                @include('layouts.partials.header')
+                @include('layouts.partials.content')
+            </div>
+        </div>
+    @else
+        @include('layouts.partials.content')
     @endauth
-
-    @include('layouts.partials.content')
 </body>
 </html>
