@@ -63,10 +63,10 @@ class StudentMockService
     private function mockProfile(?User $user): object
     {
         return (object) [
-            'user_id' => $user?->id ?? 1,
-            'student_code' => $user?->code ?? 'SV20230001',
-            'name' => $user?->name ?? 'Nguyễn Văn An',
-            'email' => $user?->email ?? 'nguyenvanan.sv@sms.edu.vn',
+            'user_id' => $user->id ?? 1,
+            'student_code' => $user->code ?? 'SV20230001',
+            'name' => $user->name ?? 'Nguyễn Văn An',
+            'email' => $user->email ?? 'nguyenvanan.sv@sms.edu.vn',
             'status_label' => 'Đang học',
             'status_badge' => 'bg-success',
             'cohort_year' => 2023,

@@ -7,11 +7,11 @@ use App\Modules\Enrollment\Models\Enrollment;
 use App\Modules\Identity\Database\Factories\StudentFactory;
 use App\Shared\Enums\Gender;
 use App\Shared\Enums\StudentStatus;
-use Illuminate\Support\Carbon;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Support\Carbon;
 
 /**
  * @property StudentStatus $status
