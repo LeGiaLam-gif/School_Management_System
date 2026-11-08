@@ -3,6 +3,16 @@
 @section('title', 'Cổng Sinh Viên · Trang chủ')
 
 @section('content')
+    @php($studentActions = [
+        ['route' => 'student.profile', 'title' => 'Hồ sơ cá nhân', 'icon' => 'user', 'color' => 'teal'],
+        ['route' => 'student.curriculum', 'title' => 'Chương trình đào tạo', 'icon' => 'book', 'color' => 'orange'],
+        ['route' => 'student.enrollment', 'title' => 'Đăng ký học phần', 'icon' => 'edit', 'color' => 'violet'],
+        ['route' => 'student.timetable', 'title' => 'Thời khóa biểu', 'icon' => 'calendar', 'color' => 'orange'],
+        ['route' => 'student.grades', 'title' => 'Điểm & GPA', 'icon' => 'chart', 'color' => 'blue'],
+        ['route' => 'student.attendance', 'title' => 'Chuyên cần', 'icon' => 'check', 'color' => 'green'],
+        ['route' => 'student.announcements', 'title' => 'Thông báo', 'icon' => 'bell', 'color' => 'teal'],
+    ])
+
     <section class="sms-welcome-card">
         <div class="sms-welcome-copy">
             <span class="sms-eyebrow">HEXA TECH ACADEMY · HỆ THỐNG QUẢN LÝ ĐÀO TẠO</span>
@@ -22,7 +32,6 @@
                 <circle class="art-spark" cx="30" cy="95" r="4" />
             </svg>
         </div>
-        <a href="{{ route('student.profile') }}" class="sms-student-profile-shortcut">Xem hồ sơ cá nhân</a>
     </section>
 
     <section class="sms-summary-grid" aria-label="Thông tin sinh viên">
@@ -56,94 +65,59 @@
         </article>
     </section>
 
-    <div class="row g-4 mt-1">
-    <div class="col-md-6 col-xl-3">
-        <div class="card h-100 border-0 shadow-sm rounded-3 hover-shadow transition">
-            <div class="card-body p-4 d-flex flex-column">
-                <div class="mb-3">
-                    <span class="sms-student-shortcut-icon sms-icon-teal">👤</span>
-                </div>
-                <h6 class="fw-bold mb-1">
-                    <a href="{{ route('student.profile') }}" class="sms-student-card-title">Hồ sơ cá nhân</a>
-                </h6>
-                <p class="text-muted small mb-4 flex-grow-1">
-                    Xem thông tin sinh viên, khoa, ngành học và quản lý thông tin liên hệ.
-                </p>
-            </div>
+    <section class="sms-workspace-card mt-4">
+        <div class="sms-section-heading">
+            <h2>Bảng điều khiển</h2>
+            <span class="sms-current-role">Sinh viên</span>
         </div>
-    </div>
-
-    <div class="col-md-6 col-xl-3">
-        <div class="card h-100 border-0 shadow-sm rounded-3">
-            <div class="card-body p-4 d-flex flex-column">
-                <div class="mb-3">
-                    <span class="sms-student-shortcut-icon sms-icon-orange">📚</span>
-                </div>
-                <h6 class="fw-bold mb-1">
-                    @if (Route::has('student.curriculum'))
-                        <a href="{{ route('student.curriculum') }}" class="sms-student-card-title">Chương trình đào tạo</a>
-                    @else
-                        Chương trình đào tạo
-                    @endif
-                </h6>
-                <p class="text-muted small mb-4 flex-grow-1">
-                    Tra cứu danh sách môn học, học phần tiên quyết và khung gợi ý theo kỳ.
-                </p>
-                @unless (Route::has('student.curriculum'))
-                    <span class="sms-module-unavailable small">Chức năng chưa khả dụng</span>
-                @endunless
-            </div>
+        <div class="sms-student-action-grid">
+            @foreach ($studentActions as $action)
+                @php($routeAvailable = Route::has($action['route']))
+                <article class="sms-student-action-card {{ $routeAvailable ? 'is-available' : '' }}">
+                    <span class="sms-student-action-icon sms-action-icon-{{ $action['color'] }}" aria-hidden="true">
+                        <svg viewBox="0 0 24 24" focusable="false">
+                            @switch($action['icon'])
+                                @case('user')
+                                    <circle cx="12" cy="8" r="4" />
+                                    <path d="M4 21a8 8 0 0 1 16 0" />
+                                    @break
+                                @case('book')
+                                    <path d="M4 5.5A2.5 2.5 0 0 1 6.5 3H20v17H6.5A2.5 2.5 0 0 0 4 22zM4 5.5v16M8 7h8M8 11h8" />
+                                    @break
+                                @case('edit')
+                                    <path d="M12 20h9M16.5 3.5a2.1 2.1 0 0 1 3 3L8 18l-4 1 1-4z" />
+                                    @break
+                                @case('calendar')
+                                    <rect x="3" y="5" width="18" height="16" rx="2" />
+                                    <path d="M16 3v4M8 3v4M3 10h18" />
+                                    @break
+                                @case('chart')
+                                    <path d="M4 20V10M10 20V4M16 20v-7M22 20H2" />
+                                    @break
+                                @case('check')
+                                    <circle cx="12" cy="12" r="9" />
+                                    <path d="m8 12 3 3 5-6" />
+                                    @break
+                                @case('bell')
+                                    <path d="M18 8a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9M10 21h4" />
+                                    @break
+                            @endswitch
+                        </svg>
+                    </span>
+                    <h3>
+                        @if ($routeAvailable)
+                            <a href="{{ route($action['route']) }}">{{ $action['title'] }}</a>
+                        @else
+                            <span aria-disabled="true">{{ $action['title'] }}</span>
+                        @endif
+                    </h3>
+                </article>
+            @endforeach
         </div>
-    </div>
-
-    <div class="col-md-6 col-xl-3">
-        <div class="card h-100 border-0 shadow-sm rounded-3">
-            <div class="card-body p-4 d-flex flex-column">
-                <div class="mb-3">
-                    <span class="sms-student-shortcut-icon sms-icon-orange">📝</span>
-                </div>
-                <h6 class="fw-bold mb-1">
-                    @if (Route::has('student.enrollment'))
-                        <a href="{{ route('student.enrollment') }}" class="sms-student-card-title">Đăng ký học phần</a>
-                    @else
-                        Đăng ký học phần
-                    @endif
-                </h6>
-                <p class="text-muted small mb-4 flex-grow-1">
-                    Đăng ký hoặc hủy các lớp học phần mở trong kỳ theo kế hoạch đào tạo.
-                </p>
-                @unless (Route::has('student.enrollment'))
-                    <span class="sms-module-unavailable small">Chức năng chưa khả dụng</span>
-                @endunless
-            </div>
-        </div>
-    </div>
-
-    <div class="col-md-6 col-xl-3">
-        <div class="card h-100 border-0 shadow-sm rounded-3">
-            <div class="card-body p-4 d-flex flex-column">
-                <div class="mb-3">
-                    <span class="sms-student-shortcut-icon sms-icon-green">📊</span>
-                </div>
-                <h6 class="fw-bold mb-1">
-                    @if (Route::has('student.grades'))
-                        <a href="{{ route('student.grades') }}" class="sms-student-card-title">Điểm & Thời khóa biểu</a>
-                    @else
-                        Điểm & Thời khóa biểu
-                    @endif
-                </h6>
-                <p class="text-muted small mb-4 flex-grow-1">
-                    Theo dõi lịch học, điểm học phần và GPA sau khi kết quả được công bố.
-                </p>
-                @unless (Route::has('student.grades'))
-                    <span class="sms-module-unavailable small">Chức năng chưa khả dụng</span>
-                @endunless
-            </div>
-        </div>
-    </div>
+    </section>
 
     <!-- Hướng dẫn sinh viên -->
-    <div class="col-12">
+    <div class="mt-4">
         <div class="card border-0 shadow-sm rounded-3">
             <div class="card-body p-4">
                 <div class="d-flex align-items-start gap-3">
@@ -158,6 +132,5 @@
                 </div>
             </div>
         </div>
-    </div>
     </div>
 @endsection
