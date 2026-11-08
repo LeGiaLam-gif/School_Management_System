@@ -14,6 +14,15 @@
         ['route' => 'student.attendance', 'label' => 'Chuyên cần', 'active' => 'student.attendance*', 'icon' => 'check'],
         ['route' => 'student.announcements', 'label' => 'Thông báo', 'active' => 'student.announcements*', 'icon' => 'bell'],
     ];
+    $lecturerNavigation = [
+        ['route' => 'lecturer.classes', 'label' => 'Lớp được phân công', 'active' => 'lecturer.classes*', 'icon' => 'book'],
+        ['route' => 'lecturer.students', 'label' => 'Danh sách sinh viên', 'active' => 'lecturer.students*', 'icon' => 'users'],
+        ['route' => 'lecturer.timetable', 'label' => 'Lịch dạy', 'active' => 'lecturer.timetable*', 'icon' => 'calendar'],
+        ['route' => 'lecturer.attendance', 'label' => 'Điểm danh', 'active' => 'lecturer.attendance*', 'icon' => 'check'],
+        ['route' => 'lecturer.grades', 'label' => 'Quản lý điểm', 'active' => 'lecturer.grades*', 'icon' => 'chart'],
+        ['route' => 'lecturer.announcements', 'label' => 'Thông báo', 'active' => 'lecturer.announcements*', 'icon' => 'bell'],
+        ['route' => 'lecturer.reports', 'label' => 'Báo cáo & xuất dữ liệu', 'active' => 'lecturer.reports*', 'icon' => 'report'],
+    ];
 @endphp
 
 <aside id="app-sidebar" class="sms-sidebar" x-show="sidebarOpen" x-cloak>
@@ -95,6 +104,63 @@
                                     @break
                                 @case('bell')
                                     <path d="M18 8a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9M10 21h4" />
+                                    @break
+                            @endswitch
+                        </svg>
+                        {{ $item['label'] }}
+                @if ($routeAvailable)
+                    </a>
+                @else
+                    </span>
+                @endif
+            @endforeach
+        @elseif ($user->isLecturer())
+            <a
+                class="sms-sidebar-link {{ request()->routeIs('profile.show') ? 'active' : '' }}"
+                href="{{ route('profile.show') }}"
+            >
+                <svg class="sms-sidebar-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+                    <circle cx="12" cy="8" r="4" />
+                    <path d="M4 21a8 8 0 0 1 16 0" />
+                </svg>
+                Hồ sơ cá nhân
+            </a>
+
+            @foreach ($lecturerNavigation as $item)
+                @php($routeAvailable = Route::has($item['route']))
+                @if ($routeAvailable)
+                    <a
+                        class="sms-sidebar-link {{ request()->routeIs($item['active']) ? 'active' : '' }}"
+                        href="{{ route($item['route']) }}"
+                    >
+                @else
+                    <span class="sms-sidebar-link sms-sidebar-link-disabled" aria-disabled="true" title="Chức năng chưa khả dụng">
+                @endif
+                        <svg class="sms-sidebar-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+                            @switch($item['icon'])
+                                @case('book')
+                                    <path d="M4 5.5A2.5 2.5 0 0 1 6.5 3H20v17H6.5A2.5 2.5 0 0 0 4 22zM4 5.5v16M8 7h8M8 11h8" />
+                                    @break
+                                @case('users')
+                                    <circle cx="9" cy="8" r="3" />
+                                    <path d="M3 20a6 6 0 0 1 12 0M16 5a3 3 0 0 1 0 6M18 14a5 5 0 0 1 3 4v2" />
+                                    @break
+                                @case('calendar')
+                                    <rect x="3" y="5" width="18" height="16" rx="2" />
+                                    <path d="M16 3v4M8 3v4M3 10h18" />
+                                    @break
+                                @case('check')
+                                    <circle cx="12" cy="12" r="9" />
+                                    <path d="m8 12 3 3 5-6" />
+                                    @break
+                                @case('chart')
+                                    <path d="M4 20V10M10 20V4M16 20v-7M22 20H2" />
+                                    @break
+                                @case('bell')
+                                    <path d="M18 8a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9M10 21h4" />
+                                    @break
+                                @case('report')
+                                    <path d="M5 3h10l4 4v14H5zM14 3v5h5M8 12h8M8 16h8" />
                                     @break
                             @endswitch
                         </svg>
