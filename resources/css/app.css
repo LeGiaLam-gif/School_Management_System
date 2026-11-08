@@ -133,6 +133,15 @@ body.sms-body {
     color: #c47b45;
 }
 
+.sms-sidebar-link-disabled {
+    color: #9aa6a1;
+    cursor: not-allowed;
+}
+
+.sms-sidebar-link-disabled .sms-sidebar-icon {
+    color: #aab8b0;
+}
+
 .sms-sidebar-footer {
     display: flex;
     flex-direction: column;
@@ -335,10 +344,204 @@ body.sms-body {
     background: #fff;
 }
 
-.student-badge-card {
+.sms-student-profile-page .card {
+    border-color: #e0e9e1;
+    border-radius: 15px;
+    box-shadow: 0 6px 18px rgba(43, 62, 54, 0.045) !important;
+}
+
+.sms-student-profile-page .card-header {
+    color: var(--sms-teal-dark);
+    background: #f7faf7 !important;
+}
+
+.sms-student-profile-page .text-primary {
+    color: var(--sms-teal-dark) !important;
+}
+
+.sms-student-profile-page .bg-primary {
+    background-color: rgba(55, 139, 120, 0.12) !important;
+}
+
+.sms-student-profile-page .form-control:focus {
+    border-color: #80b6a7;
+    box-shadow: 0 0 0 0.2rem rgba(55, 139, 120, 0.16);
+}
+
+.sms-student-profile-page .btn-primary {
     color: #fff;
-    background: linear-gradient(135deg, #0d6efd 0%, #0b5ed7 100%);
-    border-radius: 0.75rem;
+    background-color: var(--sms-teal);
+    border-color: var(--sms-teal);
+}
+
+.sms-student-profile-page .btn-primary:hover {
+    background-color: var(--sms-teal-dark);
+    border-color: var(--sms-teal-dark);
+}
+
+.sms-student-profile-page .btn-outline-primary {
+    color: var(--sms-teal-dark);
+    border-color: #78ad9d;
+}
+
+.sms-student-profile-page .btn-outline-primary:hover {
+    color: #fff;
+    background-color: var(--sms-teal);
+    border-color: var(--sms-teal);
+}
+
+.sms-student-avatar {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 80px;
+    height: 80px;
+    color: var(--sms-teal-dark);
+    background: #e6f1eb;
+    border-radius: 50%;
+}
+
+.sms-student-shortcut-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 48px;
+    height: 48px;
+    border-radius: 13px;
+    font-size: 23px;
+}
+
+.sms-student-card-title {
+    color: var(--sms-ink);
+    text-decoration: none;
+    transition: color 140ms ease;
+}
+
+.sms-student-card-title:hover,
+.sms-student-card-title:focus-visible {
+    color: var(--sms-teal-dark);
+    text-decoration: underline;
+    text-underline-offset: 3px;
+}
+
+.sms-student-action-grid {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 14px;
+    padding-top: 18px;
+}
+
+.sms-student-action-card {
+    display: flex;
+    min-height: 150px;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 15px;
+    padding: 20px 14px;
+    text-align: center;
+    background: #fff;
+    border: 1px solid #edf0ed;
+    border-radius: 18px;
+    box-shadow: 0 5px 16px rgba(43, 62, 54, 0.045);
+    transition: transform 150ms ease, box-shadow 150ms ease, border-color 150ms ease;
+}
+
+.sms-student-action-card.is-available:hover {
+    transform: translateY(-2px);
+    border-color: #cfe2d8;
+    box-shadow: 0 9px 22px rgba(43, 62, 54, 0.09);
+}
+
+.sms-student-action-icon {
+    display: inline-flex;
+    width: 52px;
+    height: 52px;
+    flex: 0 0 52px;
+    align-items: center;
+    justify-content: center;
+    border-radius: 15px;
+}
+
+.sms-action-icon-teal {
+    color: #378b78;
+    background: #e8f4ef;
+}
+
+.sms-action-icon-orange {
+    color: #d78c59;
+    background: #fbefe4;
+}
+
+.sms-action-icon-violet {
+    color: #7378b5;
+    background: #eeeff9;
+}
+
+.sms-action-icon-blue {
+    color: #5f89aa;
+    background: #e9f1f7;
+}
+
+.sms-action-icon-green {
+    color: #3e9b70;
+    background: #e8f4ed;
+}
+
+.sms-student-action-icon svg {
+    width: 26px;
+    height: 26px;
+    fill: none;
+    stroke: currentColor;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    stroke-width: 1.8;
+}
+
+.sms-student-action-card h3 {
+    margin: 0;
+    color: #435454;
+    font-size: 13px;
+    font-weight: 700;
+    line-height: 1.45;
+}
+
+.sms-student-action-card h3 a {
+    color: inherit;
+    text-decoration: none;
+}
+
+.sms-student-action-card h3 a:hover,
+.sms-student-action-card h3 a:focus-visible {
+    color: var(--sms-teal-dark);
+    text-decoration: underline;
+    text-underline-offset: 3px;
+}
+
+.sms-module-unavailable {
+    color: var(--sms-muted);
+    font-size: 11px;
+}
+
+.sms-student-profile-shortcut {
+    position: absolute;
+    z-index: 1;
+    right: clamp(24px, 3vw, 42px);
+    bottom: 28px;
+    padding: 8px 12px;
+    color: #fff;
+    background: rgba(255, 255, 255, 0.14);
+    border: 1px solid rgba(255, 255, 255, 0.48);
+    border-radius: 9px;
+    font-size: 11px;
+    font-weight: 650;
+    text-decoration: none;
+    transition: background-color 140ms ease, color 140ms ease;
+}
+
+.sms-student-profile-shortcut:hover {
+    color: var(--sms-teal-dark);
+    background: #fff;
 }
 
 .sms-welcome-card {
@@ -670,6 +873,107 @@ body.sms-body {
     white-space: nowrap;
 }
 
+.sms-lecturer-action-grid {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 14px;
+    padding-top: 18px;
+}
+
+.sms-lecturer-action-card {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 15px;
+    min-height: 150px;
+    padding: 20px 14px;
+    text-align: center;
+    background: #fff;
+    border: 1px solid #edf0ed;
+    border-radius: 18px;
+    box-shadow: 0 5px 16px rgba(43, 62, 54, 0.045);
+    transition: transform 150ms ease, box-shadow 150ms ease, border-color 150ms ease;
+}
+
+.sms-lecturer-action-card.is-available:hover {
+    transform: translateY(-2px);
+    border-color: #cfe2d8;
+    box-shadow: 0 9px 22px rgba(43, 62, 54, 0.09);
+}
+
+.sms-lecturer-action-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 52px;
+    height: 52px;
+    flex: 0 0 52px;
+    background: #f0f6f2;
+    border-radius: 15px;
+}
+
+.sms-lecturer-action-icon svg {
+    width: 26px;
+    height: 26px;
+    fill: none;
+    stroke: currentColor;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    stroke-width: 1.8;
+}
+
+.sms-action-icon-teal {
+    color: #378b78;
+    background: #e8f4ef;
+}
+
+.sms-action-icon-violet {
+    color: #7378b5;
+    background: #f0effa;
+}
+
+.sms-action-icon-orange {
+    color: #d78c50;
+    background: #fbf0e5;
+}
+
+.sms-action-icon-green {
+    color: #3a9d6a;
+    background: #eaf5ee;
+}
+
+.sms-action-icon-blue {
+    color: #4b83ad;
+    background: #eaf2f8;
+}
+
+.sms-lecturer-action-content {
+    display: flex;
+    min-height: 38px;
+    align-items: center;
+}
+
+.sms-lecturer-action-card h3 {
+    margin: 0;
+    color: #435454;
+    font-size: 13px;
+    font-weight: 700;
+    line-height: 1.45;
+}
+
+.sms-lecturer-action-card h3 a {
+    color: inherit;
+    text-decoration: none;
+}
+
+.sms-lecturer-action-card h3 a:hover,
+.sms-lecturer-action-card h3 a:focus-visible {
+    color: var(--sms-teal-dark);
+    text-decoration: underline;
+    text-underline-offset: 3px;
+}
+
 .sms-workspace-empty {
     display: flex;
     align-items: center;
@@ -808,6 +1112,27 @@ body.sms-body {
         padding: 22px;
     }
 
+    .sms-student-profile-shortcut {
+        right: 22px;
+        bottom: 18px;
+    }
+
+    .sms-student-action-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 10px;
+    }
+
+    .sms-student-action-card {
+        min-height: 132px;
+        padding: 16px 10px;
+    }
+
+    .sms-student-action-icon {
+        width: 44px;
+        height: 44px;
+        flex-basis: 44px;
+    }
+
     .sms-welcome-art {
         width: 105px;
         margin-right: -12px;
@@ -865,8 +1190,35 @@ body.sms-body {
         font-size: 11px;
     }
 
+    .sms-student-profile-shortcut {
+        right: 14px;
+        bottom: 12px;
+        padding: 6px 8px;
+        font-size: 9px;
+    }
+
+    .sms-student-action-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
     .sms-workspace-card {
         padding: 18px 15px;
+    }
+
+    .sms-lecturer-action-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 10px;
+    }
+
+    .sms-lecturer-action-card {
+        min-height: 132px;
+        padding: 16px 10px;
+    }
+
+    .sms-lecturer-action-icon {
+        width: 44px;
+        height: 44px;
+        flex-basis: 44px;
     }
 
     .sms-workspace-empty {

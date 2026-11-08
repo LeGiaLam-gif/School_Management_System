@@ -3,106 +3,121 @@
 @section('title', 'Cổng Sinh Viên · Trang chủ')
 
 @section('content')
-<div class="row g-4">
-    <!-- Banner chào mừng -->
-    <div class="col-12">
-        <div class="student-badge-card p-4 p-md-5 shadow-sm">
-            <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3">
-                <div>
-                    <span class="badge bg-white bg-opacity-25 text-white mb-2 px-3 py-2 rounded-pill">
-                        Cổng Đào Tạo Tín Chỉ
+    @php($studentActions = [
+        ['route' => 'student.profile', 'title' => 'Hồ sơ cá nhân', 'icon' => 'user', 'color' => 'teal'],
+        ['route' => 'student.curriculum', 'title' => 'Chương trình đào tạo', 'icon' => 'book', 'color' => 'orange'],
+        ['route' => 'student.enrollment', 'title' => 'Đăng ký học phần', 'icon' => 'edit', 'color' => 'violet'],
+        ['route' => 'student.timetable', 'title' => 'Thời khóa biểu', 'icon' => 'calendar', 'color' => 'orange'],
+        ['route' => 'student.grades', 'title' => 'Điểm & GPA', 'icon' => 'chart', 'color' => 'blue'],
+        ['route' => 'student.attendance', 'title' => 'Chuyên cần', 'icon' => 'check', 'color' => 'green'],
+        ['route' => 'student.announcements', 'title' => 'Thông báo', 'icon' => 'bell', 'color' => 'teal'],
+    ])
+
+    <section class="sms-welcome-card">
+        <div class="sms-welcome-copy">
+            <span class="sms-eyebrow">HEXA TECH ACADEMY · HỆ THỐNG QUẢN LÝ ĐÀO TẠO</span>
+            <h2>Chào mừng, {{ $student->name ?? $user?->name ?? 'Sinh viên' }}</h2>
+            <p>Không gian học tập dành cho sinh viên, tập trung thông tin và hoạt động học vụ trên cùng một nền tảng.</p>
+            <span class="sms-role-pill">Sinh viên</span>
+        </div>
+        <div class="sms-welcome-art" aria-hidden="true">
+            <svg viewBox="0 0 180 150" focusable="false">
+                <path class="art-orbit" d="M18 115c26-71 106-95 145-56 34 35-1 75-44 71-36-3-66-25-91-15" />
+                <path class="art-book" d="M46 51c18-8 33-5 45 4v66c-12-9-27-12-45-4z" />
+                <path class="art-book" d="M91 55c14-9 29-12 46-4v66c-17-8-32-5-46 4z" />
+                <path class="art-line" d="M56 67c11-4 20-2 27 3M56 79c11-4 20-2 27 3M102 70c9-5 19-7 28-5M102 82c9-5 19-7 28-5" />
+                <path class="art-cap" d="m31 43 60-23 60 23-60 24z" />
+                <path class="art-cap-tail" d="M48 51v24c24 17 70 17 86 0V51" />
+                <circle class="art-spark" cx="148" cy="29" r="5" />
+                <circle class="art-spark" cx="30" cy="95" r="4" />
+            </svg>
+        </div>
+    </section>
+
+    <section class="sms-summary-grid" aria-label="Thông tin sinh viên">
+        <article class="sms-summary-card">
+            <span class="sms-summary-icon sms-icon-teal" aria-hidden="true">
+                <svg viewBox="0 0 24 24"><path d="M4 5h16v14H4zM8 9h8M8 13h5" /></svg>
+            </span>
+            <span class="sms-summary-label">Mã sinh viên</span>
+            <strong>{{ $student->student_code ?? $user?->code ?? 'Chưa cập nhật' }}</strong>
+        </article>
+        <article class="sms-summary-card">
+            <span class="sms-summary-icon sms-icon-orange" aria-hidden="true">
+                <svg viewBox="0 0 24 24"><path d="M4 5h16v14H4zM8 9h8M8 13h8M8 17h5" /></svg>
+            </span>
+            <span class="sms-summary-label">Ngành học</span>
+            <strong>{{ $student->program_name ?? 'Chưa cập nhật' }}</strong>
+        </article>
+        <article class="sms-summary-card">
+            <span class="sms-summary-icon sms-icon-violet" aria-hidden="true">
+                <svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="16" rx="2" /><path d="M16 3v4M8 3v4M3 10h18" /></svg>
+            </span>
+            <span class="sms-summary-label">Khóa tuyển sinh</span>
+            <strong>{{ $student->cohort_year ?? 'Chưa cập nhật' }}</strong>
+        </article>
+        <article class="sms-summary-card">
+            <span class="sms-summary-icon sms-icon-green" aria-hidden="true">
+                <svg viewBox="0 0 24 24"><path d="m5 12 4 4L19 6" /><circle cx="12" cy="12" r="10" /></svg>
+            </span>
+            <span class="sms-summary-label">Trạng thái</span>
+            <strong>{{ $student->status_label ?? 'Chưa cập nhật' }}</strong>
+        </article>
+    </section>
+
+    <section class="sms-workspace-card mt-4">
+        <div class="sms-section-heading">
+            <h2>Bảng điều khiển</h2>
+            <span class="sms-current-role">Sinh viên</span>
+        </div>
+        <div class="sms-student-action-grid">
+            @foreach ($studentActions as $action)
+                @php($routeAvailable = Route::has($action['route']))
+                <article class="sms-student-action-card {{ $routeAvailable ? 'is-available' : '' }}">
+                    <span class="sms-student-action-icon sms-action-icon-{{ $action['color'] }}" aria-hidden="true">
+                        <svg viewBox="0 0 24 24" focusable="false">
+                            @switch($action['icon'])
+                                @case('user')
+                                    <circle cx="12" cy="8" r="4" />
+                                    <path d="M4 21a8 8 0 0 1 16 0" />
+                                    @break
+                                @case('book')
+                                    <path d="M4 5.5A2.5 2.5 0 0 1 6.5 3H20v17H6.5A2.5 2.5 0 0 0 4 22zM4 5.5v16M8 7h8M8 11h8" />
+                                    @break
+                                @case('edit')
+                                    <path d="M12 20h9M16.5 3.5a2.1 2.1 0 0 1 3 3L8 18l-4 1 1-4z" />
+                                    @break
+                                @case('calendar')
+                                    <rect x="3" y="5" width="18" height="16" rx="2" />
+                                    <path d="M16 3v4M8 3v4M3 10h18" />
+                                    @break
+                                @case('chart')
+                                    <path d="M4 20V10M10 20V4M16 20v-7M22 20H2" />
+                                    @break
+                                @case('check')
+                                    <circle cx="12" cy="12" r="9" />
+                                    <path d="m8 12 3 3 5-6" />
+                                    @break
+                                @case('bell')
+                                    <path d="M18 8a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9M10 21h4" />
+                                    @break
+                            @endswitch
+                        </svg>
                     </span>
-                    <h2 class="fw-bold mb-1">Xin chào, {{ $student->name ?? $user?->name ?? 'Sinh viên' }}!</h2>
-                    <p class="mb-0 text-white-50">
-                        MSSV: <strong class="text-white">{{ $student->student_code ?? $user?->code ?? 'SV20230001' }}</strong>
-                        · Ngành: <strong class="text-white">{{ $student->program_name ?? 'Kỹ thuật Phần mềm' }}</strong>
-                        · Khóa: <strong class="text-white">{{ $student->cohort_year ?? '2023' }}</strong>
-                    </p>
-                </div>
-                <div>
-                    <a href="{{ route('student.profile') }}" class="btn btn-light text-primary fw-semibold px-4 py-2 shadow-sm">
-                        Xem hồ sơ cá nhân →
-                    </a>
-                </div>
-            </div>
+                    <h3>
+                        @if ($routeAvailable)
+                            <a href="{{ route($action['route']) }}">{{ $action['title'] }}</a>
+                        @else
+                            <span aria-disabled="true">{{ $action['title'] }}</span>
+                        @endif
+                    </h3>
+                </article>
+            @endforeach
         </div>
-    </div>
-
-    <!-- 4 Shortcut Cards -->
-    <div class="col-md-6 col-xl-3">
-        <div class="card h-100 border-0 shadow-sm rounded-3 hover-shadow transition">
-            <div class="card-body p-4 d-flex flex-column">
-                <div class="d-flex align-items-center justify-content-between mb-3">
-                    <span class="p-3 bg-primary bg-opacity-10 text-primary rounded-3 fs-4">👤</span>
-                    <span class="badge {{ $student->status_badge ?? 'bg-success' }}">{{ $student->status_label ?? 'Đang học' }}</span>
-                </div>
-                <h6 class="fw-bold mb-1">Hồ sơ cá nhân</h6>
-                <p class="text-muted small mb-4 flex-grow-1">
-                    Xem thông tin sinh viên, khoa, ngành học và quản lý thông tin liên hệ.
-                </p>
-                <a href="{{ route('student.profile') }}" class="btn btn-sm btn-outline-primary w-100">
-                    Truy cập hồ sơ
-                </a>
-            </div>
-        </div>
-    </div>
-
-    <div class="col-md-6 col-xl-3">
-        <div class="card h-100 border-0 shadow-sm rounded-3">
-            <div class="card-body p-4 d-flex flex-column">
-                <div class="d-flex align-items-center justify-content-between mb-3">
-                    <span class="p-3 bg-info bg-opacity-10 text-info rounded-3 fs-4">📚</span>
-                    <span class="badge bg-secondary-subtle text-secondary">Học vụ</span>
-                </div>
-                <h6 class="fw-bold mb-1">Chương trình đào tạo</h6>
-                <p class="text-muted small mb-4 flex-grow-1">
-                    Tra cứu danh sách môn học, học phần tiên quyết và khung gợi ý theo kỳ.
-                </p>
-                <a href="{{ Route::has('student.curriculum') ? route('student.curriculum') : '#' }}" class="btn btn-sm btn-outline-info w-100">
-                    Xem khung CTĐT
-                </a>
-            </div>
-        </div>
-    </div>
-
-    <div class="col-md-6 col-xl-3">
-        <div class="card h-100 border-0 shadow-sm rounded-3">
-            <div class="card-body p-4 d-flex flex-column">
-                <div class="d-flex align-items-center justify-content-between mb-3">
-                    <span class="p-3 bg-warning bg-opacity-10 text-warning rounded-3 fs-4">📝</span>
-                    <span class="badge bg-warning-subtle text-warning">Đăng ký</span>
-                </div>
-                <h6 class="fw-bold mb-1">Đăng ký học phần</h6>
-                <p class="text-muted small mb-4 flex-grow-1">
-                    Đăng ký hoặc hủy các lớp học phần mở trong kỳ theo kế hoạch đào tạo.
-                </p>
-                <a href="{{ Route::has('student.enrollment') ? route('student.enrollment') : '#' }}" class="btn btn-sm btn-outline-warning w-100">
-                    Đăng ký môn học
-                </a>
-            </div>
-        </div>
-    </div>
-
-    <div class="col-md-6 col-xl-3">
-        <div class="card h-100 border-0 shadow-sm rounded-3">
-            <div class="card-body p-4 d-flex flex-column">
-                <div class="d-flex align-items-center justify-content-between mb-3">
-                    <span class="p-3 bg-success bg-opacity-10 text-success rounded-3 fs-4">📊</span>
-                    <span class="badge bg-primary-subtle text-primary">Kết quả</span>
-                </div>
-                <h6 class="fw-bold mb-1">Điểm & Thời khóa biểu</h6>
-                <p class="text-muted small mb-4 flex-grow-1">
-                    Theo dõi lịch học hàng tuần, điểm chuyên cần, giữa kỳ, cuối kỳ và GPA.
-                </p>
-                <a href="{{ Route::has('student.grades') ? route('student.grades') : '#' }}" class="btn btn-sm btn-outline-success w-100">
-                    Xem kết quả học tập
-                </a>
-            </div>
-        </div>
-    </div>
+    </section>
 
     <!-- Hướng dẫn sinh viên -->
-    <div class="col-12">
+    <div class="mt-4">
         <div class="card border-0 shadow-sm rounded-3">
             <div class="card-body p-4">
                 <div class="d-flex align-items-start gap-3">
@@ -118,5 +133,4 @@
             </div>
         </div>
     </div>
-</div>
 @endsection
