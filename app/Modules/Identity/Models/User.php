@@ -20,7 +20,7 @@ class User extends Authenticatable
     use Auditable, HasFactory, HasRoles, Notifiable, SoftDeletes;
 
     protected $fillable = [
-        'code', 'name', 'email', 'password', 'status', 'must_change_password',
+        'code', 'name', 'email', 'password', 'status', 'must_change_password', 'phone', 'address',
     ];
 
     protected $hidden = ['password', 'remember_token'];
