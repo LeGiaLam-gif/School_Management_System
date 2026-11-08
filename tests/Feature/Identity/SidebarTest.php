@@ -76,7 +76,7 @@ class SidebarTest extends TestCase
             'code' => 'SV00002',
         ]);
 
-        $this->actingAs($student)
+        $response = $this->actingAs($student)
             ->get(route('student.home'))
             ->assertOk()
             ->assertSee('class="sms-welcome-card"', false)
@@ -86,16 +86,19 @@ class SidebarTest extends TestCase
             ->assertSee('Khóa tuyển sinh')
             ->assertSee('Ngành học')
             ->assertSee('Trạng thái')
-            ->assertSee('Điểm', false)
-            ->assertSee('Thời khóa biểu', false)
-            ->assertSee('Chức năng chưa khả dụng')
+            ->assertSee('class="sms-student-action-grid"', false)
+            ->assertSee('Điểm &amp; GPA', false)
+            ->assertSee('Thời khóa biểu')
+            ->assertSee('Chuyên cần')
+            ->assertSee('Thông báo')
             ->assertDontSee('>Học vụ<', false)
             ->assertDontSee('>Kết quả<', false)
             ->assertDontSee('href="#"', false)
-            ->assertDontSee('btn-outline-success', false)
-            ->assertDontSee('Xem kết quả học tập')
-            ->assertDontSee('Đăng ký môn học')
+            ->assertDontSee('Theo dõi lịch học', false)
+            ->assertDontSee('Xem thông tin sinh viên', false)
             ->assertSee(route('student.profile'));
+
+        $this->assertSame(7, substr_count($response->getContent(), 'class="sms-student-action-card'));
     }
 
     public function test_non_student_sidebar_does_not_show_student_navigation(): void
