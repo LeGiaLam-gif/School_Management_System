@@ -149,7 +149,7 @@
                 </h6>
             </div>
             <div class="card-body p-4">
-                <form method="POST" action="{{ route('student.profile.password') }}">
+                <form method="POST" action="{{ route('profile.password') }}">
                     @csrf
                     @method('PUT')
 

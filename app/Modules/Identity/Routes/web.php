@@ -16,6 +16,8 @@ Route::post('/logout', [AuthController::class, 'logout'])->middleware('auth')->n
 Route::middleware(['auth', 'active'])->group(function () {
     Route::get('/', [DashboardController::class, 'home'])->name('home');
     Route::get('/profile', [ProfileController::class, 'show'])->name('profile.show');
+    Route::put('/profile/contact', [ProfileController::class, 'updateContact'])->name('profile.contact');
+    Route::put('/profile/password', [ProfileController::class, 'changePassword'])->name('profile.password');
 
     // Lop 1: role middleware. Lop 2 (Policy theo doi tuong) nam trong controller cua tung module.
     Route::get('/admin', [DashboardController::class, 'admin'])->middleware('role:admin')->name('admin.home');
@@ -26,6 +28,5 @@ Route::middleware(['auth', 'active'])->group(function () {
     Route::middleware('role:student')->prefix('student')->name('student.')->group(function () {
         Route::get('/profile', [StudentProfileController::class, 'show'])->name('profile');
         Route::put('/profile/contact', [StudentProfileController::class, 'updateContact'])->name('profile.contact');
-        Route::put('/profile/password', [StudentProfileController::class, 'changePassword'])->name('profile.password');
     });
 });

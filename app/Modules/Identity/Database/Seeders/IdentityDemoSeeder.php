@@ -41,6 +41,8 @@ class IdentityDemoSeeder extends Seeder
                 'lecturer_code' => $code,
                 'department_id' => $cntt->id,
                 'academic_title' => $degrees[$i],
+                'phone' => $n === 1 ? '0562845621' : null,
+                'address' => $n === 1 ? '551/156 Lê Văn Khương, phường Tân Thới Hiệp, TP.HCM' : null,
             ]);
         }
 

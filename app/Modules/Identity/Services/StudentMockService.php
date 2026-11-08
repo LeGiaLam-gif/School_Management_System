@@ -5,7 +5,6 @@ namespace App\Modules\Identity\Services;
 use App\Modules\Identity\Models\Student;
 use App\Modules\Identity\Models\User;
 use App\Shared\Enums\StudentStatus;
-use Illuminate\Support\Facades\Hash;
 use Throwable;
 
 /**
@@ -111,25 +110,6 @@ class StudentMockService
                 ], fn ($val) => $val !== null));
             } catch (Throwable) {
                 // Bo qua loi DB neu DB chua migration xong
-            }
-        }
-    }
-
-    /**
-     * Cap nhat mat khau.
-     */
-    public function updatePassword(?User $user, string $newPassword): void
-    {
-        session(['mock_student_password_changed' => true]);
-
-        if ($user !== null) {
-            try {
-                $user->update([
-                    'password' => Hash::make($newPassword),
-                    'must_change_password' => false,
-                ]);
-            } catch (Throwable) {
-                // Bo qua loi DB neu DB chua ket noi duoc
             }
         }
     }

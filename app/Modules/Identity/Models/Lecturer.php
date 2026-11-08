@@ -15,7 +15,7 @@ class Lecturer extends Model
     use HasFactory;
 
     protected $fillable = [
-        'user_id', 'lecturer_code', 'department_id', 'academic_title', 'phone', 'office',
+        'user_id', 'lecturer_code', 'department_id', 'academic_title', 'phone', 'office', 'address',
     ];
 
     protected static function newFactory(): LecturerFactory
