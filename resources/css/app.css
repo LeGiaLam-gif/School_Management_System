@@ -335,6 +335,12 @@ body.sms-body {
     background: #fff;
 }
 
+.student-badge-card {
+    color: #fff;
+    background: linear-gradient(135deg, #0d6efd 0%, #0b5ed7 100%);
+    border-radius: 0.75rem;
+}
+
 .sms-welcome-card {
     position: relative;
     display: flex;

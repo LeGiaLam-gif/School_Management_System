@@ -2,8 +2,8 @@
 
 use App\Modules\Identity\Controllers\AuthController;
 use App\Modules\Identity\Controllers\DashboardController;
-use App\Modules\Identity\Controllers\StudentProfileController;
 use App\Modules\Identity\Controllers\ProfileController;
+use App\Modules\Identity\Controllers\StudentProfileController;
 use Illuminate\Support\Facades\Route;
 
 Route::middleware('guest')->group(function () {

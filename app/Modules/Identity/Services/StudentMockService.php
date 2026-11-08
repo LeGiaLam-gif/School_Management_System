@@ -10,7 +10,7 @@ use Throwable;
 
 /**
  * Service cung cap du lieu sinh vien voi co che tu dong Fallback Mock Data.
- * 
+ *
  * - Khi Database chua san sang hoac chua co du lieu: tra ve Mock Data mau chuan
  *   de phat trien giao dien, kiem thu form va flow nghiep vu ma khong bi loi PDO/SQL.
  * - Khi Database cua thanh vien khac hoan thanh va co migration: tu dong doc/ghi
@@ -20,8 +20,6 @@ class StudentMockService
 {
     /**
      * Lay ho so sinh vien (uu tien DB, fallback ve Mock Data).
-     *
-     * @return object
      */
     public function getStudentProfile(?User $user): object
     {
@@ -46,12 +44,12 @@ class StudentMockService
                         'gender' => $student->gender?->label() ?? 'Nam',
                         'phone' => session('mock_student_phone', $student->phone ?? '0912345678'),
                         'address' => session('mock_student_address', $student->address ?? '123 Đường Nguyễn Huệ, Phường Bến Nghé, Quận 1, TP. Hồ Chí Minh'),
-                        'department_name' => $student->program?->department?->name ?? 'Công nghệ Thông tin',
-                        'department_code' => $student->program?->department?->code ?? 'CNTT',
-                        'program_name' => $student->program?->name ?? 'Kỹ thuật Phần mềm',
-                        'program_code' => $student->program?->code ?? 'SE01',
-                        'duration_years' => $student->program?->duration_years ?? 4,
-                        'total_credits_required' => $student->program?->total_credits_required ?? 140,
+                        'department_name' => $student->program->department->name ?? 'Công nghệ Thông tin',
+                        'department_code' => $student->program->department->code ?? 'CNTT',
+                        'program_name' => $student->program->name ?? 'Kỹ thuật Phần mềm',
+                        'program_code' => $student->program->code ?? 'SE01',
+                        'duration_years' => $student->program->duration_years ?? 4,
+                        'total_credits_required' => $student->program->total_credits_required ?? 140,
                     ];
                 }
             } catch (Throwable) {
@@ -59,7 +57,11 @@ class StudentMockService
             }
         }
 
-        // 2. Mock Data mau day du
+        return $this->mockProfile($user);
+    }
+
+    private function mockProfile(?User $user): object
+    {
         return (object) [
             'user_id' => $user?->id ?? 1,
             'student_code' => $user?->code ?? 'SV20230001',
@@ -143,4 +145,3 @@ class StudentMockService
         };
     }
 }
-
