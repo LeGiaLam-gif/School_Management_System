@@ -11,7 +11,14 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Support\Carbon;
 
+/**
+ * @property StudentStatus $status
+ * @property Gender|null $gender
+ * @property Carbon|null $date_of_birth
+ * @property-read Program|null $program
+ */
 class Student extends Model
 {
     use HasFactory;
@@ -41,6 +48,7 @@ class Student extends Model
         return $this->belongsTo(User::class);
     }
 
+    /** @return BelongsTo<Program, $this> */
     public function program(): BelongsTo
     {
         return $this->belongsTo(Program::class);
