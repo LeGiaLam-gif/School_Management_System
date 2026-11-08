@@ -28,6 +28,7 @@ class RoleAuthorizationTest extends TestCase
             '/admin' => RoleName::Admin,
             '/lecturer' => RoleName::Lecturer,
             '/student' => RoleName::Student,
+            '/student/profile' => RoleName::Student,
         ];
 
         foreach ($expected as $uri => $allowed) {

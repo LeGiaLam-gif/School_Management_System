@@ -2,6 +2,7 @@
 
 namespace App\Modules\Identity\Controllers;
 
+use App\Modules\Identity\Services\StudentMockService;
 use App\Shared\Enums\RoleName;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\RedirectResponse;
@@ -36,9 +37,15 @@ class DashboardController extends Controller
         return $this->page(RoleName::Lecturer);
     }
 
-    public function student(): View
+    public function student(Request $request): View
     {
-        return $this->page(RoleName::Student);
+        $user = $request->user();
+        $student = app(StudentMockService::class)->getStudentProfile($user);
+
+        return view('identity::student.dashboard', [
+            'user' => $user,
+            'student' => $student,
+        ]);
     }
 
     private function page(RoleName $role): View
