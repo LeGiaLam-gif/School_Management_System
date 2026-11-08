@@ -4,6 +4,16 @@
 
 @section('content')
     @php($user = auth()->user())
+    @php($adminActions = [
+        ['route' => 'admin.users.index', 'title' => 'Quản lý người dùng', 'icon' => 'users', 'color' => 'teal'],
+        ['route' => 'admin.faculties.index', 'title' => 'Quản lý khoa', 'icon' => 'building', 'color' => 'orange'],
+        ['route' => 'admin.majors.index', 'title' => 'Quản lý ngành', 'icon' => 'organization', 'color' => 'violet'],
+        ['route' => 'admin.classes.index', 'title' => 'Quản lý lớp', 'icon' => 'users', 'color' => 'blue'],
+        ['route' => 'admin.courses.index', 'title' => 'Quản lý học phần', 'icon' => 'book', 'color' => 'green'],
+        ['route' => 'admin.semesters.index', 'title' => 'Quản lý học kỳ', 'icon' => 'calendar', 'color' => 'orange'],
+        ['route' => 'admin.class-sections.index', 'title' => 'Lớp học phần', 'icon' => 'layers', 'color' => 'teal'],
+        ['route' => 'admin.reports.index', 'title' => 'Thống kê & báo cáo', 'icon' => 'chart', 'color' => 'violet'],
+    ])
     @php($lecturerActions = [
         ['route' => 'profile.show', 'title' => 'Hồ sơ cá nhân', 'icon' => 'user', 'color' => 'teal'],
         ['route' => 'lecturer.classes', 'title' => 'Lớp được phân công', 'icon' => 'book', 'color' => 'teal'],
@@ -77,24 +87,37 @@
             </div>
             <span class="sms-current-role">{{ $role->label() }}</span>
         </div>
-        @if ($user->isLecturer())
-            <div class="sms-lecturer-action-grid">
-                @foreach ($lecturerActions as $action)
+        @if ($user->isAdmin() || $user->isLecturer())
+            @php($actions = $user->isAdmin() ? $adminActions : $lecturerActions)
+            @php($gridClass = $user->isAdmin() ? 'sms-admin-action-grid' : 'sms-lecturer-action-grid')
+            @php($cardClass = $user->isAdmin() ? 'sms-admin-action-card' : 'sms-lecturer-action-card')
+            @php($iconClass = $user->isAdmin() ? 'sms-admin-action-icon' : 'sms-lecturer-action-icon')
+            <div class="{{ $gridClass }}">
+                @foreach ($actions as $action)
                     @php($routeAvailable = Route::has($action['route']))
-                    <article class="sms-lecturer-action-card {{ $routeAvailable ? 'is-available' : '' }}">
-                        <span class="sms-lecturer-action-icon sms-action-icon-{{ $action['color'] }}" aria-hidden="true">
+                    <article class="{{ $cardClass }} {{ $routeAvailable ? 'is-available' : '' }}">
+                        <span class="{{ $iconClass }} sms-action-icon-{{ $action['color'] }}" aria-hidden="true">
                             <svg viewBox="0 0 24 24" focusable="false">
                                 @switch($action['icon'])
                                     @case('user')
                                         <circle cx="12" cy="8" r="4" />
                                         <path d="M4 21a8 8 0 0 1 16 0" />
                                         @break
-                                    @case('book')
-                                        <path d="M4 5.5A2.5 2.5 0 0 1 6.5 3H20v17H6.5A2.5 2.5 0 0 0 4 22zM4 5.5v16M8 7h8M8 11h8" />
-                                        @break
                                     @case('users')
                                         <circle cx="9" cy="8" r="3" />
                                         <path d="M3 20a6 6 0 0 1 12 0M16 5a3 3 0 0 1 0 6M18 14a5 5 0 0 1 3 4v2" />
+                                        @break
+                                    @case('building')
+                                        <path d="M4 21V4h11v17M15 9h5v12M2 21h20M8 8h3M8 12h3M8 16h3M17 13h1M17 17h1" />
+                                        @break
+                                    @case('organization')
+                                        <rect x="8" y="3" width="8" height="5" rx="1" />
+                                        <rect x="2" y="16" width="8" height="5" rx="1" />
+                                        <rect x="14" y="16" width="8" height="5" rx="1" />
+                                        <path d="M12 8v4M6 16v-4h12v4" />
+                                        @break
+                                    @case('book')
+                                        <path d="M4 5.5A2.5 2.5 0 0 1 6.5 3H20v17H6.5A2.5 2.5 0 0 0 4 22zM4 5.5v16M8 7h8M8 11h8" />
                                         @break
                                     @case('calendar')
                                         <rect x="3" y="5" width="18" height="16" rx="2" />
@@ -103,6 +126,9 @@
                                     @case('check')
                                         <circle cx="12" cy="12" r="9" />
                                         <path d="m8 12 3 3 5-6" />
+                                        @break
+                                    @case('layers')
+                                        <path d="m12 3 9 5-9 5-9-5zM3 12l9 5 9-5M3 16l9 5 9-5" />
                                         @break
                                     @case('chart')
                                         <path d="M4 20V10M10 20V4M16 20v-7M22 20H2" />
@@ -116,12 +142,12 @@
                                 @endswitch
                             </svg>
                         </span>
-                        <div class="sms-lecturer-action-content">
+                        <div class="{{ $user->isLecturer() ? 'sms-lecturer-action-content' : '' }}">
                             <h3>
                                 @if ($routeAvailable)
                                     <a href="{{ route($action['route']) }}">{{ $action['title'] }}</a>
                                 @else
-                                    {{ $action['title'] }}
+                                    <span aria-disabled="true">{{ $action['title'] }}</span>
                                 @endif
                             </h3>
                         </div>

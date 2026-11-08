@@ -22,9 +22,9 @@ class SidebarTest extends TestCase
     public function test_sidebar_shows_dashboard_for_current_role_and_profile_link(): void
     {
         $dashboards = [
-            RoleName::Admin->value => ['route' => 'admin.home', 'label' => 'Trang quản trị'],
-            RoleName::Lecturer->value => ['route' => 'lecturer.home', 'label' => 'Trang giảng viên'],
-            RoleName::Student->value => ['route' => 'student.home', 'label' => 'Trang sinh viên'],
+            RoleName::Admin->value => ['route' => 'admin.home', 'label' => 'Trang quản trị', 'profile' => 'profile.show'],
+            RoleName::Lecturer->value => ['route' => 'lecturer.home', 'label' => 'Trang giảng viên', 'profile' => 'profile.show'],
+            RoleName::Student->value => ['route' => 'student.home', 'label' => 'Trang sinh viên', 'profile' => 'student.profile'],
         ];
 
         foreach ($dashboards as $role => $dashboard) {
@@ -35,15 +35,47 @@ class SidebarTest extends TestCase
                 ->assertOk()
                 ->assertSee($dashboard['label'])
                 ->assertSee('aria-label="Ẩn hoặc hiện thanh điều hướng"', false)
-                ->assertSee('images/logo.png');
+                ->assertSee('images/logo.png')
+                ->assertSee('Hồ sơ cá nhân');
 
             preg_match('/<nav class="sms-sidebar-nav".*?<\/nav>/s', $response->getContent(), $matches);
             $sidebar = $matches[0] ?? '';
-            $profileRoute = $role === RoleName::Student->value ? 'student.profile' : 'profile.show';
 
             $this->assertNotSame('', $sidebar);
-            $this->assertSame(1, substr_count($sidebar, route($profileRoute)));
+            $this->assertSame(1, substr_count($sidebar, route($dashboard['profile'])));
         }
+    }
+
+    public function test_admin_dashboard_shows_management_cards_and_disabled_navigation(): void
+    {
+        $admin = User::factory()->withRole(RoleName::Admin)->create();
+
+        $response = $this->actingAs($admin)
+            ->get(route('admin.home'))
+            ->assertOk()
+            ->assertSee('Bảng điều khiển')
+            ->assertSee('class="sms-admin-action-grid"', false)
+            ->assertSee('Quản lý người dùng')
+            ->assertSee('Quản lý khoa')
+            ->assertSee('Quản lý ngành')
+            ->assertSee('Quản lý lớp')
+            ->assertSee('Quản lý học phần')
+            ->assertSee('Quản lý học kỳ')
+            ->assertSee('Lớp học phần')
+            ->assertSee('Thống kê &amp; báo cáo', false)
+            ->assertDontSee('href="#"', false);
+
+        $this->assertSame(8, substr_count($response->getContent(), 'class="sms-admin-action-card'));
+        $this->assertSame(16, substr_count($response->getContent(), 'aria-disabled="true"'));
+
+        preg_match('/<nav class="sms-sidebar-nav".*?<\/nav>/s', $response->getContent(), $matches);
+        $sidebar = $matches[0] ?? '';
+
+        foreach (['Người dùng', 'Khoa', 'Ngành', 'Lớp', 'Học phần', 'Học kỳ', 'Lớp học phần', 'Thống kê &amp; báo cáo'] as $label) {
+            $this->assertStringContainsString($label, $sidebar);
+        }
+
+        $this->assertSame(8, substr_count($sidebar, 'class="sms-sidebar-link sms-sidebar-link-disabled"'));
     }
 
     public function test_student_sidebar_shows_student_navigation_with_unavailable_modules_disabled(): void
