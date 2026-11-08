@@ -7,3 +7,88 @@ body {
 .sms-brand {
     letter-spacing: 0.02em;
 }
+
+.sms-logo {
+    width: 38px;
+    height: 38px;
+    object-fit: cover;
+    border-radius: 50%;
+}
+
+.sms-sidebar-toggle {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 38px;
+    height: 38px;
+    padding: 0.4rem;
+}
+
+.sms-sidebar-toggle svg {
+    width: 22px;
+    height: 22px;
+    fill: none;
+    stroke: currentColor;
+    stroke-linecap: round;
+    stroke-width: 2;
+}
+
+.sms-sidebar-icon {
+    width: 14px;
+    height: 14px;
+    flex: 0 0 14px;
+    fill: none;
+    color: #0b8587;
+    stroke: currentColor;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    stroke-width: 2;
+}
+
+.nav-link {
+    white-space: nowrap;
+}
+
+.nav-link.active .sms-sidebar-icon {
+    color: #fff;
+}
+
+.nav-link:not(.active):hover .sms-sidebar-icon {
+    color: #075e63;
+}
+
+.sms-header-content,
+.sms-header-actions {
+    flex-wrap: wrap;
+}
+
+.sms-header-name {
+    max-width: 16rem;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+@media (max-width: 575.98px) {
+    .sms-header-content {
+        justify-content: space-between;
+    }
+
+    .sms-brand {
+        font-size: 1rem;
+    }
+
+    .sms-logo {
+        width: 32px;
+        height: 32px;
+    }
+
+    .sms-header-actions {
+        width: 100%;
+        justify-content: center;
+    }
+
+    .sms-header-name {
+        max-width: 100%;
+    }
+}

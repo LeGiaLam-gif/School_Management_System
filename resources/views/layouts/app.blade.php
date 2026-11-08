@@ -7,7 +7,7 @@
     <title>@yield('title', config('app.name'))</title>
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
-<body>
+<body x-data="{ sidebarOpen: true }">
     @auth
         @include('layouts.partials.header')
     @endauth

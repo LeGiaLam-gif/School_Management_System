@@ -34,6 +34,8 @@ class SidebarTest extends TestCase
                 ->get(route($dashboard['route']))
                 ->assertOk()
                 ->assertSee($dashboard['label'])
+                ->assertSee('aria-label="Ẩn hoặc hiện thanh điều hướng"', false)
+                ->assertSee('images/logo.png')
                 ->assertSee('Hồ sơ cá nhân');
 
             $this->assertSame(1, substr_count($response->getContent(), route('profile.show')));
