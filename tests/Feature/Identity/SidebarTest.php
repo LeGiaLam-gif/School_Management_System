@@ -42,6 +42,38 @@ class SidebarTest extends TestCase
         }
     }
 
+    public function test_admin_dashboard_shows_management_cards_and_disabled_navigation(): void
+    {
+        $admin = User::factory()->withRole(RoleName::Admin)->create();
+
+        $response = $this->actingAs($admin)
+            ->get(route('admin.home'))
+            ->assertOk()
+            ->assertSee('Bảng điều khiển')
+            ->assertSee('class="sms-admin-action-grid"', false)
+            ->assertSee('Quản lý người dùng')
+            ->assertSee('Quản lý khoa')
+            ->assertSee('Quản lý ngành')
+            ->assertSee('Quản lý lớp')
+            ->assertSee('Quản lý học phần')
+            ->assertSee('Quản lý học kỳ')
+            ->assertSee('Lớp học phần')
+            ->assertSee('Thống kê &amp; báo cáo', false)
+            ->assertDontSee('href="#"', false);
+
+        $this->assertSame(8, substr_count($response->getContent(), 'class="sms-admin-action-card'));
+        $this->assertSame(16, substr_count($response->getContent(), 'aria-disabled="true"'));
+
+        preg_match('/<nav class="sms-sidebar-nav".*?<\/nav>/s', $response->getContent(), $matches);
+        $sidebar = $matches[0] ?? '';
+
+        foreach (['Người dùng', 'Khoa', 'Ngành', 'Lớp', 'Học phần', 'Học kỳ', 'Lớp học phần', 'Thống kê &amp; báo cáo'] as $label) {
+            $this->assertStringContainsString($label, $sidebar);
+        }
+
+        $this->assertSame(8, substr_count($sidebar, 'class="sms-sidebar-link sms-sidebar-link-disabled" aria-disabled="true"'));
+    }
+
     public function test_guest_does_not_see_authenticated_sidebar(): void
     {
         $this->get(route('login'))

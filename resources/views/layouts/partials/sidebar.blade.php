@@ -6,6 +6,16 @@
         $user->isStudent() => ['route' => 'student.home', 'label' => 'Trang sinh viên'],
         default => null,
     };
+    $adminNavigation = $user->isAdmin() ? [
+        ['route' => 'admin.users.index', 'label' => 'Người dùng', 'icon' => 'users'],
+        ['route' => 'admin.faculties.index', 'label' => 'Khoa', 'icon' => 'building'],
+        ['route' => 'admin.majors.index', 'label' => 'Ngành', 'icon' => 'organization'],
+        ['route' => 'admin.classes.index', 'label' => 'Lớp', 'icon' => 'users'],
+        ['route' => 'admin.courses.index', 'label' => 'Học phần', 'icon' => 'book'],
+        ['route' => 'admin.semesters.index', 'label' => 'Học kỳ', 'icon' => 'calendar'],
+        ['route' => 'admin.class-sections.index', 'label' => 'Lớp học phần', 'icon' => 'layers'],
+        ['route' => 'admin.reports.index', 'label' => 'Thống kê & báo cáo', 'icon' => 'chart'],
+    ] : [];
 @endphp
 
 <aside id="app-sidebar" class="sms-sidebar" x-show="sidebarOpen" x-cloak>
@@ -42,6 +52,53 @@
                 {{ $dashboard['label'] }}
             </a>
         @endif
+        @foreach ($adminNavigation as $item)
+            @php($routeAvailable = Route::has($item['route']))
+            @if ($routeAvailable)
+                <a
+                    class="sms-sidebar-link {{ request()->routeIs($item['route']) ? 'active' : '' }}"
+                    href="{{ route($item['route']) }}"
+                >
+            @else
+                <span class="sms-sidebar-link sms-sidebar-link-disabled" aria-disabled="true">
+            @endif
+                <svg class="sms-sidebar-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+                    @switch($item['icon'])
+                        @case('users')
+                            <circle cx="9" cy="8" r="3" />
+                            <path d="M3 20a6 6 0 0 1 12 0M16 5.5a3 3 0 0 1 0 5.8M18 14a5 5 0 0 1 3 4.5" />
+                            @break
+                        @case('building')
+                            <path d="M4 21V4h11v17M15 9h5v12M2 21h20M8 8h3M8 12h3M8 16h3M17 13h1M17 17h1" />
+                            @break
+                        @case('organization')
+                            <rect x="8" y="3" width="8" height="5" rx="1" />
+                            <rect x="2" y="16" width="8" height="5" rx="1" />
+                            <rect x="14" y="16" width="8" height="5" rx="1" />
+                            <path d="M12 8v4M6 16v-4h12v4" />
+                            @break
+                        @case('book')
+                            <path d="M4 5.5A2.5 2.5 0 0 1 6.5 3H20v17H6.5A2.5 2.5 0 0 0 4 22zM4 5.5v16M8 7h8M8 11h8" />
+                            @break
+                        @case('calendar')
+                            <rect x="3" y="5" width="18" height="16" rx="2" />
+                            <path d="M16 3v4M8 3v4M3 10h18" />
+                            @break
+                        @case('layers')
+                            <path d="m12 3 9 5-9 5-9-5zM3 12l9 5 9-5M3 16l9 5 9-5" />
+                            @break
+                        @case('chart')
+                            <path d="M4 20V10M10 20V4M16 20v-7M22 20H2" />
+                            @break
+                    @endswitch
+                </svg>
+                {{ $item['label'] }}
+            @if ($routeAvailable)
+                </a>
+            @else
+                </span>
+            @endif
+        @endforeach
         <a
             class="sms-sidebar-link {{ request()->routeIs('profile.show') ? 'active' : '' }}"
             href="{{ route('profile.show') }}"
