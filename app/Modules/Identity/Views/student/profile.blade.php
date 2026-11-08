@@ -3,13 +3,14 @@
 @section('title', 'Thông tin cá nhân & Học vấn · Cổng Sinh Viên')
 
 @section('content')
+<div class="sms-student-profile-page">
 <div class="row g-4">
     <!-- Cột bên trái: Thẻ tóm tắt thông tin sinh viên -->
     <div class="col-lg-4">
         <div class="card border-0 shadow-sm rounded-3">
             <div class="card-body p-4 text-center">
                 <div class="mb-3">
-                    <div class="d-inline-flex align-items-center justify-content-center bg-primary bg-opacity-10 text-primary rounded-circle" style="width: 80px; height: 80px;">
+                    <div class="sms-student-avatar">
                         <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" fill="currentColor" class="bi bi-person-badge" viewBox="0 0 16 16">
                             <path d="M6.5 2a.5.5 0 0 0 0 1h3a.5.5 0 0 0 0-1zM11 8a3 3 0 1 1-6 0 3 3 0 0 1 6 0"/>
                             <path d="M4.5 0A2.5 2.5 0 0 0 2 2.5V14a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2V2.5A2.5 2.5 0 0 0 11.5 0zM3 2.5A1.5 1.5 0 0 1 4.5 1h7A1.5 1.5 0 0 1 13 2.5V14a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1z"/>
@@ -17,8 +18,8 @@
                     </div>
                 </div>
 
-                <h5 class="fw-bold mb-1">{{ $student->name ?? $user?->name ?? 'Nguyễn Văn An' }}</h5>
-                <p class="text-muted mb-2 font-monospace">{{ $student->student_code ?? $user?->code ?? 'SV20230001' }}</p>
+                <h5 class="fw-bold mb-1">{{ $student->name ?? $user?->name ?? 'Sinh viên' }}</h5>
+                <p class="text-muted mb-2 font-monospace">{{ $student->student_code ?? $user?->code }}</p>
 
                 <span class="badge {{ $student->status_badge ?? 'bg-success' }} px-3 py-2 rounded-pill fs-7 mb-3">
                     {{ $student->status_label ?? 'Đang học' }}
@@ -27,21 +28,21 @@
                 <hr class="text-muted my-3">
 
                 <div class="text-start small">
-                    <div class="d-flex justify-content-between py-1">
+                    <div class="d-flex justify-content-between gap-3 py-1">
                         <span class="text-muted">Email trường:</span>
-                        <span class="fw-semibold">{{ $student->email ?? $user?->email ?? 'sv@sms.edu.vn' }}</span>
+                        <span class="fw-semibold text-end">{{ $student->email ?? $user?->email }}</span>
                     </div>
-                    <div class="d-flex justify-content-between py-1">
+                    <div class="d-flex justify-content-between gap-3 py-1">
                         <span class="text-muted">Ngày sinh:</span>
-                        <span class="fw-semibold">{{ $student->date_of_birth ?? '15/08/2005' }}</span>
+                        <span class="fw-semibold text-end">{{ $student->date_of_birth ?? 'Chưa cập nhật' }}</span>
                     </div>
-                    <div class="d-flex justify-content-between py-1">
+                    <div class="d-flex justify-content-between gap-3 py-1">
                         <span class="text-muted">Giới tính:</span>
-                        <span class="fw-semibold">{{ $student->gender ?? 'Nam' }}</span>
+                        <span class="fw-semibold text-end">{{ $student->gender ?? 'Chưa cập nhật' }}</span>
                     </div>
-                    <div class="d-flex justify-content-between py-1">
+                    <div class="d-flex justify-content-between gap-3 py-1">
                         <span class="text-muted">Khóa tuyển sinh:</span>
-                        <span class="fw-semibold">Khóa {{ $student->cohort_year ?? '2023' }}</span>
+                        <span class="fw-semibold text-end">Khóa {{ $student->cohort_year ?? 'Chưa cập nhật' }}</span>
                     </div>
                 </div>
             </div>
@@ -64,21 +65,15 @@
             <div class="card-body p-4">
                 <div class="row g-3">
                     <div class="col-md-6">
-                        <label class="form-label text-muted small mb-1">Khoa trực thuộc</label>
+                        <label class="form-label text-muted small mb-1">Khoa</label>
                         <div class="p-2 bg-light rounded border fw-semibold">
                             {{ $student->department_name ?? 'Công nghệ Thông tin' }}
-                            @if (!empty($student->department_code))
-                                <span class="badge bg-secondary ms-1">{{ $student->department_code }}</span>
-                            @endif
                         </div>
                     </div>
                     <div class="col-md-6">
                         <label class="form-label text-muted small mb-1">Chương trình đào tạo (Ngành)</label>
                         <div class="p-2 bg-light rounded border fw-semibold">
                             {{ $student->program_name ?? 'Kỹ thuật Phần mềm' }}
-                            @if (!empty($student->program_code))
-                                <span class="badge bg-primary ms-1">{{ $student->program_code }}</span>
-                            @endif
                         </div>
                     </div>
                     <div class="col-md-6">
@@ -158,22 +153,22 @@
                     @csrf
                     @method('PUT')
 
-                    <div class="row g-3 mb-3">
-                        <div class="col-md-4">
+                    <div class="d-flex flex-column gap-3 mb-3">
+                        <div>
                             <label for="current_password" class="form-label small fw-semibold">Mật khẩu hiện tại</label>
                             <input type="password" class="form-control @error('current_password') is-invalid @enderror" id="current_password" name="current_password" required autocomplete="current-password">
                             @error('current_password')
                                 <div class="invalid-feedback">{{ $message }}</div>
                             @enderror
                         </div>
-                        <div class="col-md-4">
+                        <div>
                             <label for="new_password" class="form-label small fw-semibold">Mật khẩu mới (tối thiểu 8 ký tự)</label>
                             <input type="password" class="form-control @error('new_password') is-invalid @enderror" id="new_password" name="new_password" required autocomplete="new-password">
                             @error('new_password')
                                 <div class="invalid-feedback">{{ $message }}</div>
                             @enderror
                         </div>
-                        <div class="col-md-4">
+                        <div>
                             <label for="new_password_confirmation" class="form-label small fw-semibold">Xác nhận mật khẩu mới</label>
                             <input type="password" class="form-control" id="new_password_confirmation" name="new_password_confirmation" required autocomplete="new-password">
                         </div>
@@ -188,5 +183,6 @@
             </div>
         </div>
     </div>
+</div>
 </div>
 @endsection
