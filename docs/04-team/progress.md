@@ -13,7 +13,9 @@ Ký hiệu: `[x]` đã có trong patch kiến trúc (có test), `[ ]` việc c�
 ## Sprint 1 - Identity + Academic
 - [x] Migration + model + factory + seeder cho toàn bộ bảng Identity/Academic; `RolePermissionSeeder`, `SuperAdminSeeder`
 - [x] `AuthService` (FR-AUTH-01, 05 khóa sau 5 lần sai), `UserService`, `UserPolicy`, `CourseService` (tiên quyết không vòng), `SemesterService`
-- [ ] FR-AUTH-03 quên/đặt lại mật khẩu (M); FR-AUTH-04 trang buộc đổi mật khẩu (S); FR-AUTH-06 hồ sơ cá nhân (M)
+- [x] FR-AUTH-03 quên/đặt lại mật khẩu (M)
+- [ ] FR-AUTH-04 trang buộc đổi mật khẩu lần đầu (S)
+- [x] FR-AUTH-06 hồ sơ cá nhân (M)
 - [ ] FR-USER-01..05 CRUD tài khoản, hồ sơ SV/GV, reset mật khẩu hộ, tìm kiếm/lọc/phân trang; FR-USER-03 import CSV (S)
 - [ ] FR-ACAD-01..05 CRUD khoa, ngành, học phần, học kỳ, phòng; FR-ACAD-03 khung chương trình (S); cache danh mục + Observer
 - [ ] Controller, FormRequest, Blade và route cho các mục trên (theo mẫu Identity)
