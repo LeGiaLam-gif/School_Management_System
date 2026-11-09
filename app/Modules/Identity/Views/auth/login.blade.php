@@ -1,6 +1,10 @@
 @extends('layouts.app')
 
-@section('title', 'Đăng nhập · Hexa Tech Academy')
+@section('title', match ($authMode ?? 'login') {
+    'forgot' => 'Quên mật khẩu · Hexa Tech Academy',
+    'reset' => 'Đặt lại mật khẩu · Hexa Tech Academy',
+    default => 'Đăng nhập · Hexa Tech Academy',
+})
 
 @section('content')
 <style>
@@ -138,6 +142,22 @@
     .avatar-circle:hover {
         transform: scale(1.05);
         border-color: #1e2b5e;
+    }
+
+    .auth-form-title {
+        color: #1b2559;
+        font-size: 1.05rem;
+        font-weight: 800;
+        margin: 0 0 6px;
+        text-align: center;
+    }
+
+    .auth-form-description {
+        color: #636b8a;
+        font-size: 0.75rem;
+        line-height: 1.45;
+        margin: 0 0 16px;
+        text-align: center;
     }
 
     /* Pill-Shaped Form Controls */
@@ -505,6 +525,93 @@
             </div>
 
             <!-- Form -->
+            @if (($authMode ?? 'login') === 'forgot')
+                <h1 class="auth-form-title">Quên mật khẩu</h1>
+                <p class="auth-form-description">Nhập email đã đăng ký để nhận liên kết đặt lại mật khẩu.</p>
+                <form method="POST" action="{{ route('password.email') }}" novalidate>
+                    @csrf
+
+                    <div class="input-pill-wrapper">
+                        <span class="input-icon">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                                <rect x="3" y="5" width="18" height="14" rx="2"></rect>
+                                <path d="m3 7 9 6 9-6"></path>
+                            </svg>
+                        </span>
+                        <input id="email" name="email" type="email"
+                               value="{{ old('email') }}"
+                               class="pill-input @error('email') is-invalid @enderror"
+                               placeholder="Nhập email đã đăng ký"
+                               autocomplete="email" autofocus required>
+                        @error('email')
+                            <div class="text-danger small mt-1 ps-3" style="font-size: 0.75rem;">{{ $message }}</div>
+                        @enderror
+                    </div>
+
+                    <button type="submit" class="btn-submit-pill">GỬI LIÊN KẾT ĐẶT LẠI MẬT KHẨU</button>
+                    <div class="aux-links">
+                        <a href="{{ route('login') }}" class="forgot-link">Quay lại</a>
+                    </div>
+                </form>
+            @elseif (($authMode ?? 'login') === 'reset')
+                <h1 class="auth-form-title">Đặt lại mật khẩu</h1>
+                <p class="auth-form-description">Tạo mật khẩu mới để tiếp tục sử dụng tài khoản.</p>
+                <form method="POST" action="{{ route('password.update') }}" novalidate>
+                    @csrf
+                    <input type="hidden" name="token" value="{{ $token }}">
+
+                    <div class="input-pill-wrapper">
+                        <span class="input-icon">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                                <rect x="3" y="5" width="18" height="14" rx="2"></rect>
+                                <path d="m3 7 9 6 9-6"></path>
+                            </svg>
+                        </span>
+                        <input id="email" name="email" type="email"
+                               value="{{ old('email', $email ?? '') }}"
+                               class="pill-input @error('email') is-invalid @enderror"
+                               placeholder="Email đã đăng ký"
+                               autocomplete="email" autofocus required>
+                        @error('email')
+                            <div class="text-danger small mt-1 ps-3" style="font-size: 0.75rem;">{{ $message }}</div>
+                        @enderror
+                    </div>
+
+                    <div class="input-pill-wrapper">
+                        <span class="input-icon">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                                <rect x="3" y="11" width="18" height="11" rx="2"></rect>
+                                <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+                            </svg>
+                        </span>
+                        <input id="password" name="password" type="password"
+                               class="pill-input @error('password') is-invalid @enderror"
+                               placeholder="Mật khẩu mới (ít nhất 8 ký tự)"
+                               autocomplete="new-password" required>
+                        @error('password')
+                            <div class="text-danger small mt-1 ps-3" style="font-size: 0.75rem;">{{ $message }}</div>
+                        @enderror
+                    </div>
+
+                    <div class="input-pill-wrapper">
+                        <span class="input-icon">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                                <rect x="3" y="11" width="18" height="11" rx="2"></rect>
+                                <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+                            </svg>
+                        </span>
+                        <input id="password_confirmation" name="password_confirmation" type="password"
+                               class="pill-input"
+                               placeholder="Xác nhận mật khẩu mới"
+                               autocomplete="new-password" required>
+                    </div>
+
+                    <button type="submit" class="btn-submit-pill">ĐẶT LẠI MẬT KHẨU</button>
+                    <div class="aux-links">
+                        <a href="{{ route('login') }}" class="forgot-link">Quay lại</a>
+                    </div>
+                </form>
+            @else
             <form method="POST" action="{{ route('login.attempt') }}" novalidate>
                 @csrf
 
@@ -550,9 +657,10 @@
 
                 <!-- Forgot password -->
                 <div class="aux-links">
-                    <a href="#" class="forgot-link">Forgot your password?</a>
+                    <a href="{{ route('password.request') }}" class="forgot-link">Quên mật khẩu?</a>
                 </div>
             </form>
+            @endif
         </div>
 
         <!-- 3 Dots Indicator -->

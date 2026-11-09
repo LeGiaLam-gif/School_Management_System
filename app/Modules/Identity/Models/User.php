@@ -4,6 +4,7 @@ namespace App\Modules\Identity\Models;
 
 use App\Modules\Announcement\Models\Announcement;
 use App\Modules\Identity\Database\Factories\UserFactory;
+use App\Modules\Identity\Notifications\ResetPasswordNotification;
 use App\Shared\Enums\RoleName;
 use App\Shared\Enums\UserStatus;
 use App\Shared\Traits\Auditable;
@@ -74,6 +75,11 @@ class User extends Authenticatable
     public function announcements(): HasMany
     {
         return $this->hasMany(Announcement::class, 'author_id');
+    }
+
+    public function sendPasswordResetNotification($token): void
+    {
+        $this->notify(new ResetPasswordNotification($token));
     }
 
     public function isActive(): bool
