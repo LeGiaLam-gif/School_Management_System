@@ -2,6 +2,7 @@
 
 use App\Modules\Identity\Controllers\AuthController;
 use App\Modules\Identity\Controllers\DashboardController;
+use App\Modules\Identity\Controllers\PasswordResetController;
 use App\Modules\Identity\Controllers\ProfileController;
 use App\Modules\Identity\Controllers\StudentProfileController;
 use Illuminate\Support\Facades\Route;
@@ -9,6 +10,10 @@ use Illuminate\Support\Facades\Route;
 Route::middleware('guest')->group(function () {
     Route::get('/login', [AuthController::class, 'showLogin'])->name('login');
     Route::post('/login', [AuthController::class, 'login'])->name('login.attempt');
+    Route::get('/forgot-password', [PasswordResetController::class, 'create'])->name('password.request');
+    Route::post('/forgot-password', [PasswordResetController::class, 'sendLink'])->name('password.email');
+    Route::get('/reset-password/{token}', [PasswordResetController::class, 'edit'])->name('password.reset');
+    Route::post('/reset-password', [PasswordResetController::class, 'reset'])->name('password.update');
 });
 
 Route::post('/logout', [AuthController::class, 'logout'])->middleware('auth')->name('logout');
