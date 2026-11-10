@@ -87,7 +87,7 @@ class WorkspaceController extends Controller
     }
 
     /**
-     * @param array<string, array{title: string, description: string}> $pages
+     * @param  array<string, array{title: string, description: string}>  $pages
      */
     private function render(Request $request, array $pages, string $roleLabel, string $dashboardRoute): View
     {
