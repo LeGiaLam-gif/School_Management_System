@@ -6,9 +6,8 @@
     @php($user = auth()->user())
     @php($adminActions = [
         ['route' => 'admin.users.index', 'title' => 'Quản lý người dùng', 'icon' => 'users', 'color' => 'teal'],
-        ['route' => 'admin.faculties.index', 'title' => 'Quản lý khoa', 'icon' => 'building', 'color' => 'orange'],
-        ['route' => 'admin.majors.index', 'title' => 'Quản lý ngành', 'icon' => 'organization', 'color' => 'violet'],
-        ['route' => 'admin.classes.index', 'title' => 'Quản lý lớp', 'icon' => 'users', 'color' => 'blue'],
+        ['route' => 'admin.departments.index', 'title' => 'Quản lý khoa', 'icon' => 'building', 'color' => 'orange'],
+        ['route' => 'admin.programs.index', 'title' => 'Chương trình đào tạo', 'icon' => 'organization', 'color' => 'violet'],
         ['route' => 'admin.courses.index', 'title' => 'Quản lý học phần', 'icon' => 'book', 'color' => 'green'],
         ['route' => 'admin.semesters.index', 'title' => 'Quản lý học kỳ', 'icon' => 'calendar', 'color' => 'orange'],
         ['route' => 'admin.class-sections.index', 'title' => 'Lớp học phần', 'icon' => 'layers', 'color' => 'teal'],
