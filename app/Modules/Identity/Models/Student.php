@@ -7,6 +7,7 @@ use App\Modules\Enrollment\Models\Enrollment;
 use App\Modules\Identity\Database\Factories\StudentFactory;
 use App\Shared\Enums\Gender;
 use App\Shared\Enums\StudentStatus;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -14,10 +15,19 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Carbon;
 
 /**
+ * @property int $id
+ * @property int $user_id
+ * @property string $student_code
+ * @property int $program_id
+ * @property int $cohort_year
  * @property StudentStatus $status
  * @property Gender|null $gender
  * @property Carbon|null $date_of_birth
+ * @property string|null $phone
+ * @property string|null $address
+ * @property-read User $user
  * @property-read Program|null $program
+ * @property-read Collection<int, Enrollment> $enrollments
  */
 class Student extends Model
 {
@@ -43,6 +53,7 @@ class Student extends Model
         ];
     }
 
+    /** @return BelongsTo<User, $this> */
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
@@ -54,6 +65,7 @@ class Student extends Model
         return $this->belongsTo(Program::class);
     }
 
+    /** @return HasMany<Enrollment, $this> */
     public function enrollments(): HasMany
     {
         return $this->hasMany(Enrollment::class);
