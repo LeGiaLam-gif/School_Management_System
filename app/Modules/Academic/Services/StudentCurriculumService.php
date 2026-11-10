@@ -21,8 +21,8 @@ use Throwable;
  *   department_name: string,
  *   department_code: string,
  *   description: string,
- *   prerequisites: list<string>,
- *   prerequisite_names?: list<string>
+ *   prerequisites: array<int, string>,
+ *   prerequisite_names?: array<int, string>
  * }
  * @phpstan-type CurriculumCourseItem object{
  *   code: string,
@@ -33,7 +33,23 @@ use Throwable;
  *   is_compulsory: bool,
  *   type_label: string,
  *   type_badge: string,
- *   prerequisites: list<string>
+ *   prerequisites: array<int, string>
+ * }
+ * @phpstan-type CurriculumSemester array{
+ *   semester_no: int,
+ *   semester_title: string,
+ *   total_credits: int,
+ *   courses: list<CurriculumCourseItem>
+ * }
+ * @phpstan-type CurriculumData object{
+ *   program_name: string,
+ *   program_code: string,
+ *   department_name: string,
+ *   duration_years: int,
+ *   total_credits: int,
+ *   required_credits: int,
+ *   elective_credits: int,
+ *   semesters: list<CurriculumSemester>
  * }
  */
 class StudentCurriculumService
@@ -41,6 +57,8 @@ class StudentCurriculumService
     /**
      * Lay toan bo khung chuong trinh dao tao theo nganh cua sinh vien.
      * Uu tien doc DB neu co san, fallback sang Mock Dataset day du.
+     *
+     * @return CurriculumData
      */
     public function getCurriculum(?User $user): object
     {
@@ -95,8 +113,7 @@ class StudentCurriculumService
             $courses = $query->get();
 
             if ($courses->isNotEmpty()) {
-                /** @var Collection<int, CourseListItem> $mappedCourses */
-                $mappedCourses = $courses->map(function (Course $c): object {
+                $mappedCourses = $courses->map(function (Course $c) {
                     $department = $c->department;
 
                     return (object) [
@@ -110,7 +127,7 @@ class StudentCurriculumService
                         'department_code' => $department !== null ? $department->code : '',
                         'description' => $c->description ?? 'Không có mô tả chi tiết.',
                         'prerequisites' => $c->prerequisites->pluck('code')->all(),
-                        'prerequisite_names' => $c->prerequisites->map(function (Course $p): string {
+                        'prerequisite_names' => $c->prerequisites->map(function (Course $p) {
                             return $p->code.' - '.$p->name;
                         })->all(),
                     ];
@@ -142,7 +159,7 @@ class StudentCurriculumService
                     'credits' => $course->credits,
                     'theory_periods' => $course->theory_periods,
                     'practice_periods' => $course->practice_periods,
-                    'department_name' => $course->department?->name ?? 'Khoa Đào tạo',
+                    'department_name' => $course->department->name,
                     'description' => $course->description ?? 'Môn học cung cấp kiến thức nền tảng và nâng cao phục vụ chuyên ngành.',
                     'prerequisites' => $course->prerequisites->map(fn ($p) => (object) ['code' => $p->code, 'name' => $p->name, 'credits' => $p->credits])->all(),
                     'required_by' => $course->requiredBy->map(fn ($r) => (object) ['code' => $r->code, 'name' => $r->name, 'credits' => $r->credits])->all(),
@@ -157,10 +174,12 @@ class StudentCurriculumService
 
     /**
      * Format du lieu that tu DB theo cac hoc ky goi y.
+     *
+     * @return CurriculumData
      */
     private function formatCurriculumFromDb(Program $program): object
     {
-        /** @var array<int, array{semester_no:int, semester_title:string, total_credits:int, courses:list<CurriculumCourseItem>}> $grouped */
+        /** @var array<int, CurriculumSemester> $grouped */
         $grouped = [];
         $totalCredits = 0;
         $requiredCredits = 0;
@@ -180,7 +199,6 @@ class StudentCurriculumService
             $type = $course->pivot->type ?? 'required';
             $isCompulsory = ($type === 'required' || $type === CourseType::Required->value);
 
-            /** @var CurriculumCourseItem $courseObj */
             $courseObj = (object) [
                 'code' => $course->code,
                 'name' => $course->name,
@@ -222,9 +240,12 @@ class StudentCurriculumService
 
     /**
      * Mock Khung chuong trinh dao tao chuan nganh Ky thuat Phan mem.
+     *
+     * @return CurriculumData
      */
     private function getMockCurriculum(): object
     {
+        /** @var list<CurriculumSemester> $semesters */
         $semesters = [
             [
                 'semester_no' => 1,
@@ -341,10 +362,11 @@ class StudentCurriculumService
      * Mock danh muc mon hoc toan truong co bo loc tim kiem.
      *
      * @param  array{keyword?: ?string, department?: ?string, credits?: ?int, type?: ?string}  $filters
-     * @return Collection<int, object>
+     * @return Collection<int, CourseListItem>
      */
     private function getMockCourses(array $filters): Collection
     {
+        /** @var Collection<int, CourseListItem> $all */
         $all = collect([
             (object) ['code' => 'CS101', 'name' => 'Nhập môn lập trình', 'credits' => 4, 'theory_periods' => 30, 'practice_periods' => 30, 'department_name' => 'Khoa Công nghệ Thông tin', 'department_code' => 'CNTT', 'description' => 'Cung cấp cú pháp C/C++, biến, vòng lặp, mảng, con trỏ và hàm căn bản.', 'prerequisites' => []],
             (object) ['code' => 'CS102', 'name' => 'Kỹ thuật lập trình', 'credits' => 4, 'theory_periods' => 30, 'practice_periods' => 30, 'department_name' => 'Khoa Công nghệ Thông tin', 'department_code' => 'CNTT', 'description' => 'Đệ quy, cấp phát động, xử lý tập tin, đệ quy quay lui và kỹ thuật giải bài toán.', 'prerequisites' => ['CS101']],

@@ -62,16 +62,19 @@ class User extends Authenticatable
         return ['password', 'remember_token', 'updated_at', 'created_at', 'last_login_at'];
     }
 
+    /** @return HasOne<Student, $this> */
     public function student(): HasOne
     {
         return $this->hasOne(Student::class);
     }
 
+    /** @return HasOne<Lecturer, $this> */
     public function lecturer(): HasOne
     {
         return $this->hasOne(Lecturer::class);
     }
 
+    /** @return HasMany<Announcement, $this> */
     public function announcements(): HasMany
     {
         return $this->hasMany(Announcement::class, 'author_id');

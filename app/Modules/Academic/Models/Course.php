@@ -13,6 +13,19 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 
 /**
  * Hoc phan (mon hoc trong chuong trinh dao tao, co so tin chi).
+ *
+ * @property int $id
+ * @property int $department_id
+ * @property string $code
+ * @property string $name
+ * @property int $credits
+ * @property int $theory_periods
+ * @property int $practice_periods
+ * @property string|null $description
+ * @property bool $is_active
+ * @property-read Department|null $department
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, Course> $prerequisites
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, Course> $requiredBy
  */
 class Course extends Model
 {
@@ -38,11 +51,13 @@ class Course extends Model
         ];
     }
 
+    /** @return BelongsTo<Department, $this> */
     public function department(): BelongsTo
     {
         return $this->belongsTo(Department::class);
     }
 
+    /** @return HasMany<ClassSection, $this> */
     public function classSections(): HasMany
     {
         return $this->hasMany(ClassSection::class);
@@ -51,6 +66,7 @@ class Course extends Model
     /**
      * Cac hoc phan phai dat truoc khi duoc dang ky hoc phan nay.
      */
+    /** @return BelongsToMany<Course, $this> */
     public function prerequisites(): BelongsToMany
     {
         return $this->belongsToMany(self::class, 'course_prerequisites', 'course_id', 'prerequisite_course_id');
@@ -59,6 +75,7 @@ class Course extends Model
     /**
      * Cac hoc phan yeu cau hoc phan nay lam tien quyet.
      */
+    /** @return BelongsToMany<Course, $this> */
     public function requiredBy(): BelongsToMany
     {
         return $this->belongsToMany(self::class, 'course_prerequisites', 'prerequisite_course_id', 'course_id');
