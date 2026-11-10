@@ -4,6 +4,7 @@ namespace App\Modules\Academic\Models;
 
 use App\Modules\Academic\Database\Factories\CourseFactory;
 use App\Modules\Teaching\Models\ClassSection;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -24,8 +25,8 @@ use Illuminate\Database\Eloquent\SoftDeletes;
  * @property string|null $description
  * @property bool $is_active
  * @property-read Department|null $department
- * @property-read \Illuminate\Database\Eloquent\Collection<int, Course> $prerequisites
- * @property-read \Illuminate\Database\Eloquent\Collection<int, Course> $requiredBy
+ * @property-read Collection<int, Course> $prerequisites
+ * @property-read Collection<int, Course> $requiredBy
  */
 class Course extends Model
 {

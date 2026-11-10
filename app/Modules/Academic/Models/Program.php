@@ -4,6 +4,7 @@ namespace App\Modules\Academic\Models;
 
 use App\Modules\Academic\Database\Factories\ProgramFactory;
 use App\Modules\Identity\Models\Student;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -18,8 +19,8 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
  * @property int $total_credits_required
  * @property int $duration_years
  * @property-read Department|null $department
- * @property-read \Illuminate\Database\Eloquent\Collection<int, Student> $students
- * @property-read \Illuminate\Database\Eloquent\Collection<int, Course> $courses
+ * @property-read Collection<int, Student> $students
+ * @property-read Collection<int, Course> $courses
  */
 class Program extends Model
 {
