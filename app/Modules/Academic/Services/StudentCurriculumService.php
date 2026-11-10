@@ -12,7 +12,18 @@ use Throwable;
 
 /**
  * @phpstan-type CourseListItem object{
- *   id?: int,
+ *   code: string,
+ *   name: string,
+ *   credits: int,
+ *   theory_periods: int,
+ *   practice_periods: int,
+ *   department_name: string,
+ *   department_code: string,
+ *   description: string,
+ *   prerequisites: array<int, string>
+ * }&\stdClass
+ * @phpstan-type DatabaseCourseListItem object{
+ *   id: int,
  *   code: string,
  *   name: string,
  *   credits: int,
@@ -22,8 +33,8 @@ use Throwable;
  *   department_code: string,
  *   description: string,
  *   prerequisites: array<int, string>,
- *   prerequisite_names?: array<int, string>
- * }
+ *   prerequisite_names: array<int, non-falsy-string>
+ * }&\stdClass
  * @phpstan-type CurriculumCourseItem object{
  *   code: string,
  *   name: string,
@@ -86,7 +97,7 @@ class StudentCurriculumService
      * Tra cuu danh muc mon hoc toan truong (co tim kiem va loc).
      *
      * @param  array{keyword?: ?string, department?: ?string, credits?: ?int, type?: ?string}  $filters
-     * @return Collection<int, CourseListItem>
+     * @return Collection<int, DatabaseCourseListItem>|Collection<int, CourseListItem>
      */
     public function getCourses(array $filters = []): Collection
     {
@@ -126,7 +137,10 @@ class StudentCurriculumService
                         'department_name' => $department !== null ? $department->name : 'Khoa Đào tạo',
                         'department_code' => $department !== null ? $department->code : '',
                         'description' => $c->description ?? 'Không có mô tả chi tiết.',
-                        'prerequisites' => $c->prerequisites->pluck('code')->all(),
+                        'prerequisites' => $c->prerequisites
+                            ->map(fn (Course $prerequisite): string => $prerequisite->code)
+                            ->values()
+                            ->all(),
                         'prerequisite_names' => $c->prerequisites->map(function (Course $p) {
                             return $p->code.' - '.$p->name;
                         })->all(),
@@ -245,7 +259,6 @@ class StudentCurriculumService
      */
     private function getMockCurriculum(): object
     {
-        /** @var list<CurriculumSemester> $semesters */
         $semesters = [
             [
                 'semester_no' => 1,

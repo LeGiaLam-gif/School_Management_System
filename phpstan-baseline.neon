@@ -43,12 +43,6 @@ parameters:
 			path: app/Modules/Attendance/Policies/AttendancePolicy.php
 
 		-
-			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$id\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Modules/Attendance/Policies/AttendancePolicy.php
-
-		-
 			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$student_id\.$#'
 			identifier: property.notFound
 			count: 1
@@ -77,12 +71,6 @@ parameters:
 			identifier: method.notFound
 			count: 1
 			path: app/Modules/Enrollment/Database/Seeders/EnrollmentDemoSeeder.php
-
-		-
-			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$id\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Modules/Enrollment/Policies/EnrollmentPolicy.php
 
 		-
 			message: '#^Call to an undefined method Illuminate\\Database\\Eloquent\\Model\:\:isTaughtBy\(\)\.$#'
@@ -128,12 +116,6 @@ parameters:
 
 		-
 			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$classSection\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Modules/Grading/Policies/GradePolicy.php
-
-		-
-			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$id\.$#'
 			identifier: property.notFound
 			count: 1
 			path: app/Modules/Grading/Policies/GradePolicy.php
@@ -197,12 +179,6 @@ parameters:
 			identifier: argument.type
 			count: 1
 			path: app/Modules/Teaching/Models/ClassSchedule.php
-
-		-
-			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$id\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Modules/Teaching/Models/ClassSection.php
 
 		-
 			message: '#^Cannot call method acceptsEnrollment\(\) on string\.$#'
