@@ -5,6 +5,7 @@ use App\Modules\Identity\Controllers\DashboardController;
 use App\Modules\Identity\Controllers\PasswordResetController;
 use App\Modules\Identity\Controllers\ProfileController;
 use App\Modules\Identity\Controllers\StudentProfileController;
+use App\Modules\Identity\Controllers\WorkspaceController;
 use Illuminate\Support\Facades\Route;
 
 Route::middleware('guest')->group(function () {
@@ -28,6 +29,26 @@ Route::middleware(['auth', 'active'])->group(function () {
     Route::get('/admin', [DashboardController::class, 'admin'])->middleware('role:admin')->name('admin.home');
     Route::get('/lecturer', [DashboardController::class, 'lecturer'])->middleware('role:lecturer')->name('lecturer.home');
     Route::get('/student', [DashboardController::class, 'student'])->middleware('role:student')->name('student.home');
+
+    Route::middleware('role:admin')->prefix('admin')->name('admin.')->group(function () {
+        Route::get('/users', [WorkspaceController::class, 'admin'])->defaults('page', 'users')->name('users.index');
+        Route::get('/departments', [WorkspaceController::class, 'admin'])->defaults('page', 'departments')->name('departments.index');
+        Route::get('/programs', [WorkspaceController::class, 'admin'])->defaults('page', 'programs')->name('programs.index');
+        Route::get('/courses', [WorkspaceController::class, 'admin'])->defaults('page', 'courses')->name('courses.index');
+        Route::get('/semesters', [WorkspaceController::class, 'admin'])->defaults('page', 'semesters')->name('semesters.index');
+        Route::get('/class-sections', [WorkspaceController::class, 'admin'])->defaults('page', 'class-sections')->name('class-sections.index');
+        Route::get('/reports', [WorkspaceController::class, 'admin'])->defaults('page', 'reports')->name('reports.index');
+    });
+
+    Route::middleware('role:lecturer')->prefix('lecturer')->name('lecturer.')->group(function () {
+        Route::get('/classes', [WorkspaceController::class, 'lecturer'])->defaults('page', 'classes')->name('classes');
+        Route::get('/students', [WorkspaceController::class, 'lecturer'])->defaults('page', 'students')->name('students');
+        Route::get('/timetable', [WorkspaceController::class, 'lecturer'])->defaults('page', 'timetable')->name('timetable');
+        Route::get('/attendance', [WorkspaceController::class, 'lecturer'])->defaults('page', 'attendance')->name('attendance');
+        Route::get('/grades', [WorkspaceController::class, 'lecturer'])->defaults('page', 'grades')->name('grades');
+        Route::get('/announcements', [WorkspaceController::class, 'lecturer'])->defaults('page', 'announcements')->name('announcements');
+        Route::get('/reports', [WorkspaceController::class, 'lecturer'])->defaults('page', 'reports')->name('reports');
+    });
 
     // Cổng sinh viên - Hồ sơ & tài khoản cá nhân
     Route::middleware('role:student')->prefix('student')->name('student.')->group(function () {
