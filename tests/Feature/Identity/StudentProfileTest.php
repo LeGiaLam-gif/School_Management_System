@@ -55,6 +55,12 @@ class StudentProfileTest extends TestCase
         $response->assertSee((string) $student->cohort_year);
         $response->assertSee($student->program->name);
         $response->assertSee($student->program->department->name);
+        $response->assertSee('>Khoa</label>', false);
+        $response->assertSee(route('profile.password'));
+        $response->assertDontSee('Khoa trực thuộc');
+        $response->assertDontSee('KTPM');
+        $response->assertDontSee('CNTT');
+        $response->assertSee('class="d-flex flex-column gap-3 mb-3"', false);
     }
 
     public function test_student_can_update_contact_info(): void
@@ -97,7 +103,7 @@ class StudentProfileTest extends TestCase
             'password' => Hash::make('old-password'),
         ]);
 
-        $response = $this->actingAs($user)->put('/student/profile/password', [
+        $response = $this->actingAs($user)->put(route('profile.password'), [
             'current_password' => 'old-password',
             'new_password' => 'new-secure-password',
             'new_password_confirmation' => 'new-secure-password',
@@ -116,7 +122,7 @@ class StudentProfileTest extends TestCase
             'password' => Hash::make('correct-password'),
         ]);
 
-        $response = $this->actingAs($user)->put('/student/profile/password', [
+        $response = $this->actingAs($user)->put(route('profile.password'), [
             'current_password' => 'wrong-password',
             'new_password' => 'new-secure-password',
             'new_password_confirmation' => 'new-secure-password',
@@ -125,4 +131,3 @@ class StudentProfileTest extends TestCase
         $response->assertSessionHasErrors(['current_password']);
     }
 }
-

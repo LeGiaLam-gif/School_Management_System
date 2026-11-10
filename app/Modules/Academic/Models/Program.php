@@ -21,6 +21,7 @@ class Program extends Model
         return ProgramFactory::new();
     }
 
+    /** @return BelongsTo<Department, $this> */
     public function department(): BelongsTo
     {
         return $this->belongsTo(Department::class);

@@ -9,10 +9,6 @@ use PHPUnit\Framework\Attributes\DataProvider;
 use Tests\CreatesRoles;
 use Tests\TestCase;
 
-/**
- * Ma tran 200/403 cho tung route theo tung role (muc 10, tang Authorization).
- * Khi them route moi cua module, them dong vao provider nay.
- */
 class RoleAuthorizationTest extends TestCase
 {
     use CreatesRoles, RefreshDatabase;
@@ -50,5 +46,16 @@ class RoleAuthorizationTest extends TestCase
         $user = User::factory()->withRole($role)->create();
 
         $this->actingAs($user)->get($uri)->assertStatus($status);
+    }
+
+    public function test_profile_route_is_available_to_every_role(): void
+    {
+        $this->seedRoles();
+
+        foreach (RoleName::cases() as $role) {
+            $user = User::factory()->withRole($role)->create();
+
+            $this->actingAs($user)->get('/profile')->assertOk();
+        }
     }
 }

@@ -2,7 +2,6 @@
 
 namespace App\Modules\Identity\Controllers;
 
-use App\Modules\Identity\Requests\ChangePasswordRequest;
 use App\Modules\Identity\Requests\UpdateContactRequest;
 use App\Modules\Identity\Services\StudentMockService;
 use Illuminate\Contracts\View\View;
@@ -38,17 +37,5 @@ class StudentProfileController extends Controller
         );
 
         return back()->with('success', 'Cập nhật thông tin liên hệ thành công.');
-    }
-
-    public function changePassword(ChangePasswordRequest $request): RedirectResponse
-    {
-        $user = $request->user();
-
-        $this->mockService->updatePassword(
-            $user,
-            $request->string('new_password')->toString()
-        );
-
-        return back()->with('success', 'Đổi mật khẩu thành công.');
     }
 }

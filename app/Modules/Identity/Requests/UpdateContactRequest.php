@@ -8,7 +8,7 @@ class UpdateContactRequest extends FormRequest
 {
     public function authorize(): bool
     {
-        return $this->user() !== null && $this->user()->isStudent();
+        return $this->user() !== null;
     }
 
     /**
@@ -34,4 +34,3 @@ class UpdateContactRequest extends FormRequest
         ];
     }
 }
-
