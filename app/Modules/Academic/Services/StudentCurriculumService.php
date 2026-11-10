@@ -4,11 +4,38 @@ namespace App\Modules\Academic\Services;
 
 use App\Modules\Academic\Models\Course;
 use App\Modules\Academic\Models\Program;
+use App\Modules\Identity\Models\Student;
 use App\Modules\Identity\Models\User;
 use App\Shared\Enums\CourseType;
 use Illuminate\Support\Collection;
 use Throwable;
 
+/**
+ * @phpstan-type CourseListItem object{
+ *   id?: int,
+ *   code: string,
+ *   name: string,
+ *   credits: int,
+ *   theory_periods: int,
+ *   practice_periods: int,
+ *   department_name: string,
+ *   department_code: string,
+ *   description: string,
+ *   prerequisites: list<string>,
+ *   prerequisite_names?: list<string>
+ * }
+ * @phpstan-type CurriculumCourseItem object{
+ *   code: string,
+ *   name: string,
+ *   credits: int,
+ *   theory_periods: int,
+ *   practice_periods: int,
+ *   is_compulsory: bool,
+ *   type_label: string,
+ *   type_badge: string,
+ *   prerequisites: list<string>
+ * }
+ */
 class StudentCurriculumService
 {
     /**
@@ -19,8 +46,8 @@ class StudentCurriculumService
     {
         if ($user !== null) {
             try {
-                $student = $user->student;
-                if ($student && $student->program_id) {
+                $student = $user->student()->first();
+                if ($student instanceof Student && $student->program_id !== null) {
                     $program = Program::with(['department', 'courses' => function ($q) {
                         $q->with('prerequisites');
                     }])->find($student->program_id);
@@ -41,7 +68,7 @@ class StudentCurriculumService
      * Tra cuu danh muc mon hoc toan truong (co tim kiem va loc).
      *
      * @param  array{keyword?: ?string, department?: ?string, credits?: ?int, type?: ?string}  $filters
-     * @return Collection<int, object>
+     * @return Collection<int, CourseListItem>
      */
     public function getCourses(array $filters = []): Collection
     {
@@ -68,19 +95,28 @@ class StudentCurriculumService
             $courses = $query->get();
 
             if ($courses->isNotEmpty()) {
-                return $courses->map(fn ($c) => (object) [
-                    'id' => $c->id,
-                    'code' => $c->code,
-                    'name' => $c->name,
-                    'credits' => $c->credits,
-                    'theory_periods' => $c->theory_periods,
-                    'practice_periods' => $c->practice_periods,
-                    'department_name' => $c->department?->name ?? 'Khoa Đào tạo',
-                    'department_code' => $c->department?->code ?? '',
-                    'description' => $c->description ?? 'Không có mô tả chi tiết.',
-                    'prerequisites' => $c->prerequisites->pluck('code')->all(),
-                    'prerequisite_names' => $c->prerequisites->map(fn ($p) => "{$p->code} - {$p->name}")->all(),
-                ]);
+                /** @var Collection<int, CourseListItem> $mappedCourses */
+                $mappedCourses = $courses->map(function (Course $c): object {
+                    $department = $c->department;
+
+                    return (object) [
+                        'id' => $c->id,
+                        'code' => $c->code,
+                        'name' => $c->name,
+                        'credits' => $c->credits,
+                        'theory_periods' => $c->theory_periods,
+                        'practice_periods' => $c->practice_periods,
+                        'department_name' => $department !== null ? $department->name : 'Khoa Đào tạo',
+                        'department_code' => $department !== null ? $department->code : '',
+                        'description' => $c->description ?? 'Không có mô tả chi tiết.',
+                        'prerequisites' => $c->prerequisites->pluck('code')->all(),
+                        'prerequisite_names' => $c->prerequisites->map(function (Course $p): string {
+                            return $p->code.' - '.$p->name;
+                        })->all(),
+                    ];
+                });
+
+                return $mappedCourses;
             }
         } catch (Throwable) {
             // DB chua san sang -> tiep tuc xuong Mock Data
@@ -124,6 +160,7 @@ class StudentCurriculumService
      */
     private function formatCurriculumFromDb(Program $program): object
     {
+        /** @var array<int, array{semester_no:int, semester_title:string, total_credits:int, courses:list<CurriculumCourseItem>}> $grouped */
         $grouped = [];
         $totalCredits = 0;
         $requiredCredits = 0;
@@ -143,6 +180,7 @@ class StudentCurriculumService
             $type = $course->pivot->type ?? 'required';
             $isCompulsory = ($type === 'required' || $type === CourseType::Required->value);
 
+            /** @var CurriculumCourseItem $courseObj */
             $courseObj = (object) [
                 'code' => $course->code,
                 'name' => $course->name,
@@ -168,10 +206,12 @@ class StudentCurriculumService
             }
         }
 
+        $department = $program->department;
+
         return (object) [
             'program_name' => $program->name,
             'program_code' => $program->code,
-            'department_name' => $program->department?->name ?? 'Khoa Đào tạo',
+            'department_name' => $department !== null ? $department->name : 'Khoa Đào tạo',
             'duration_years' => $program->duration_years,
             'total_credits' => $program->total_credits_required ?: $totalCredits,
             'required_credits' => $requiredCredits,
