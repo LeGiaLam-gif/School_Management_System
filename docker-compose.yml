@@ -1,5 +1,5 @@
 # SMS - Docker Compose (muc 5.7). Dung mot lenh:  docker compose up -d --build
-# Cau hinh qua .env (copy tu .env.example). Dich vu co profile `dev` chi dung khi phat trien.
+# Docker Compose nap cau hinh tu .env; .env.example chi la mau. Dich vu `dev` chi dung khi phat trien.
 
 x-app: &app
   build:
