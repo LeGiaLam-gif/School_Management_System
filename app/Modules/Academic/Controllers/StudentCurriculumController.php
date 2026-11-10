@@ -62,3 +62,4 @@ class StudentCurriculumController extends Controller
         ]);
     }
 }
+

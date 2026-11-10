@@ -27,6 +27,7 @@ class RoleAuthorizationTest extends TestCase
             '/student/profile' => RoleName::Student,
             '/student/curriculum' => RoleName::Student,
             '/student/courses' => RoleName::Student,
+            '/student/enrollment' => RoleName::Student,
         ];
 
         foreach ($expected as $uri => $allowed) {
