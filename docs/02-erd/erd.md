@@ -20,6 +20,9 @@ erDiagram
     DEPARTMENTS ||--o{ COURSES : "quản lý"
     DEPARTMENTS ||--o{ LECTURERS : "thuộc khoa"
     PROGRAMS ||--o{ STUDENTS : "theo học"
+    PROGRAMS ||--o{ ADMINISTRATIVE_CLASSES : "thuộc ngành"
+    ADMINISTRATIVE_CLASSES ||--o{ STUDENTS : "gồm sinh viên"
+    LECTURERS ||--o{ ADMINISTRATIVE_CLASSES : "cố vấn học tập (CVHT)"
     PROGRAMS ||--o{ PROGRAM_COURSES : "khung CT"
     COURSES ||--o{ PROGRAM_COURSES : "thuộc khung"
     COURSES ||--o{ COURSE_PREREQUISITES : "cần tiên quyết"
@@ -58,6 +61,16 @@ erDiagram
         bool must_change_password
         timestamp last_login_at
         timestamp deleted_at
+    }
+    ADMINISTRATIVE_CLASSES {
+        bigint id PK
+        string code UK "mã lớp hành chính"
+        string name "tên lớp"
+        bigint program_id FK "thuộc ngành"
+        smallint academic_year "niên khóa"
+        bigint advisor_lecturer_id FK "nullable, cố vấn"
+        timestamp created_at
+        timestamp updated_at
     }
     CLASS_SECTIONS {
         bigint id PK
