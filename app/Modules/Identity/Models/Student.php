@@ -2,6 +2,7 @@
 
 namespace App\Modules\Identity\Models;
 
+use App\Modules\Academic\Models\AcademicWarning;
 use App\Modules\Academic\Models\AdministrativeClass;
 use App\Modules\Academic\Models\Program;
 use App\Modules\Enrollment\Models\Enrollment;
@@ -31,6 +32,7 @@ use Illuminate\Support\Carbon;
  * @property-read Program|null $program
  * @property-read AdministrativeClass|null $administrativeClass
  * @property-read Collection<int, Enrollment> $enrollments
+ * @property-read Collection<int, AcademicWarning> $academicWarnings
  */
 class Student extends Model
 {
@@ -78,5 +80,11 @@ class Student extends Model
     public function enrollments(): HasMany
     {
         return $this->hasMany(Enrollment::class);
+    }
+
+    /** @return HasMany<AcademicWarning, $this> */
+    public function academicWarnings(): HasMany
+    {
+        return $this->hasMany(AcademicWarning::class);
     }
 }
