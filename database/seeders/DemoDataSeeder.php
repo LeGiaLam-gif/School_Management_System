@@ -3,6 +3,7 @@
 namespace Database\Seeders;
 
 use App\Modules\Academic\Database\Seeders\AcademicDemoSeeder;
+use App\Modules\Academic\Database\Seeders\AcademicWarningSeeder;
 use App\Modules\Academic\Database\Seeders\AdministrativeClassSeeder;
 use App\Modules\Announcement\Database\Seeders\AnnouncementDemoSeeder;
 use App\Modules\Attendance\Database\Seeders\AttendanceDemoSeeder;
@@ -34,6 +35,7 @@ class DemoDataSeeder extends Seeder
             EnrollmentDemoSeeder::class,
             AttendanceDemoSeeder::class,
             GradingDemoSeeder::class,
+            AcademicWarningSeeder::class,
             AnnouncementDemoSeeder::class,
         ]);
     }
