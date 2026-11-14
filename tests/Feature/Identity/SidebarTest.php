@@ -240,12 +240,20 @@ class SidebarTest extends TestCase
             $this->actingAs($lecturer)->get(route($route))->assertForbidden();
         }
 
+        $implementedLecturerRoutes = [
+            'lecturer.classes',
+            'lecturer.students',
+        ];
+
         foreach ($lecturerRoutes as $route => $title) {
-            $this->actingAs($lecturer)
+            $response = $this->actingAs($lecturer)
                 ->get(route($route))
                 ->assertOk()
-                ->assertSee($title)
-                ->assertSee('Giao diện cơ bản đã sẵn sàng');
+                ->assertSee($title);
+
+            if (! in_array($route, $implementedLecturerRoutes, true)) {
+                $response->assertSee('Giao diện cơ bản đã sẵn sàng');
+            }
 
             $this->actingAs($admin)->get(route($route))->assertForbidden();
         }
