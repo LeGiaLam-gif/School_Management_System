@@ -339,3 +339,4 @@ class StudentTimetableService
         return $colors[$courseCode] ?? 'primary';
     }
 }
+

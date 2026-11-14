@@ -54,3 +54,4 @@ class StudentTimetableTest extends TestCase
         $response->assertSee('Thời Khóa Biểu Sinh Viên');
     }
 }
+

@@ -30,3 +30,4 @@ class StudentTimetableController extends Controller
         ]);
     }
 }
+
