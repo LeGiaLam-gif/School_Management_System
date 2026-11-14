@@ -130,6 +130,180 @@ class StudentMockService
         }
     }
 
+    /**
+     * Lay so lieu thong ke tong hop cho Dashboard sinh vien.
+     */
+    public function getStudentDashboardStats(?User $user): object
+    {
+        // 1. Thu lay du lieu that tu DB neu co
+        if ($user !== null) {
+            try {
+                $student = $user->student;
+                if ($student !== null) {
+                    $warnings = $student->academicWarnings()->active()->get();
+                    $hasWarning = $warnings->isNotEmpty();
+                    $latestWarning = $warnings->sortByDesc('created_at')->first();
+
+                    $warningInfo = (object) [
+                        'has_warning' => $hasWarning,
+                        'status' => $hasWarning ? 'warning' : 'safe',
+                        'status_label' => $hasWarning ? ($latestWarning->warning_level_label ?? 'Cảnh báo học vụ') : 'Bình thường',
+                        'status_badge' => $hasWarning ? 'bg-danger' : 'bg-success',
+                        'note' => $hasWarning
+                            ? ($latestWarning->reason ?? 'Sinh viên đang bị cảnh báo kết quả học tập.')
+                            : 'Không có cảnh báo học vụ. Sinh viên đạt chuẩn tiến độ đào tạo theo Thông tư 08/2021/TT-BGDĐT.',
+                        'records' => $warnings,
+                    ];
+
+                    $totalCreditsRequired = (int) ($student->program?->total_credits_required ?? 140);
+                    $earnedCredits = 52; // Tich luy tu final_results neu co
+                    $enrolledCredits = 15;
+                    $remainingCredits = max(0, $totalCreditsRequired - $earnedCredits);
+                    $progressPercentage = $totalCreditsRequired > 0
+                        ? round(($earnedCredits / $totalCreditsRequired) * 100, 1)
+                        : 0.0;
+
+                    return (object) [
+                        'progress' => (object) [
+                            'total_credits_required' => $totalCreditsRequired,
+                            'earned_credits' => $earnedCredits,
+                            'enrolled_credits' => $enrolledCredits,
+                            'remaining_credits' => $remainingCredits,
+                            'progress_percentage' => $progressPercentage,
+                            'passed_courses_count' => 17,
+                            'enrolled_courses_count' => 5,
+                        ],
+                        'gpa' => (object) [
+                            'gpa_4' => 3.48,
+                            'gpa_10' => 8.35,
+                            'classification' => 'Giỏi',
+                            'academic_standing' => 'Tích cực',
+                        ],
+                        'warning' => $warningInfo,
+                        'attendance' => (object) [
+                            'overall_rate' => 95.9,
+                            'total_sessions' => 49,
+                            'present_count' => 47,
+                            'late_count' => 1,
+                            'excused_count' => 1,
+                            'unexcused_count' => 0,
+                            'absence_risk' => 'low',
+                            'status_label' => 'Đạt chuẩn chuyên cần',
+                            'status_badge' => 'bg-success',
+                        ],
+                        'today_schedules' => $this->getMockTodaySchedules(),
+                        'recent_announcements' => $this->getMockRecentAnnouncements(),
+                    ];
+                }
+            } catch (Throwable) {
+                // DB chua san sang -> Fallback mock
+            }
+        }
+
+        // 2. Mock Data Fallback
+        return (object) [
+            'progress' => (object) [
+                'total_credits_required' => 140,
+                'earned_credits' => 52,
+                'enrolled_credits' => 15,
+                'remaining_credits' => 88,
+                'progress_percentage' => 37.1,
+                'passed_courses_count' => 17,
+                'enrolled_courses_count' => 5,
+            ],
+            'gpa' => (object) [
+                'gpa_4' => 3.48,
+                'gpa_10' => 8.35,
+                'classification' => 'Giỏi',
+                'academic_standing' => 'Tích cực',
+            ],
+            'warning' => (object) [
+                'has_warning' => false,
+                'status' => 'safe',
+                'status_label' => 'Bình thường',
+                'status_badge' => 'bg-success',
+                'note' => 'Không có cảnh báo học vụ. Sinh viên duy trì kết quả học tập tốt và đạt chuẩn tiến độ theo Thông tư 08/2021/TT-BGDĐT.',
+                'records' => [],
+            ],
+            'attendance' => (object) [
+                'overall_rate' => 95.9,
+                'total_sessions' => 49,
+                'present_count' => 47,
+                'late_count' => 1,
+                'excused_count' => 1,
+                'unexcused_count' => 0,
+                'absence_risk' => 'low',
+                'status_label' => 'Đạt chuẩn chuyên cần',
+                'status_badge' => 'bg-success',
+            ],
+            'today_schedules' => $this->getMockTodaySchedules(),
+            'recent_announcements' => $this->getMockRecentAnnouncements(),
+        ];
+    }
+
+    /**
+     * @return list<object>
+     */
+    private function getMockTodaySchedules(): array
+    {
+        return [
+            (object) [
+                'course_code' => 'IT002',
+                'course_name' => 'Lập trình Hướng đối tượng',
+                'shift' => 'Sáng',
+                'periods' => 'Tiết 1 - 3 (07:30 - 10:00)',
+                'room' => 'Phòng B1-302',
+                'lecturer' => 'TS. Phạm Thanh Hương',
+                'status' => 'Sắp diễn ra',
+            ],
+            (object) [
+                'course_code' => 'CS101',
+                'course_name' => 'Cấu trúc Dữ liệu & Giải thuật',
+                'shift' => 'Chiều',
+                'periods' => 'Tiết 7 - 9 (13:00 - 15:30)',
+                'room' => 'Lab máy 402',
+                'lecturer' => 'ThS. Lê Hoàng Nam',
+                'status' => 'Chưa bắt đầu',
+            ],
+        ];
+    }
+
+    /**
+     * @return list<object>
+     */
+    private function getMockRecentAnnouncements(): array
+    {
+        return [
+            (object) [
+                'id' => '1',
+                'title' => 'Lịch đăng ký học phần Học kỳ 2 năm học 2024 - 2025',
+                'category' => 'Toàn trường',
+                'badge' => 'bg-danger',
+                'is_pinned' => true,
+                'published_at' => '10/02/2025',
+                'author' => 'Phòng Đào tạo',
+            ],
+            (object) [
+                'id' => '2',
+                'title' => 'Thông báo nộp học phí và chính sách miễn giảm học phí HK2',
+                'category' => 'Học vụ & Học phí',
+                'badge' => 'bg-primary',
+                'is_pinned' => false,
+                'published_at' => '08/02/2025',
+                'author' => 'Phòng Kế hoạch Tài chính',
+            ],
+            (object) [
+                'id' => '3',
+                'title' => '[IT002] Lịch nộp bài tập lớn và kiểm tra giữa kỳ môn OOP',
+                'category' => 'Lớp học phần',
+                'badge' => 'bg-info text-dark',
+                'is_pinned' => false,
+                'published_at' => '05/02/2025',
+                'author' => 'TS. Phạm Thanh Hương',
+            ],
+        ];
+    }
+
     private function getStatusBadgeClass(?StudentStatus $status): string
     {
         return match ($status) {

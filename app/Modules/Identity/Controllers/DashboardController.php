@@ -40,11 +40,14 @@ class DashboardController extends Controller
     public function student(Request $request): View
     {
         $user = $request->user();
-        $student = app(StudentMockService::class)->getStudentProfile($user);
+        $studentService = app(StudentMockService::class);
+        $student = $studentService->getStudentProfile($user);
+        $stats = $studentService->getStudentDashboardStats($user);
 
         return view('identity::student.dashboard', [
             'user' => $user,
             'student' => $student,
+            'stats' => $stats,
         ]);
     }
 
