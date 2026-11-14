@@ -3,6 +3,7 @@
 namespace App\Modules\Attendance\Requests;
 
 use App\Modules\Identity\Models\User;
+use App\Modules\Teaching\Models\ClassSection;
 use App\Modules\Teaching\Models\ClassSession;
 use App\Shared\Authorization\Permission;
 use App\Shared\Enums\AttendanceStatus;
@@ -22,8 +23,11 @@ class StoreSessionAttendanceRequest extends FormRequest
             return false;
         }
 
-        return $user->can(Permission::ATTENDANCE_MARK)
-            && $session->classSection->isTaughtBy($user);
+        $section = $session->classSection;
+
+        return $section instanceof ClassSection
+            && $user->can(Permission::ATTENDANCE_MARK)
+            && $section->isTaughtBy($user);
     }
 
     /**
