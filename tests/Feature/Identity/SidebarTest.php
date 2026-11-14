@@ -244,6 +244,7 @@ class SidebarTest extends TestCase
             'lecturer.classes',
             'lecturer.students',
             'lecturer.timetable',
+            'lecturer.attendance',
         ];
 
         foreach ($lecturerRoutes as $route => $title) {
