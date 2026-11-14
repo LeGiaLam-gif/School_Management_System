@@ -1,4 +1,4 @@
-@extends('layouts.student')
+@extends('layouts.app')
 
 @section('title', $announcement->title . ' · Thông báo')
 
@@ -61,3 +61,4 @@
     </div>
 </div>
 @endsection
+

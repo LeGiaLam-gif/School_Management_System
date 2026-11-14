@@ -1,4 +1,4 @@
-@extends('layouts.student')
+@extends('layouts.app')
 
 @section('title', 'Thời khóa biểu sinh viên · Cổng Sinh Viên')
 

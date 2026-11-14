@@ -1,4 +1,4 @@
-@extends('layouts.student')
+@extends('layouts.app')
 
 @section('title', 'Thông báo · Cổng Sinh Viên')
 
@@ -95,3 +95,4 @@
     </div>
 </div>
 @endsection
+

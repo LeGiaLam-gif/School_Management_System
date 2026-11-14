@@ -25,3 +25,4 @@ class StudentAttendanceController extends Controller
         ]);
     }
 }
+

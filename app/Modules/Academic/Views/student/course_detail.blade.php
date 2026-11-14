@@ -1,4 +1,4 @@
-@extends('layouts.student')
+@extends('layouts.app')
 
 @section('title', $course->code . ' - ' . $course->name . ' · Cổng Sinh Viên')
 

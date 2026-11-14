@@ -5,15 +5,11 @@ namespace App\Modules\Identity\Services;
 use App\Modules\Identity\Models\Student;
 use App\Modules\Identity\Models\User;
 use App\Shared\Enums\StudentStatus;
+use Illuminate\Support\Facades\Hash;
 use Throwable;
 
 /**
  * Service cung cap du lieu sinh vien voi co che tu dong Fallback Mock Data.
- *
- * - Khi Database chua san sang hoac chua co du lieu: tra ve Mock Data mau chuan
- *   de phat trien giao dien, kiem thu form va flow nghiep vu ma khong bi loi PDO/SQL.
- * - Khi Database cua thanh vien khac hoan thanh va co migration: tu dong doc/ghi
- *   vao Database that qua Eloquent.
  */
 class StudentMockService
 {
@@ -27,7 +23,7 @@ class StudentMockService
             try {
                 /** @var Student|null $student */
                 $student = $user->student()
-                    ->with(['program.department'])
+                    ->with(['program.department', 'administrativeClass.advisor.user'])
                     ->first();
 
                 if ($student !== null) {
@@ -43,12 +39,15 @@ class StudentMockService
                         'gender' => $student->gender?->label() ?? 'Nam',
                         'phone' => session('mock_student_phone', $student->phone ?? '0912345678'),
                         'address' => session('mock_student_address', $student->address ?? '123 Đường Nguyễn Huệ, Phường Bến Nghé, Quận 1, TP. Hồ Chí Minh'),
-                        'department_name' => $student->program->department->name ?? 'Công nghệ Thông tin',
-                        'department_code' => $student->program->department->code ?? 'CNTT',
-                        'program_name' => $student->program->name ?? 'Kỹ thuật Phần mềm',
-                        'program_code' => $student->program->code ?? 'SE01',
-                        'duration_years' => $student->program->duration_years ?? 4,
-                        'total_credits_required' => $student->program->total_credits_required ?? 140,
+                        'department_name' => $student->program?->department?->name ?? 'Công nghệ Thông tin',
+                        'department_code' => $student->program?->department?->code ?? 'CNTT',
+                        'program_name' => $student->program?->name ?? 'Kỹ thuật Phần mềm',
+                        'program_code' => $student->program?->code ?? 'SE01',
+                        'class_code' => $student->administrativeClass?->code ?? 'SE23.01',
+                        'class_name' => $student->administrativeClass?->name ?? 'Lớp Kỹ thuật Phần mềm 2023-01',
+                        'advisor_name' => $student->administrativeClass?->advisor?->user?->name ?? 'ThS. Hoàng Tuấn Anh',
+                        'duration_years' => $student->program?->duration_years ?? 4,
+                        'total_credits_required' => $student->program?->total_credits_required ?? 140,
                     ];
                 }
             } catch (Throwable) {
@@ -56,16 +55,12 @@ class StudentMockService
             }
         }
 
-        return $this->mockProfile($user);
-    }
-
-    private function mockProfile(?User $user): object
-    {
+        // 2. Mock Data mau day du
         return (object) [
-            'user_id' => $user->id ?? 1,
-            'student_code' => $user->code ?? 'SV20230001',
-            'name' => $user->name ?? 'Nguyễn Văn An',
-            'email' => $user->email ?? 'nguyenvanan.sv@sms.edu.vn',
+            'user_id' => $user?->id ?? 1,
+            'student_code' => $user?->code ?? 'SV20230001',
+            'name' => $user?->name ?? 'Nguyễn Văn An',
+            'email' => $user?->email ?? 'nguyenvanan.sv@sms.edu.vn',
             'status_label' => 'Đang học',
             'status_badge' => 'bg-success',
             'cohort_year' => 2023,
@@ -77,17 +72,19 @@ class StudentMockService
             'department_code' => 'CNTT',
             'program_name' => 'Kỹ thuật Phần mềm',
             'program_code' => 'SE01',
+            'class_code' => 'SE23.01',
+            'class_name' => 'Lớp Kỹ thuật Phần mềm 2023-01',
+            'advisor_name' => 'ThS. Hoàng Tuấn Anh',
             'duration_years' => 4,
             'total_credits_required' => 140,
         ];
     }
 
     /**
-     * Cap nhat thong tin lien lac (ghi vao DB neu co, luon luu vao session de hien thi ngay).
+     * Cap nhat thong tin lien lac.
      */
     public function updateContact(?User $user, ?string $phone, ?string $address): void
     {
-        // Luu vao session de du lieu cap nhat ngay lap tuc tren giao dien ke ca khi khong co DB
         session([
             'mock_student_phone' => $phone,
             'mock_student_address' => $address,
@@ -109,7 +106,26 @@ class StudentMockService
                     'address' => $address,
                 ], fn ($val) => $val !== null));
             } catch (Throwable) {
-                // Bo qua loi DB neu DB chua migration xong
+                // Bo qua loi neu chua co DB
+            }
+        }
+    }
+
+    /**
+     * Cap nhat mat khau.
+     */
+    public function updatePassword(?User $user, string $newPassword): void
+    {
+        session(['mock_student_password_changed' => true]);
+
+        if ($user !== null) {
+            try {
+                $user->update([
+                    'password' => Hash::make($newPassword),
+                    'must_change_password' => false,
+                ]);
+            } catch (Throwable) {
+                // Bo qua
             }
         }
     }

@@ -1314,3 +1314,11 @@ body.sms-body {
         padding: 13px;
     }
 }
+
+/* Student Portal Custom Styles */
+.student-badge-card {
+    background: linear-gradient(135deg, #226b5c 0%, #378b78 100%);
+    color: white;
+    border-radius: 14px;
+}
+
