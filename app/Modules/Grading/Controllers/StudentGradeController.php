@@ -30,3 +30,4 @@ class StudentGradeController extends Controller
         ]);
     }
 }
+
