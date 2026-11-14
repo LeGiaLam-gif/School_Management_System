@@ -46,7 +46,7 @@ class SidebarTest extends TestCase
         }
     }
 
-    public function test_admin_dashboard_shows_management_cards_and_disabled_navigation(): void
+    public function test_admin_dashboard_links_to_the_management_workspaces(): void
     {
         $admin = User::factory()->withRole(RoleName::Admin)->create();
 
@@ -57,25 +57,24 @@ class SidebarTest extends TestCase
             ->assertSee('class="sms-admin-action-grid"', false)
             ->assertSee('Quản lý người dùng')
             ->assertSee('Quản lý khoa')
-            ->assertSee('Quản lý ngành')
-            ->assertSee('Quản lý lớp')
+            ->assertSee('Chương trình đào tạo')
             ->assertSee('Quản lý học phần')
             ->assertSee('Quản lý học kỳ')
             ->assertSee('Lớp học phần')
             ->assertSee('Thống kê &amp; báo cáo', false)
             ->assertDontSee('href="#"', false);
 
-        $this->assertSame(8, substr_count($response->getContent(), 'class="sms-admin-action-card'));
-        $this->assertSame(16, substr_count($response->getContent(), 'aria-disabled="true"'));
+        $this->assertSame(7, substr_count($response->getContent(), 'class="sms-admin-action-card'));
+        $this->assertSame(0, substr_count($response->getContent(), 'aria-disabled="true"'));
 
         preg_match('/<nav class="sms-sidebar-nav".*?<\/nav>/s', $response->getContent(), $matches);
         $sidebar = $matches[0] ?? '';
 
-        foreach (['Người dùng', 'Khoa', 'Ngành', 'Lớp', 'Học phần', 'Học kỳ', 'Lớp học phần', 'Thống kê &amp; báo cáo'] as $label) {
+        foreach (['Người dùng', 'Khoa', 'Chương trình đào tạo', 'Học phần', 'Học kỳ', 'Lớp học phần', 'Thống kê &amp; báo cáo'] as $label) {
             $this->assertStringContainsString($label, $sidebar);
         }
 
-        $this->assertSame(8, substr_count($sidebar, 'class="sms-sidebar-link sms-sidebar-link-disabled"'));
+        $this->assertSame(0, substr_count($sidebar, 'class="sms-sidebar-link sms-sidebar-link-disabled"'));
     }
 
     public function test_student_sidebar_shows_student_navigation_with_unavailable_modules_disabled(): void
@@ -151,7 +150,7 @@ class SidebarTest extends TestCase
         $this->assertStringNotContainsString('Thời khóa biểu', $sidebar);
     }
 
-    public function test_lecturer_sidebar_shows_documented_navigation_as_unavailable_until_routes_exist(): void
+    public function test_lecturer_sidebar_links_to_the_lecturer_workspaces(): void
     {
         $lecturer = User::factory()->lecturer()->create();
 
@@ -177,12 +176,12 @@ class SidebarTest extends TestCase
             $this->assertStringContainsString($label, $sidebar);
         }
 
-        $this->assertSame(7, substr_count($sidebar, 'class="sms-sidebar-link sms-sidebar-link-disabled"'));
+        $this->assertSame(0, substr_count($sidebar, 'class="sms-sidebar-link sms-sidebar-link-disabled"'));
         $this->assertStringNotContainsString('href="#"', $sidebar);
         $this->assertStringNotContainsString('Chương trình đào tạo', $sidebar);
     }
 
-    public function test_lecturer_dashboard_shows_documented_actions_until_routes_are_available(): void
+    public function test_lecturer_dashboard_links_to_lecturer_workspaces(): void
     {
         $lecturer = User::factory()->lecturer()->create();
 
@@ -205,6 +204,51 @@ class SidebarTest extends TestCase
             ->assertDontSee('Xem các lớp học phần')
             ->assertDontSee('Tra cứu danh sách sinh viên')
             ->assertDontSee('href="#"', false);
+    }
+
+    public function test_admin_and_lecturer_workspace_pages_are_visible_only_to_their_role(): void
+    {
+        $adminRoutes = [
+            'admin.users.index' => 'Quản lý người dùng',
+            'admin.departments.index' => 'Quản lý khoa',
+            'admin.programs.index' => 'Chương trình đào tạo',
+            'admin.courses.index' => 'Quản lý học phần',
+            'admin.semesters.index' => 'Quản lý học kỳ',
+            'admin.class-sections.index' => 'Lớp học phần',
+            'admin.reports.index' => 'Thống kê & báo cáo',
+        ];
+        $lecturerRoutes = [
+            'lecturer.classes' => 'Lớp được phân công',
+            'lecturer.students' => 'Danh sách sinh viên',
+            'lecturer.timetable' => 'Lịch dạy',
+            'lecturer.attendance' => 'Điểm danh',
+            'lecturer.grades' => 'Quản lý điểm',
+            'lecturer.announcements' => 'Thông báo',
+            'lecturer.reports' => 'Báo cáo & xuất dữ liệu',
+        ];
+
+        $admin = User::factory()->admin()->create();
+        $lecturer = User::factory()->lecturer()->create();
+
+        foreach ($adminRoutes as $route => $title) {
+            $this->actingAs($admin)
+                ->get(route($route))
+                ->assertOk()
+                ->assertSee($title)
+                ->assertSee('Giao diện cơ bản đã sẵn sàng');
+
+            $this->actingAs($lecturer)->get(route($route))->assertForbidden();
+        }
+
+        foreach ($lecturerRoutes as $route => $title) {
+            $this->actingAs($lecturer)
+                ->get(route($route))
+                ->assertOk()
+                ->assertSee($title)
+                ->assertSee('Giao diện cơ bản đã sẵn sàng');
+
+            $this->actingAs($admin)->get(route($route))->assertForbidden();
+        }
     }
 
     public function test_guest_does_not_see_authenticated_sidebar(): void

@@ -3,6 +3,8 @@
 namespace Database\Seeders;
 
 use App\Modules\Academic\Database\Seeders\AcademicDemoSeeder;
+use App\Modules\Academic\Database\Seeders\AcademicWarningSeeder;
+use App\Modules\Academic\Database\Seeders\AdministrativeClassSeeder;
 use App\Modules\Announcement\Database\Seeders\AnnouncementDemoSeeder;
 use App\Modules\Attendance\Database\Seeders\AttendanceDemoSeeder;
 use App\Modules\Enrollment\Database\Seeders\EnrollmentDemoSeeder;
@@ -28,10 +30,12 @@ class DemoDataSeeder extends Seeder
         $this->call([
             AcademicDemoSeeder::class,
             IdentityDemoSeeder::class,
+            AdministrativeClassSeeder::class,
             TeachingDemoSeeder::class,
             EnrollmentDemoSeeder::class,
             AttendanceDemoSeeder::class,
             GradingDemoSeeder::class,
+            AcademicWarningSeeder::class,
             AnnouncementDemoSeeder::class,
         ]);
     }

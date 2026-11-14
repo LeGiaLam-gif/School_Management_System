@@ -20,6 +20,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
  * @property int $duration_years
  * @property-read Department|null $department
  * @property-read Collection<int, Student> $students
+ * @property-read Collection<int, AdministrativeClass> $administrativeClasses
  * @property-read Collection<int, Course> $courses
  */
 class Program extends Model
@@ -43,6 +44,12 @@ class Program extends Model
     public function students(): HasMany
     {
         return $this->hasMany(Student::class);
+    }
+
+    /** @return HasMany<AdministrativeClass, $this> */
+    public function administrativeClasses(): HasMany
+    {
+        return $this->hasMany(AdministrativeClass::class);
     }
 
     /**

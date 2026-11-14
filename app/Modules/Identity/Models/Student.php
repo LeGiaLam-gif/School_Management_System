@@ -2,6 +2,8 @@
 
 namespace App\Modules\Identity\Models;
 
+use App\Modules\Academic\Models\AcademicWarning;
+use App\Modules\Academic\Models\AdministrativeClass;
 use App\Modules\Academic\Models\Program;
 use App\Modules\Enrollment\Models\Enrollment;
 use App\Modules\Identity\Database\Factories\StudentFactory;
@@ -19,6 +21,7 @@ use Illuminate\Support\Carbon;
  * @property int $user_id
  * @property string $student_code
  * @property int $program_id
+ * @property int|null $class_id
  * @property int $cohort_year
  * @property StudentStatus $status
  * @property Gender|null $gender
@@ -27,14 +30,16 @@ use Illuminate\Support\Carbon;
  * @property string|null $address
  * @property-read User $user
  * @property-read Program|null $program
+ * @property-read AdministrativeClass|null $administrativeClass
  * @property-read Collection<int, Enrollment> $enrollments
+ * @property-read Collection<int, AcademicWarning> $academicWarnings
  */
 class Student extends Model
 {
     use HasFactory;
 
     protected $fillable = [
-        'user_id', 'student_code', 'program_id', 'cohort_year', 'date_of_birth',
+        'user_id', 'student_code', 'program_id', 'class_id', 'cohort_year', 'date_of_birth',
         'gender', 'phone', 'address', 'status',
     ];
 
@@ -65,9 +70,21 @@ class Student extends Model
         return $this->belongsTo(Program::class);
     }
 
+    /** @return BelongsTo<AdministrativeClass, $this> */
+    public function administrativeClass(): BelongsTo
+    {
+        return $this->belongsTo(AdministrativeClass::class, 'class_id');
+    }
+
     /** @return HasMany<Enrollment, $this> */
     public function enrollments(): HasMany
     {
         return $this->hasMany(Enrollment::class);
+    }
+
+    /** @return HasMany<AcademicWarning, $this> */
+    public function academicWarnings(): HasMany
+    {
+        return $this->hasMany(AcademicWarning::class);
     }
 }
