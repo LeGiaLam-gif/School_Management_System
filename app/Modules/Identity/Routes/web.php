@@ -43,7 +43,7 @@ Route::middleware(['auth', 'active'])->group(function () {
     Route::middleware('role:lecturer')->prefix('lecturer')->name('lecturer.')->group(function () {
         // Route::get('/classes', [WorkspaceController::class, 'lecturer'])->defaults('page', 'classes')->name('classes');
         // Route::get('/students', [WorkspaceController::class, 'lecturer'])->defaults('page', 'students')->name('students');
-        Route::get('/timetable', [WorkspaceController::class, 'lecturer'])->defaults('page', 'timetable')->name('timetable');
+        // Route::get('/timetable', [WorkspaceController::class, 'lecturer'])->defaults('page', 'timetable')->name('timetable');
         Route::get('/attendance', [WorkspaceController::class, 'lecturer'])->defaults('page', 'attendance')->name('attendance');
         Route::get('/grades', [WorkspaceController::class, 'lecturer'])->defaults('page', 'grades')->name('grades');
         Route::get('/announcements', [WorkspaceController::class, 'lecturer'])->defaults('page', 'announcements')->name('announcements');

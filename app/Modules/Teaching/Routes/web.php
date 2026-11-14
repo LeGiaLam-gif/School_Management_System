@@ -9,4 +9,5 @@ Route::middleware(['auth', 'active', 'role:lecturer'])
     ->group(function (): void {
         Route::get('/classes', [LecturerTeachingController::class, 'classes'])->name('classes');
         Route::get('/students', [LecturerTeachingController::class, 'students'])->name('students');
+        Route::get('/timetable', [LecturerTeachingController::class, 'timetable'])->name('timetable');
     });

@@ -6,7 +6,10 @@ use App\Modules\Academic\Models\Semester;
 use App\Modules\Enrollment\Models\Enrollment;
 use App\Modules\Identity\Models\Student;
 use App\Modules\Identity\Models\User;
+use App\Modules\Teaching\Models\ClassSchedule;
 use App\Modules\Teaching\Models\ClassSection;
+use App\Modules\Teaching\Models\ClassSession;
+use Carbon\CarbonImmutable;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 
@@ -112,5 +115,64 @@ class LecturerTeachingService
                 return $student instanceof Student ? $student->student_code : '';
             })
             ->values();
+    }
+
+    /**
+     * Lay cac buoi giang day cu the trong khoang tuan dang xem.
+     *
+     * @return Collection<int, ClassSession>
+     */
+    public function getWeeklySessions(
+        User $user,
+        ?int $semesterId,
+        CarbonImmutable $weekStart,
+        CarbonImmutable $weekEnd,
+    ): Collection {
+        $lecturerId = $user->lecturer?->id;
+
+        if ($lecturerId === null) {
+            return new Collection;
+        }
+
+        return ClassSession::query()
+            ->with(['classSection.course', 'room'])
+            ->whereHas('classSection', function (Builder $builder) use ($lecturerId, $semesterId): void {
+                $builder->where('lecturer_id', $lecturerId);
+
+                if ($semesterId !== null) {
+                    $builder->where('semester_id', $semesterId);
+                }
+            })
+            ->whereBetween('session_date', [$weekStart->toDateString(), $weekEnd->toDateString()])
+            ->orderBy('session_date')
+            ->orderBy('start_period')
+            ->get();
+    }
+
+    /**
+     * Lay thoi khoa bieu co dinh hang tuan cua giang vien trong hoc ky.
+     *
+     * @return Collection<int, ClassSchedule>
+     */
+    public function getSemesterSchedules(User $user, ?int $semesterId): Collection
+    {
+        $lecturerId = $user->lecturer?->id;
+
+        if ($lecturerId === null) {
+            return new Collection;
+        }
+
+        return ClassSchedule::query()
+            ->with(['classSection.course', 'room'])
+            ->whereHas('classSection', function (Builder $builder) use ($lecturerId, $semesterId): void {
+                $builder->where('lecturer_id', $lecturerId);
+
+                if ($semesterId !== null) {
+                    $builder->where('semester_id', $semesterId);
+                }
+            })
+            ->orderBy('day_of_week')
+            ->orderBy('start_period')
+            ->get();
     }
 }
