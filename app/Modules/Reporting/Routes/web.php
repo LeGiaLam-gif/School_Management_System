@@ -1,6 +1,12 @@
 <?php
 
-/*
-| Route web cua module Reporting (dashboard theo role, thong ke, xem audit log - Sprint 5).
-| Audit log: permission `audit.view`, chi Admin.
-*/
+use App\Modules\Reporting\Controllers\LecturerReportController;
+use Illuminate\Support\Facades\Route;
+
+Route::middleware(['auth', 'active', 'role:lecturer'])
+    ->prefix('lecturer')
+    ->name('lecturer.')
+    ->group(function (): void {
+        Route::get('/reports', [LecturerReportController::class, 'index'])->name('reports');
+        Route::get('/reports/export', [LecturerReportController::class, 'exportCsv'])->name('reports.export');
+    });
