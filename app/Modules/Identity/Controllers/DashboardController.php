@@ -56,3 +56,4 @@ class DashboardController extends Controller
         return view('identity::dashboard', ['role' => $role]);
     }
 }
+  
