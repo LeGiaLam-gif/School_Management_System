@@ -162,4 +162,27 @@ class EnrollmentServiceTest extends TestCase
         $this->expectException(BusinessRuleException::class);
         $service->drop($enrollment);
     }
+
+    public function test_student_can_re_register_dropped_section(): void
+    {
+        $student = Student::factory()->create();
+        $section = $this->openSection();
+        $service = app(EnrollmentService::class);
+
+        // 1. Dang ky lan dau
+        $enrollment = $service->register($student, $section->id);
+        $this->assertSame(EnrollmentStatus::Registered, $enrollment->status);
+        $this->assertSame(1, $section->refresh()->enrolled_count);
+
+        // 2. Huy dang ky (Drop)
+        $service->drop($enrollment);
+        $this->assertSame(EnrollmentStatus::Dropped, $enrollment->refresh()->status);
+        $this->assertSame(0, $section->refresh()->enrolled_count);
+
+        // 3. Dang ky lai
+        $reEnrolled = $service->register($student, $section->id);
+        $this->assertSame(EnrollmentStatus::Registered, $reEnrolled->refresh()->status);
+        $this->assertSame(1, $section->refresh()->enrolled_count);
+        $this->assertNull($reEnrolled->dropped_at);
+    }
 }
