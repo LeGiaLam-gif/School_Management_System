@@ -2,6 +2,7 @@
 
 namespace App\Modules\Enrollment\Services;
 
+use App\Modules\Academic\Models\Semester;
 use App\Modules\Enrollment\Models\Enrollment;
 use App\Modules\Identity\Models\User;
 use App\Modules\Teaching\Models\ClassSection;
@@ -16,6 +17,19 @@ class StudentEnrollmentService
         private readonly ?EnrollmentService $enrollmentService = null
     ) {}
 
+    private function resolveEnrollmentService(): ?EnrollmentService
+    {
+        if ($this->enrollmentService !== null) {
+            return $this->enrollmentService;
+        }
+
+        try {
+            return app(EnrollmentService::class);
+        } catch (Throwable) {
+            return null;
+        }
+    }
+
     /**
      * Lay toan bo du lieu dang ky hoc phan cua sinh vien trong hoc ky hien tai.
      */
@@ -26,18 +40,11 @@ class StudentEnrollmentService
             try {
                 $student = $user->student;
                 if ($student) {
-                    $dbEnrollments = Enrollment::with([
-                        'classSection.course',
-                        'classSection.lecturer.user',
-                        'classSection.schedules.room',
-                        'classSection.semester',
-                    ])
-                        ->where('student_id', $student->id)
-                        ->where('status', EnrollmentStatus::Registered)
-                        ->get();
+                    $currentSemester = Semester::where('is_current', true)->first()
+                        ?? Semester::latest('id')->first();
 
-                    if ($dbEnrollments->isNotEmpty()) {
-                        return $this->formatFromDb($user, $dbEnrollments);
+                    if ($currentSemester) {
+                        return $this->formatFromDb($user, $currentSemester);
                     }
                 }
             } catch (Throwable) {
@@ -56,12 +63,14 @@ class StudentEnrollmentService
      */
     public function register(?User $user, int|string $sectionId): array
     {
+        $service = $this->resolveEnrollmentService();
+
         // Thu dang ky qua Eloquent DB neu co
-        if ($user !== null && is_numeric($sectionId) && $this->enrollmentService !== null) {
+        if ($user !== null && is_numeric($sectionId) && $service !== null) {
             try {
                 $student = $user->student;
                 if ($student) {
-                    $this->enrollmentService->register($student, (int) $sectionId);
+                    $service->register($student, (int) $sectionId);
 
                     return [
                         'success' => true,
@@ -73,8 +82,11 @@ class StudentEnrollmentService
                     'success' => false,
                     'message' => $e->getMessage(),
                 ];
-            } catch (Throwable) {
-                // DB chua co ban ghi/chua setup -> chuyen sang mock
+            } catch (Throwable $e) {
+                return [
+                    'success' => false,
+                    'message' => 'Không thể đăng ký: ' . $e->getMessage(),
+                ];
             }
         }
 
@@ -89,7 +101,9 @@ class StudentEnrollmentService
      */
     public function drop(?User $user, int|string $sectionId): array
     {
-        if ($user !== null && is_numeric($sectionId) && $this->enrollmentService !== null) {
+        $service = $this->resolveEnrollmentService();
+
+        if ($user !== null && is_numeric($sectionId) && $service !== null) {
             try {
                 $student = $user->student;
                 if ($student) {
@@ -99,25 +113,145 @@ class StudentEnrollmentService
                         ->first();
 
                     if ($enrollment) {
-                        $this->enrollmentService->drop($enrollment);
+                        $service->drop($enrollment);
 
                         return [
                             'success' => true,
                             'message' => 'Hủy học phần thành công.',
                         ];
                     }
+
+                    return [
+                        'success' => false,
+                        'message' => 'Lớp học phần không nằm trong danh sách đã đăng ký của bạn.',
+                    ];
                 }
             } catch (BusinessRuleException $e) {
                 return [
                     'success' => false,
                     'message' => $e->getMessage(),
                 ];
-            } catch (Throwable) {
-                // Fallback mock
+            } catch (Throwable $e) {
+                return [
+                    'success' => false,
+                    'message' => 'Không thể hủy học phần: ' . $e->getMessage(),
+                ];
             }
         }
 
         return $this->dropMockSection((string) $sectionId);
+    }
+
+    private function formatFromDb(User $user, Semester $semester): object
+    {
+        $student = $user->student;
+
+        // 1. Cac lop sinh vien da dang ky trong hoc ky nay
+        $dbEnrollments = Enrollment::with([
+            'classSection.course',
+            'classSection.lecturer.user',
+            'classSection.schedules.room',
+            'classSection.semester',
+        ])
+            ->where('student_id', $student->id)
+            ->where('status', EnrollmentStatus::Registered)
+            ->whereHas('classSection', fn ($q) => $q->where('semester_id', $semester->id))
+            ->get();
+
+        $enrolledSectionIds = $dbEnrollments->pluck('class_section_id')->all();
+
+        $enrolledSections = $dbEnrollments->map(fn ($e) => (object) [
+            'id' => (string) $e->classSection->id,
+            'code' => $e->classSection->code,
+            'course_code' => $e->classSection->course->code,
+            'course_name' => $e->classSection->course->name,
+            'credits' => $e->classSection->course->credits,
+            'lecturer_name' => $e->classSection->lecturer?->user?->name ?? 'Chưa phân công',
+            'schedule_text' => $this->formatScheduleText($e->classSection),
+            'room_name' => $this->formatRoomText($e->classSection),
+            'capacity' => $e->classSection->capacity,
+            'enrolled_count' => $e->classSection->enrolled_count,
+            'registered_at' => $e->registered_at ? $e->registered_at->format('d/m/Y H:i') : null,
+            'is_enrolled' => true,
+        ]);
+
+        // 2. Tat ca cac lop mo trong hoc ky
+        $openSections = ClassSection::with([
+            'course',
+            'lecturer.user',
+            'schedules.room',
+        ])
+            ->where('semester_id', $semester->id)
+            ->where('status', 'open')
+            ->get();
+
+        $availableSections = $openSections->map(fn ($s) => (object) [
+            'id' => (string) $s->id,
+            'code' => $s->code,
+            'course_code' => $s->course->code,
+            'course_name' => $s->course->name,
+            'credits' => $s->course->credits,
+            'lecturer_name' => $s->lecturer?->user?->name ?? 'Chưa phân công',
+            'schedule_text' => $this->formatScheduleText($s),
+            'room_name' => $this->formatRoomText($s),
+            'capacity' => $s->capacity,
+            'enrolled_count' => $s->enrolled_count,
+            'registered_at' => null,
+            'is_enrolled' => in_array($s->id, $enrolledSectionIds, true),
+        ]);
+
+        $totalCredits = $enrolledSections->sum('credits');
+
+        return (object) [
+            'semester' => (object) [
+                'name' => $semester->name,
+                'code' => $semester->code,
+                'registration_open_at' => $semester->registration_open_at?->format('d/m/Y H:i') ?? '01/09/2026 00:00',
+                'registration_close_at' => $semester->registration_close_at?->format('d/m/Y H:i') ?? '30/11/2026 23:59',
+                'drop_deadline' => $semester->drop_deadline?->format('d/m/Y') ?? '15/12/2026',
+                'min_credits' => $semester->min_credits ?: 14,
+                'max_credits' => $semester->max_credits ?: 24,
+                'is_open' => true,
+            ],
+            'enrolled_sections' => $enrolledSections,
+            'available_sections' => $availableSections,
+            'total_credits' => $totalCredits,
+            'total_courses' => $enrolledSections->count(),
+            'min_credits' => $semester->min_credits ?: 14,
+            'max_credits' => $semester->max_credits ?: 24,
+        ];
+    }
+
+    private function formatScheduleText(ClassSection $section): string
+    {
+        if ($section->schedules->isEmpty()) {
+            return 'Theo lịch phòng đào tạo';
+        }
+
+        return $section->schedules->map(function ($sch) {
+            $dayName = match ($sch->day_of_week) {
+                1 => 'Thứ 2',
+                2 => 'Thứ 3',
+                3 => 'Thứ 4',
+                4 => 'Thứ 5',
+                5 => 'Thứ 6',
+                6 => 'Thứ 7',
+                default => 'CN',
+            };
+
+            return "{$dayName} (Tiết {$sch->start_period}-{$sch->end_period})";
+        })->implode(' · ');
+    }
+
+    private function formatRoomText(ClassSection $section): string
+    {
+        if ($section->schedules->isEmpty()) {
+            return 'Phòng học chính';
+        }
+
+        $rooms = $section->schedules->pluck('room.code')->filter()->unique();
+
+        return $rooms->isEmpty() ? 'Phòng học chính' : 'Phòng ' . $rooms->implode(', ');
     }
 
     private function getMockEnrollmentData(): object
@@ -171,7 +305,6 @@ class StudentEnrollmentService
 
         $enrolledIds = session('mock_enrolled_section_ids', ['CS102.O11', 'SE201.O11']);
 
-        // 1. Kiem tra da dang ky
         if (in_array($sectionId, $enrolledIds, true)) {
             return [
                 'success' => false,
@@ -179,7 +312,6 @@ class StudentEnrollmentService
             ];
         }
 
-        // 2. Kiem tra si so
         if ($target->enrolled_count >= $target->capacity) {
             return [
                 'success' => false,
@@ -187,7 +319,6 @@ class StudentEnrollmentService
             ];
         }
 
-        // 3. Kiem tra gioi han tin chi (Max 24 TC)
         $currentCredits = $allSections->filter(fn ($s) => in_array($s->id, $enrolledIds, true))->sum('credits');
         if (($currentCredits + $target->credits) > 24) {
             return [
@@ -196,7 +327,6 @@ class StudentEnrollmentService
             ];
         }
 
-        // Them vao session
         $enrolledIds[] = $sectionId;
         session(['mock_enrolled_section_ids' => array_values(array_unique($enrolledIds))]);
 
@@ -222,7 +352,7 @@ class StudentEnrollmentService
 
         return [
             'success' => true,
-            'message' => 'Hủy đăng ký học phần thành công.',
+            'message' => 'Hủy học phần thành công.',
         ];
     }
 
@@ -338,45 +468,4 @@ class StudentEnrollmentService
             ],
         ]);
     }
-
-    private function formatFromDb(User $user, Collection $dbEnrollments): object
-    {
-        $enrolledSections = $dbEnrollments->map(fn ($e) => (object) [
-            'id' => (string) $e->classSection->id,
-            'code' => $e->classSection->code,
-            'course_code' => $e->classSection->course->code,
-            'course_name' => $e->classSection->course->name,
-            'credits' => $e->classSection->course->credits,
-            'lecturer_name' => $e->classSection->lecturer?->user?->name ?? 'Chưa phân công',
-            'schedule_text' => 'Theo lịch phòng đào tạo',
-            'room_name' => 'Phòng học chính',
-            'capacity' => $e->classSection->capacity,
-            'enrolled_count' => $e->classSection->enrolled_count,
-            'registered_at' => $e->registered_at ? $e->registered_at->format('d/m/Y H:i') : null,
-            'is_enrolled' => true,
-        ]);
-
-        $firstSection = $dbEnrollments->first()->classSection;
-        $semester = $firstSection->semester;
-
-        return (object) [
-            'semester' => (object) [
-                'name' => $semester->name,
-                'code' => $semester->code,
-                'registration_open_at' => $semester->registration_open_at?->format('d/m/Y H:i') ?? 'N/A',
-                'registration_close_at' => $semester->registration_close_at?->format('d/m/Y H:i') ?? 'N/A',
-                'drop_deadline' => $semester->drop_deadline?->format('d/m/Y') ?? 'N/A',
-                'min_credits' => $semester->min_credits ?: 14,
-                'max_credits' => $semester->max_credits ?: 24,
-                'is_open' => $semester->isRegistrationOpen(),
-            ],
-            'enrolled_sections' => $enrolledSections,
-            'available_sections' => $enrolledSections,
-            'total_credits' => $enrolledSections->sum('credits'),
-            'total_courses' => $enrolledSections->count(),
-            'min_credits' => $semester->min_credits ?: 14,
-            'max_credits' => $semester->max_credits ?: 24,
-        ];
-    }
 }
-
