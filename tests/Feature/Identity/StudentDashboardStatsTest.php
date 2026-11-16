@@ -93,3 +93,4 @@ class StudentDashboardStatsTest extends TestCase
         $response->assertSee(route('student.profile'));
     }
 }
+
