@@ -11,6 +11,7 @@ use App\Shared\Authorization\Permission;
 use App\Shared\Enums\RoleName;
 use App\Shared\Enums\UserStatus;
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\Hash;
 
 /**
  * Tai khoan mau (chuyen tu UserSeeder cu), mat khau chung: `password`.
@@ -69,12 +70,25 @@ class IdentityDemoSeeder extends Seeder
 
     private function account(string $email, string $code, string $name, RoleName $role): User
     {
+        $requiresFirstChange = ! in_array($email, [
+            'superadmin@example.com',
+            'admin@example.com',
+            'gv1@example.com',
+            'sv1@example.com',
+        ], true);
+
         $user = User::firstOrCreate(['email' => $email], [
             'code' => $code,
             'name' => $name,
             'password' => 'password',
             'status' => UserStatus::Active,
+            'must_change_password' => $requiresFirstChange,
         ]);
+
+        if ($user->must_change_password !== $requiresFirstChange
+            && (! $requiresFirstChange || Hash::check('password', $user->password))) {
+            $user->update(['must_change_password' => $requiresFirstChange]);
+        }
 
         $user->assignRole($role->value);
 
