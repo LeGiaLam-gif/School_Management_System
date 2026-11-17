@@ -17,8 +17,8 @@ class StoreDepartmentRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'code'        => ['required', 'string', 'max:20', 'unique:departments,code'],
-            'name'        => ['required', 'string', 'max:255'],
+            'code' => ['required', 'string', 'max:20', 'unique:departments,code'],
+            'name' => ['required', 'string', 'max:255'],
             'description' => ['nullable', 'string', 'max:1000'],
         ];
     }
@@ -29,8 +29,8 @@ class StoreDepartmentRequest extends FormRequest
     public function attributes(): array
     {
         return [
-            'code'        => 'mã khoa',
-            'name'        => 'tên khoa',
+            'code' => 'mã khoa',
+            'name' => 'tên khoa',
             'description' => 'mô tả',
         ];
     }
@@ -42,7 +42,7 @@ class StoreDepartmentRequest extends FormRequest
     {
         return [
             'code.required' => 'Vui lòng nhập mã khoa.',
-            'code.unique'   => 'Mã khoa này đã tồn tại trong hệ thống.',
+            'code.unique' => 'Mã khoa này đã tồn tại trong hệ thống.',
             'name.required' => 'Vui lòng nhập tên đầy đủ của khoa.',
         ];
     }

@@ -2,6 +2,7 @@
 
 namespace App\Modules\Academic\Requests\Admin;
 
+use App\Modules\Academic\Models\AdministrativeClass;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 
@@ -26,9 +27,9 @@ class UpdateAdministrativeClassRequest extends FormRequest
      */
     public function rules(): array
     {
-        /** @var \App\Modules\Academic\Models\AdministrativeClass|null $class */
+        /** @var AdministrativeClass|null $class */
         $class = $this->route('administrative_class') ?? $this->route('class');
-        $id = $class instanceof \App\Modules\Academic\Models\AdministrativeClass ? $class->id : $class;
+        $id = $class instanceof AdministrativeClass ? $class->id : $class;
 
         return [
             'code' => [

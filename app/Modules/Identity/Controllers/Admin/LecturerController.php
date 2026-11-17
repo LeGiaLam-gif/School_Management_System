@@ -68,19 +68,19 @@ class LecturerController extends Controller
         $validated = $request->validated();
 
         $account = [
-            'code'     => $validated['lecturer_code'],
-            'name'     => $validated['name'],
-            'email'    => $validated['email'],
+            'code' => $validated['lecturer_code'],
+            'name' => $validated['name'],
+            'email' => $validated['email'],
             'password' => Hash::make($validated['password']),
         ];
 
         $profile = [
-            'lecturer_code'  => $validated['lecturer_code'],
-            'department_id'  => $validated['department_id'],
+            'lecturer_code' => $validated['lecturer_code'],
+            'department_id' => $validated['department_id'],
             'academic_title' => $validated['academic_title'] ?? null,
-            'phone'          => $validated['phone'] ?? null,
-            'office'         => $validated['office'] ?? null,
-            'address'        => $validated['address'] ?? null,
+            'phone' => $validated['phone'] ?? null,
+            'office' => $validated['office'] ?? null,
+            'address' => $validated['address'] ?? null,
         ];
 
         $user = $userService->createLecturer($account, $profile);
@@ -117,9 +117,9 @@ class LecturerController extends Controller
 
         DB::transaction(function () use ($validated, $lecturer) {
             $userPayload = [
-                'name'  => $validated['name'],
+                'name' => $validated['name'],
                 'email' => $validated['email'],
-                'code'  => $validated['lecturer_code'],
+                'code' => $validated['lecturer_code'],
             ];
 
             if (! empty($validated['password'])) {
@@ -133,12 +133,12 @@ class LecturerController extends Controller
             $lecturer->user->update($userPayload);
 
             $lecturer->update([
-                'lecturer_code'  => $validated['lecturer_code'],
-                'department_id'  => $validated['department_id'],
+                'lecturer_code' => $validated['lecturer_code'],
+                'department_id' => $validated['department_id'],
                 'academic_title' => $validated['academic_title'] ?? null,
-                'phone'          => $validated['phone'] ?? null,
-                'office'         => $validated['office'] ?? null,
-                'address'        => $validated['address'] ?? null,
+                'phone' => $validated['phone'] ?? null,
+                'office' => $validated['office'] ?? null,
+                'address' => $validated['address'] ?? null,
             ]);
         });
 

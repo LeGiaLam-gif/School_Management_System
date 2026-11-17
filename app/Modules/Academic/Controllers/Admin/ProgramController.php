@@ -2,10 +2,12 @@
 
 namespace App\Modules\Academic\Controllers\Admin;
 
+use App\Modules\Academic\Models\AdministrativeClass;
 use App\Modules\Academic\Models\Department;
 use App\Modules\Academic\Models\Program;
 use App\Modules\Academic\Requests\Admin\StoreProgramRequest;
 use App\Modules\Academic\Requests\Admin\UpdateProgramRequest;
+use App\Modules\Identity\Models\Student;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
@@ -29,14 +31,14 @@ class ProgramController extends Controller
             $query->where('department_id', $deptId);
         }
 
-        $programs    = $query->orderBy('code')->paginate(15)->withQueryString();
+        $programs = $query->orderBy('code')->paginate(15)->withQueryString();
         $departments = Department::orderBy('name')->get();
 
         $stats = [
             'total_programs' => Program::count(),
-            'total_classes'  => \App\Modules\Academic\Models\AdministrativeClass::count(),
-            'total_students' => \App\Modules\Identity\Models\Student::count(),
-            'avg_credits'    => round((float) Program::avg('total_credits_required'), 0),
+            'total_classes' => AdministrativeClass::count(),
+            'total_students' => Student::count(),
+            'avg_credits' => round((float) Program::avg('total_credits_required'), 0),
         ];
 
         return view('academic::admin.programs.index', compact('programs', 'departments', 'stats'));

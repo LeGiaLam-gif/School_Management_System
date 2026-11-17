@@ -23,8 +23,8 @@ class UpdateDepartmentRequest extends FormRequest
         $deptId = $department instanceof Department ? $department->id : $department;
 
         return [
-            'code'        => ['required', 'string', 'max:20', Rule::unique('departments', 'code')->ignore($deptId)],
-            'name'        => ['required', 'string', 'max:255'],
+            'code' => ['required', 'string', 'max:20', Rule::unique('departments', 'code')->ignore($deptId)],
+            'name' => ['required', 'string', 'max:255'],
             'description' => ['nullable', 'string', 'max:1000'],
         ];
     }
@@ -35,8 +35,8 @@ class UpdateDepartmentRequest extends FormRequest
     public function attributes(): array
     {
         return [
-            'code'        => 'mã khoa',
-            'name'        => 'tên khoa',
+            'code' => 'mã khoa',
+            'name' => 'tên khoa',
             'description' => 'mô tả',
         ];
     }
@@ -48,7 +48,7 @@ class UpdateDepartmentRequest extends FormRequest
     {
         return [
             'code.required' => 'Vui lòng nhập mã khoa.',
-            'code.unique'   => 'Mã khoa này đã tồn tại trong hệ thống.',
+            'code.unique' => 'Mã khoa này đã tồn tại trong hệ thống.',
             'name.required' => 'Vui lòng nhập tên đầy đủ của khoa.',
         ];
     }

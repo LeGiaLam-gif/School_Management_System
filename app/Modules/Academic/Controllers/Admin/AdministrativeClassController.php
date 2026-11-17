@@ -41,15 +41,15 @@ class AdministrativeClassController extends Controller
             ->withQueryString();
 
         $programs = Program::orderBy('name')->get();
-        $years    = AdministrativeClass::select('academic_year')
+        $years = AdministrativeClass::select('academic_year')
             ->distinct()
             ->orderBy('academic_year', 'desc')
             ->pluck('academic_year');
 
         $stats = [
-            'total_classes'  => AdministrativeClass::count(),
+            'total_classes' => AdministrativeClass::count(),
             'total_students' => Student::count(),
-            'with_advisor'   => AdministrativeClass::whereNotNull('advisor_lecturer_id')->count(),
+            'with_advisor' => AdministrativeClass::whereNotNull('advisor_lecturer_id')->count(),
             'total_programs' => Program::count(),
         ];
 
@@ -88,7 +88,7 @@ class AdministrativeClassController extends Controller
 
     public function edit(AdministrativeClass $administrativeClass): View
     {
-        $programs  = Program::with('department')->orderBy('name')->get();
+        $programs = Program::with('department')->orderBy('name')->get();
         $lecturers = Lecturer::with(['user', 'department'])->get();
 
         return view('academic::admin.administrative-classes.edit', compact('administrativeClass', 'programs', 'lecturers'));

@@ -17,11 +17,11 @@ class StoreProgramRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'department_id'          => ['required', 'integer', 'exists:departments,id'],
-            'code'                   => ['required', 'string', 'max:20', 'unique:programs,code'],
-            'name'                   => ['required', 'string', 'max:255'],
+            'department_id' => ['required', 'integer', 'exists:departments,id'],
+            'code' => ['required', 'string', 'max:20', 'unique:programs,code'],
+            'name' => ['required', 'string', 'max:255'],
             'total_credits_required' => ['required', 'integer', 'min:50', 'max:250'],
-            'duration_years'         => ['required', 'numeric', 'min:1', 'max:8'],
+            'duration_years' => ['required', 'numeric', 'min:1', 'max:8'],
         ];
     }
 
@@ -31,11 +31,11 @@ class StoreProgramRequest extends FormRequest
     public function attributes(): array
     {
         return [
-            'department_id'          => 'khoa trực thuộc',
-            'code'                   => 'mã ngành',
-            'name'                   => 'tên ngành đào tạo',
+            'department_id' => 'khoa trực thuộc',
+            'code' => 'mã ngành',
+            'name' => 'tên ngành đào tạo',
             'total_credits_required' => 'tổng số tín chỉ',
-            'duration_years'         => 'thời gian đào tạo chuẩn',
+            'duration_years' => 'thời gian đào tạo chuẩn',
         ];
     }
 
@@ -46,10 +46,10 @@ class StoreProgramRequest extends FormRequest
     {
         return [
             'department_id.required' => 'Vui lòng chọn khoa trực thuộc.',
-            'department_id.exists'   => 'Khoa đã chọn không hợp lệ.',
-            'code.required'          => 'Vui lòng nhập mã ngành.',
-            'code.unique'            => 'Mã ngành này đã tồn tại trong hệ thống.',
-            'name.required'          => 'Vui lòng nhập tên ngành đào tạo.',
+            'department_id.exists' => 'Khoa đã chọn không hợp lệ.',
+            'code.required' => 'Vui lòng nhập mã ngành.',
+            'code.unique' => 'Mã ngành này đã tồn tại trong hệ thống.',
+            'name.required' => 'Vui lòng nhập tên ngành đào tạo.',
         ];
     }
 

@@ -2,9 +2,12 @@
 
 namespace App\Modules\Academic\Controllers\Admin;
 
+use App\Modules\Academic\Models\Course;
 use App\Modules\Academic\Models\Department;
+use App\Modules\Academic\Models\Program;
 use App\Modules\Academic\Requests\Admin\StoreDepartmentRequest;
 use App\Modules\Academic\Requests\Admin\UpdateDepartmentRequest;
+use App\Modules\Identity\Models\Lecturer;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
@@ -28,9 +31,9 @@ class DepartmentController extends Controller
 
         $stats = [
             'total_departments' => Department::count(),
-            'total_programs'    => \App\Modules\Academic\Models\Program::count(),
-            'total_courses'     => \App\Modules\Academic\Models\Course::count(),
-            'total_lecturers'   => \App\Modules\Identity\Models\Lecturer::count(),
+            'total_programs' => Program::count(),
+            'total_courses' => Course::count(),
+            'total_lecturers' => Lecturer::count(),
         ];
 
         return view('academic::admin.departments.index', compact('departments', 'stats'));
