@@ -1,5 +1,6 @@
 <?php
 
+use App\Modules\Identity\Controllers\Admin\LecturerController;
 use App\Modules\Identity\Controllers\AuthController;
 use App\Modules\Identity\Controllers\DashboardController;
 use App\Modules\Identity\Controllers\PasswordResetController;
@@ -33,8 +34,8 @@ Route::middleware(['auth', 'active'])->group(function () {
 
     Route::middleware('role:admin')->prefix('admin')->name('admin.')->group(function () {
         Route::get('/users', [WorkspaceController::class, 'admin'])->defaults('page', 'users')->name('users.index');
-        Route::get('/departments', [WorkspaceController::class, 'admin'])->defaults('page', 'departments')->name('departments.index');
-        Route::get('/programs', [WorkspaceController::class, 'admin'])->defaults('page', 'programs')->name('programs.index');
+        Route::post('/lecturers/{lecturer}/toggle-status', [LecturerController::class, 'toggleStatus'])->name('lecturers.toggle-status');
+        Route::resource('lecturers', LecturerController::class);
         Route::get('/courses', [WorkspaceController::class, 'admin'])->defaults('page', 'courses')->name('courses.index');
         Route::get('/semesters', [WorkspaceController::class, 'admin'])->defaults('page', 'semesters')->name('semesters.index');
         Route::get('/class-sections', [WorkspaceController::class, 'admin'])->defaults('page', 'class-sections')->name('class-sections.index');

@@ -9,8 +9,10 @@
     $navigation = match (true) {
         $user->isAdmin() => [
             ['route' => 'admin.users.index', 'active' => 'admin.users.*', 'label' => 'Người dùng', 'icon' => 'users'],
-            ['route' => 'admin.departments.index', 'active' => 'admin.departments.*', 'label' => 'Khoa', 'icon' => 'building'],
-            ['route' => 'admin.programs.index', 'active' => 'admin.programs.*', 'label' => 'Chương trình đào tạo', 'icon' => 'organization'],
+            ['route' => 'admin.lecturers.index', 'active' => 'admin.lecturers.*', 'label' => 'Giảng viên', 'icon' => 'lecturer'],
+            ['route' => 'admin.departments.index', 'active' => 'admin.departments.*', 'label' => 'Khoa chuyên môn', 'icon' => 'building'],
+            ['route' => 'admin.programs.index', 'active' => 'admin.programs.*', 'label' => 'Ngành đào tạo', 'icon' => 'organization'],
+            ['route' => 'admin.administrative-classes.index', 'active' => 'admin.administrative-classes.*', 'label' => 'Lớp hành chính', 'icon' => 'class'],
             ['route' => 'admin.courses.index', 'active' => 'admin.courses.*', 'label' => 'Học phần', 'icon' => 'book'],
             ['route' => 'admin.semesters.index', 'active' => 'admin.semesters.*', 'label' => 'Học kỳ', 'icon' => 'calendar'],
             ['route' => 'admin.class-sections.index', 'active' => 'admin.class-sections.*', 'label' => 'Lớp học phần', 'icon' => 'layers'],
@@ -98,6 +100,17 @@
                         @case('users')
                             <circle cx="9" cy="8" r="3" />
                             <path d="M3 20a6 6 0 0 1 12 0M16 5a3 3 0 0 1 0 6M18 14a5 5 0 0 1 3 4v2" />
+                            @break
+                        @case('lecturer')
+                            <circle cx="12" cy="8" r="4" />
+                            <path d="M6 21v-2a4 4 0 0 1 4-4h4a4 4 0 0 1 4 4v2" />
+                            <path d="M16 3.13a4 4 0 0 1 0 7.75" />
+                            @break
+                        @case('class')
+                            <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
+                            <circle cx="9" cy="7" r="4" />
+                            <path d="M23 21v-2a4 4 0 0 0-3-3.87" />
+                            <path d="M16 3.13a4 4 0 0 1 0 7.75" />
                             @break
                         @case('building')
                             <path d="M4 21V4h11v17M15 9h5v12M2 21h20M8 8h3M8 12h3M8 16h3M17 13h1M17 17h1" />
