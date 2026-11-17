@@ -22,6 +22,7 @@ Route::post('/logout', [AuthController::class, 'logout'])->middleware('auth')->n
 Route::middleware(['auth', 'active'])->group(function () {
     Route::get('/', [DashboardController::class, 'home'])->name('home');
     Route::get('/profile', [ProfileController::class, 'show'])->name('profile.show');
+    Route::get('/first-password-change', [ProfileController::class, 'showFirstPasswordChange'])->name('password.first.edit');
     Route::put('/profile/contact', [ProfileController::class, 'updateContact'])->name('profile.contact');
     Route::put('/profile/password', [ProfileController::class, 'changePassword'])->name('profile.password');
 

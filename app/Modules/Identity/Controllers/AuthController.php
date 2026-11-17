@@ -23,14 +23,18 @@ class AuthController extends Controller
 
     public function login(LoginRequest $request): RedirectResponse
     {
-        $this->auth->attempt(
-            $request->string('login')->toString(),
-            $request->string('password')->toString(),
-            $request->boolean('remember'),
-            (string) $request->ip(),
+        $user = $this->auth->attempt(
+        $request->string('login')->toString(),
+        $request->string('password')->toString(),
+        $request->boolean('remember'),
+        (string) $request->ip(),
         );
 
         $request->session()->regenerate();
+
+        if ($user->must_change_password) {
+            return redirect()->route('password.first.edit');
+        }
 
         return redirect()->intended(route('home'));
     }

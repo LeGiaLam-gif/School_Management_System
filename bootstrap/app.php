@@ -1,5 +1,6 @@
 <?php
 
+use App\Modules\Identity\Middleware\EnsurePasswordHasBeenChanged;
 use App\Modules\Identity\Middleware\EnsureUserIsActive;
 use App\Shared\Exceptions\BusinessRuleException;
 use Illuminate\Foundation\Application;
@@ -18,6 +19,9 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware): void {
+        $middleware->web(append: [EnsurePasswordHasBeenChanged::class]);
+        $middleware->trimStrings(except: ['new_password', 'new_password_confirmation']);
+        
         $middleware->alias([
             // Lop kiem tra 1 (muc 5.8): role / permission o tang route.
             'role' => RoleMiddleware::class,
@@ -28,6 +32,7 @@ return Application::configure(basePath: dirname(__DIR__))
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
+        $exceptions->dontFlash(['new_password', 'new_password_confirmation']);
         // Vi pham quy tac nghiep vu (BR-xx) -> thong bao than thien, khong 500.
         $exceptions->render(function (BusinessRuleException $e, Request $request) {
             if ($request->expectsJson()) {
