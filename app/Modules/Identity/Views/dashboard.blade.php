@@ -6,11 +6,9 @@
     @php($user = auth()->user())
     @php($adminActions = [
         ['route' => 'admin.users.index', 'title' => 'Quản lý người dùng', 'icon' => 'users', 'color' => 'teal'],
-        ['route' => 'admin.lecturers.index', 'title' => 'Quản lý giảng viên', 'icon' => 'users', 'color' => 'blue'],
         ['route' => 'admin.departments.index', 'title' => 'Quản lý khoa', 'icon' => 'building', 'color' => 'orange'],
-        ['route' => 'admin.programs.index', 'title' => 'Ngành & Chương trình đào tạo', 'icon' => 'organization', 'color' => 'violet'],
-        ['route' => 'admin.administrative-classes.index', 'title' => 'Lớp hành chính', 'icon' => 'users', 'color' => 'green'],
-        ['route' => 'admin.courses.index', 'title' => 'Quản lý học phần', 'icon' => 'book', 'color' => 'teal'],
+        ['route' => 'admin.programs.index', 'title' => 'Chương trình đào tạo', 'icon' => 'organization', 'color' => 'violet'],
+        ['route' => 'admin.courses.index', 'title' => 'Quản lý học phần', 'icon' => 'book', 'color' => 'green'],
         ['route' => 'admin.semesters.index', 'title' => 'Quản lý học kỳ', 'icon' => 'calendar', 'color' => 'orange'],
         ['route' => 'admin.class-sections.index', 'title' => 'Lớp học phần', 'icon' => 'layers', 'color' => 'teal'],
         ['route' => 'admin.reports.index', 'title' => 'Thống kê & báo cáo', 'icon' => 'chart', 'color' => 'violet'],

@@ -8,11 +8,17 @@
     {{-- Banner Header theo nhận diện HTA --}}
     <div class="hta-page-header d-flex justify-content-between align-items-center flex-wrap gap-3">
         <div>
-            <span class="hta-eyebrow">HEXA TECH ACADEMY · CẤU TRÚC ĐÀO TẠO</span>
-            <h1 class="hta-page-title">Quản lý Khoa & Đơn vị đào tạo</h1>
+            <span class="hta-eyebrow">HEXA TECH ACADEMY · CẤU TRÚC ĐÀO TẠO · <span class="badge bg-white text-primary fw-semibold px-2 py-1">Giao diện cơ bản đã sẵn sàng</span></span>
+            <h1 class="hta-page-title">Quản lý khoa</h1>
             <p class="hta-page-subtitle">Thiết lập cơ cấu các khoa chuyên môn, quản lý ngành học và phân bổ giảng viên trực thuộc.</p>
         </div>
-        <div>
+        <div class="d-flex gap-2 flex-wrap">
+            <a href="{{ route('admin.lecturers.index') }}" class="hta-btn-outline text-white border-white">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="12" cy="8" r="4"/><path d="M6 21v-2a4 4 0 0 1 4-4h4a4 4 0 0 1 4 4v2"/>
+                </svg>
+                Quản lý giảng viên
+            </a>
             <a href="{{ route('admin.departments.create') }}" class="hta-btn-primary">
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true">
                     <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>

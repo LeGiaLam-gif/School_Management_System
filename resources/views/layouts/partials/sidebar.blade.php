@@ -9,10 +9,8 @@
     $navigation = match (true) {
         $user->isAdmin() => [
             ['route' => 'admin.users.index', 'active' => 'admin.users.*', 'label' => 'Người dùng', 'icon' => 'users'],
-            ['route' => 'admin.lecturers.index', 'active' => 'admin.lecturers.*', 'label' => 'Giảng viên', 'icon' => 'lecturer'],
-            ['route' => 'admin.departments.index', 'active' => 'admin.departments.*', 'label' => 'Khoa chuyên môn', 'icon' => 'building'],
-            ['route' => 'admin.programs.index', 'active' => 'admin.programs.*', 'label' => 'Ngành đào tạo', 'icon' => 'organization'],
-            ['route' => 'admin.administrative-classes.index', 'active' => 'admin.administrative-classes.*', 'label' => 'Lớp hành chính', 'icon' => 'class'],
+            ['route' => 'admin.departments.index', 'active' => 'admin.departments.*', 'label' => 'Khoa', 'icon' => 'building'],
+            ['route' => 'admin.programs.index', 'active' => 'admin.programs.*', 'label' => 'Chương trình đào tạo', 'icon' => 'organization'],
             ['route' => 'admin.courses.index', 'active' => 'admin.courses.*', 'label' => 'Học phần', 'icon' => 'book'],
             ['route' => 'admin.semesters.index', 'active' => 'admin.semesters.*', 'label' => 'Học kỳ', 'icon' => 'calendar'],
             ['route' => 'admin.class-sections.index', 'active' => 'admin.class-sections.*', 'label' => 'Lớp học phần', 'icon' => 'layers'],
