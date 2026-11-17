@@ -164,12 +164,13 @@
     .input-pill-wrapper {
         position: relative;
         margin-bottom: 15px;
+        --input-height: 44px;
     }
 
     .input-icon {
         position: absolute;
         left: 18px;
-        top: 50%;
+        top: calc(var(--input-height) / 2);
         transform: translateY(-50%);
         color: #273873;
         display: flex;
@@ -435,43 +436,32 @@
 
     /* Welcome Hero Text */
     .art-content {
-        position: relative;
-        z-index: 3;
-        align-self: flex-end;
-        text-align: right;
-        margin-top: auto;
-        margin-bottom: 25px;
-        max-width: 320px;
+    position: relative;
+    z-index: 3;
+    align-self: flex-end;
+    width: fit-content;
+    max-width: 100%;
+    margin-top: auto;
+    text-align: left;
     }
 
     .art-content h1 {
-        font-size: 3.2rem;
+        margin: 0 0 12px;
+        color: #fff;
+        font-size: clamp(1.6rem, 3vw, 2.5rem);
         font-weight: 800;
-        margin: 0 0 10px;
-        letter-spacing: -0.8px;
-        color: #ffffff;
-        text-shadow: 0 4px 20px rgba(0, 0, 0, 0.25);
+        text-wrap: balance;
     }
 
     .art-content p {
-        font-size: 0.72rem;
-        line-height: 1.5;
-        color: rgba(255, 255, 255, 0.78);
-        margin: 0 0 16px;
+        margin: 0;
+        color: #f3f4f8;
+        font-size: 0.9rem;
+        line-height: 1.6;
     }
 
-    .signup-invite {
-        font-size: 0.72rem;
-        color: rgba(255, 255, 255, 0.85);
-        font-weight: 500;
-    }
-
-    .signup-invite a {
-        color: #ffffff;
-        font-weight: 800;
-        text-decoration: none;
-        border-bottom: 1px solid rgba(255, 255, 255, 0.6);
-        padding-bottom: 1px;
+    .art-content p + p {
+        margin-top: 8px;
     }
 
     /* Mobile Responsive */
@@ -493,14 +483,22 @@
         }
 
         .art-content {
-            align-self: flex-start;
+            width: 100%;
+            margin-top: 16px;
             text-align: left;
-            margin-bottom: 10px;
         }
 
         .art-content h1 {
-            font-size: 2.2rem;
+            font-size: clamp(1.25rem, 5vw, 1.65rem);
+            line-height: 1.2;
+            margin-bottom: 8px;
         }
+
+        .art-content p {
+            font-size: 0.85rem;
+            line-height: 1.5;
+            text-wrap: pretty;
+
     }
 </style>
 
@@ -627,7 +625,7 @@
                     <input id="login" name="login" type="text"
                            value="{{ old('login') }}"
                            class="pill-input @error('login') is-invalid @enderror"
-                           placeholder="Nhập mã sinh viên"
+                           placeholder="Nhập email hoặc mã tài khoản"
                            autocomplete="username" autofocus required>
                     @error('login')
                         <div class="text-danger small mt-1 ps-3" style="font-size: 0.75rem;">{{ $message }}</div>
@@ -693,10 +691,9 @@
 
         <!-- Bottom Right Welcome Hero -->
         <div class="art-content">
-            <h1>Welcome.</h1>
-            <p>Hệ thống Quản lý Đào tạo Hexa Tech Academy. Nền tảng học tập số thông minh và đồng bộ.</p>
-            <div class="signup-invite">
-                Not a member? <a href="#">Sign up now</a>
+            <h1>Cổng thông tin đào tạo</h1>
+            <p>Dành cho sinh viên, giảng viên và quản trị viên của Hexa Tech Academy</p>
+            <p>Sử dụng tài khoản do nhà trường cấp để đăng nhập</p>
             </div>
         </div>
     </div>
