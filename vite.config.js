@@ -10,6 +10,10 @@ export default defineConfig({
     ],
     server: {
         host: '0.0.0.0',
+        hmr: {
+            host: 'localhost',
+        },
+        cors: true,
         watch: {
             ignored: ['**/storage/framework/views/**'],
         },
