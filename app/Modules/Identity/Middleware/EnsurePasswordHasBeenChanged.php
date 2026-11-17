@@ -10,7 +10,6 @@ use Symfony\Component\HttpFoundation\Response;
 /**
  * Đổi mật khẩu khi đăng nhập lần đầu
  */
-
 class EnsurePasswordHasBeenChanged
 {
     public function handle(Request $request, Closure $next): Response

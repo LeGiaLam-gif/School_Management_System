@@ -70,12 +70,12 @@ class IdentityDemoSeeder extends Seeder
 
     private function account(string $email, string $code, string $name, RoleName $role): User
     {
-        $requiresFirstChange = ! in_array($email, [ 
+        $requiresFirstChange = ! in_array($email, [
             'superadmin@example.com',
             'admin@example.com',
             'gv1@example.com',
             'sv1@example.com',
-            ], true);
+        ], true);
 
         $user = User::firstOrCreate(['email' => $email], [
             'code' => $code,

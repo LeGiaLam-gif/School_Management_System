@@ -24,10 +24,10 @@ class AuthController extends Controller
     public function login(LoginRequest $request): RedirectResponse
     {
         $user = $this->auth->attempt(
-        $request->string('login')->toString(),
-        $request->string('password')->toString(),
-        $request->boolean('remember'),
-        (string) $request->ip(),
+            $request->string('login')->toString(),
+            $request->string('password')->toString(),
+            $request->boolean('remember'),
+            (string) $request->ip(),
         );
 
         $request->session()->regenerate();

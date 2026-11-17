@@ -21,7 +21,7 @@ return Application::configure(basePath: dirname(__DIR__))
     ->withMiddleware(function (Middleware $middleware): void {
         $middleware->web(append: [EnsurePasswordHasBeenChanged::class]);
         $middleware->trimStrings(except: ['new_password', 'new_password_confirmation']);
-        
+
         $middleware->alias([
             // Lop kiem tra 1 (muc 5.8): role / permission o tang route.
             'role' => RoleMiddleware::class,
