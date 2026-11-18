@@ -9,6 +9,7 @@ use App\Modules\Identity\Models\User;
 use App\Shared\Enums\Gender;
 use App\Shared\Enums\RoleName;
 use App\Shared\Enums\StudentStatus;
+use App\Shared\Enums\UserStatus;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\CreatesRoles;
 use Tests\TestCase;
@@ -23,6 +24,7 @@ class AdminStudentManagementTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
+        $this->withoutMiddleware(\Illuminate\Foundation\Http\Middleware\ValidateCsrfToken::class);
         $this->seedRoles();
 
         $this->admin = User::factory()->withRole(RoleName::Admin)->create();
@@ -169,7 +171,7 @@ class AdminStudentManagementTest extends TestCase
         $this->assertSame('Trần Quang Huy (Cập nhật)', $student->user->name);
         $this->assertSame('huy.updated@student.hta.edu.vn', $student->user->email);
         $this->assertSame(StudentStatus::Suspended, $student->status);
-        $this->assertSame('locked', $student->user->status);
+        $this->assertSame(UserStatus::Locked, $student->user->status);
     }
 
     public function test_admin_can_toggle_student_account_status(): void
@@ -209,7 +211,7 @@ class AdminStudentManagementTest extends TestCase
 
         $response->assertRedirect(route('admin.students.index'));
         $this->assertDatabaseMissing('students', ['id' => $student->id]);
-        $this->assertDatabaseMissing('users', ['id' => $userId]);
+        $this->assertSoftDeleted('users', ['id' => $userId]);
     }
 
     public function test_non_admin_cannot_access_student_management(): void
