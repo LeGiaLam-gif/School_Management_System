@@ -2,7 +2,6 @@
 
 namespace App\Modules\Attendance\Services;
 
-use App\Modules\Attendance\Models\AttendanceRecord;
 use App\Modules\Attendance\Support\AbsenceRateCalculator;
 use App\Modules\Enrollment\Models\Enrollment;
 use App\Modules\Identity\Models\User;
@@ -239,4 +238,3 @@ class StudentAttendanceService
         ];
     }
 }
-

@@ -93,4 +93,3 @@ class StudentCurriculumTest extends TestCase
         $response->assertSessionHas('error');
     }
 }
-

@@ -83,4 +83,3 @@ class StudentEnrollmentUITest extends TestCase
         $response->assertSessionHas('success');
     }
 }
-

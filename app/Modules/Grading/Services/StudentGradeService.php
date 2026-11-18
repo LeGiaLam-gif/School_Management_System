@@ -2,7 +2,6 @@
 
 namespace App\Modules\Grading\Services;
 
-use App\Modules\Academic\Models\Semester;
 use App\Modules\Grading\Models\FinalResult;
 use App\Modules\Grading\Queries\StudentGpaQuery;
 use App\Modules\Identity\Models\User;
@@ -402,4 +401,3 @@ class StudentGradeService
         };
     }
 }
-

@@ -68,4 +68,3 @@ class StudentEnrollmentController extends Controller
         return back()->with('error', $result['message']);
     }
 }
-

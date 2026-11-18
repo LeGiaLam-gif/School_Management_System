@@ -48,12 +48,12 @@ class StudentAnnouncementService
                         'title' => $a->title,
                         'body' => $a->body,
                         'scope' => $a->scope->value,
-                        'scope_label' => $a->scope === AnnouncementScope::All ? 'Toàn trường' : ('Lớp ' . ($a->classSection?->code ?? '')),
+                        'scope_label' => $a->scope === AnnouncementScope::All ? 'Toàn trường' : ('Lớp '.($a->classSection?->code ?? '')),
                         'scope_badge' => $a->scope === AnnouncementScope::All ? 'bg-primary' : 'bg-info text-dark',
                         'author_name' => $a->author?->name ?? 'Phòng Đào tạo',
                         'is_pinned' => $a->is_pinned,
                         'published_at' => $a->published_at ? $a->published_at->format('d/m/Y H:i') : 'N/A',
-                        'summary' => mb_substr(strip_tags($a->body), 0, 160) . '...',
+                        'summary' => mb_substr(strip_tags($a->body), 0, 160).'...',
                     ]);
                 }
             } catch (Throwable) {
@@ -78,7 +78,7 @@ class StudentAnnouncementService
                         'title' => $a->title,
                         'body' => $a->body,
                         'scope' => $a->scope->value,
-                        'scope_label' => $a->scope === AnnouncementScope::All ? 'Toàn trường' : ('Lớp ' . ($a->classSection?->code ?? '')),
+                        'scope_label' => $a->scope === AnnouncementScope::All ? 'Toàn trường' : ('Lớp '.($a->classSection?->code ?? '')),
                         'scope_badge' => $a->scope === AnnouncementScope::All ? 'bg-primary' : 'bg-info text-dark',
                         'author_name' => $a->author?->name ?? 'Phòng Đào tạo',
                         'is_pinned' => $a->is_pinned,
@@ -174,4 +174,3 @@ class StudentAnnouncementService
         return $all->values();
     }
 }
-

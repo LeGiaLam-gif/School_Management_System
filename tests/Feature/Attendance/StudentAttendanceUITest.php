@@ -44,4 +44,3 @@ class StudentAttendanceUITest extends TestCase
         $response->assertSee('Đủ điều kiện dự thi');
     }
 }
-

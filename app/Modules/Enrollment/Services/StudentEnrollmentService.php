@@ -85,7 +85,7 @@ class StudentEnrollmentService
             } catch (Throwable $e) {
                 return [
                     'success' => false,
-                    'message' => 'Không thể đăng ký: ' . $e->getMessage(),
+                    'message' => 'Không thể đăng ký: '.$e->getMessage(),
                 ];
             }
         }
@@ -134,7 +134,7 @@ class StudentEnrollmentService
             } catch (Throwable $e) {
                 return [
                     'success' => false,
-                    'message' => 'Không thể hủy học phần: ' . $e->getMessage(),
+                    'message' => 'Không thể hủy học phần: '.$e->getMessage(),
                 ];
             }
         }
@@ -251,7 +251,7 @@ class StudentEnrollmentService
 
         $rooms = $section->schedules->pluck('room.code')->filter()->unique();
 
-        return $rooms->isEmpty() ? 'Phòng học chính' : 'Phòng ' . $rooms->implode(', ');
+        return $rooms->isEmpty() ? 'Phòng học chính' : 'Phòng '.$rooms->implode(', ');
     }
 
     private function getMockEnrollmentData(): object
@@ -323,7 +323,7 @@ class StudentEnrollmentService
         if (($currentCredits + $target->credits) > 24) {
             return [
                 'success' => false,
-                'message' => "Không thể đăng ký: Tổng số tín chỉ sau khi đăng ký (".($currentCredits + $target->credits)." TC) vượt quá số tín chỉ tối đa cho phép (24 TC) (BR-03).",
+                'message' => 'Không thể đăng ký: Tổng số tín chỉ sau khi đăng ký ('.($currentCredits + $target->credits).' TC) vượt quá số tín chỉ tối đa cho phép (24 TC) (BR-03).',
             ];
         }
 

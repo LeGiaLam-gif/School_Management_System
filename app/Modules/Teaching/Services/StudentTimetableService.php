@@ -74,7 +74,7 @@ class StudentTimetableService
 
         return (object) [
             'week_offset' => $weekOffset,
-            'week_label' => 'Tuần từ ' . $startOfWeek->format('d/m/Y') . ' đến ' . $endOfWeek->format('d/m/Y'),
+            'week_label' => 'Tuần từ '.$startOfWeek->format('d/m/Y').' đến '.$endOfWeek->format('d/m/Y'),
             'start_of_week' => $startOfWeek->format('d/m/Y'),
             'end_of_week' => $endOfWeek->format('d/m/Y'),
             'days' => $days,
@@ -339,4 +339,3 @@ class StudentTimetableService
         return $colors[$courseCode] ?? 'primary';
     }
 }
-

@@ -63,4 +63,3 @@ class StudentAnnouncementUITest extends TestCase
         $response->assertSessionHas('error');
     }
 }
-

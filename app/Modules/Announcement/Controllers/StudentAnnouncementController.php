@@ -49,4 +49,3 @@ class StudentAnnouncementController extends Controller
         ]);
     }
 }
-
