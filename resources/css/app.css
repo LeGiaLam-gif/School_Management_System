@@ -1314,3 +1314,354 @@ body.sms-body {
         padding: 13px;
     }
 }
+
+
+/* ==========================================================================
+   HTA THEME SYSTEM (Đồng bộ font chữ & màu sắc nhận diện Trang Đăng Nhập)
+   Màu chủ đạo: Deep Navy #1b2559, Accent Indigo #273873, Gold Accent #fedba2
+   Font chữ: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif
+   ========================================================================== */
+
+:root {
+    --hta-navy: #1b2559;
+    --hta-navy-accent: #273873;
+    --hta-navy-dark: #14204d;
+    --hta-blue-vibrant: #2b619e;
+    --hta-gold-light: #fedba2;
+    --hta-gold-amber: #f59e0b;
+    --hta-text-muted: #636b8a;
+    --hta-border: #e2e8f0;
+    --hta-card-bg: #ffffff;
+    --hta-surface: #f8fafc;
+}
+
+/* Page Header */
+.hta-page-header {
+    background: linear-gradient(135deg, #1b2559 0%, #273873 70%, #2b619e 100%);
+    border-radius: 24px;
+    padding: 28px 32px;
+    color: #ffffff;
+    margin-bottom: 24px;
+    box-shadow: 0 14px 34px rgba(27, 37, 89, 0.18);
+    position: relative;
+    overflow: hidden;
+}
+
+.hta-page-header::after {
+    content: "";
+    position: absolute;
+    width: 320px;
+    height: 320px;
+    right: -80px;
+    top: -80px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(254, 219, 162, 0.25) 0%, rgba(254, 219, 162, 0.05) 50%, transparent 70%);
+    filter: blur(25px);
+    pointer-events: none;
+}
+
+.hta-page-title {
+    font-size: 1.55rem;
+    font-weight: 800;
+    letter-spacing: -0.3px;
+    color: #ffffff;
+    margin-bottom: 4px;
+}
+
+.hta-page-subtitle {
+    font-size: 0.85rem;
+    color: rgba(255, 255, 255, 0.82);
+    margin-bottom: 0;
+}
+
+.hta-eyebrow {
+    font-size: 0.72rem;
+    font-weight: 750;
+    text-transform: uppercase;
+    letter-spacing: 1.2px;
+    color: var(--hta-gold-light);
+    display: inline-block;
+    margin-bottom: 6px;
+}
+
+/* Card Styling */
+.hta-card {
+    background: #ffffff;
+    border: 1px solid rgba(39, 56, 115, 0.08);
+    border-radius: 20px;
+    box-shadow: 0 8px 24px rgba(27, 37, 89, 0.05), 0 2px 6px rgba(0, 0, 0, 0.02);
+    overflow: hidden;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.hta-card-header {
+    background: #ffffff;
+    border-bottom: 1px solid #edf2f7;
+    padding: 18px 24px;
+    font-weight: 800;
+    color: var(--hta-navy);
+    font-size: 1.05rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+/* Stat Card */
+.hta-stat-card {
+    background: #ffffff;
+    border-radius: 20px;
+    border: 1px solid rgba(39, 56, 115, 0.08);
+    padding: 22px;
+    box-shadow: 0 6px 20px rgba(27, 37, 89, 0.04);
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    height: 100%;
+}
+
+.hta-stat-icon {
+    width: 52px;
+    height: 52px;
+    border-radius: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    font-weight: 800;
+}
+
+.hta-stat-icon-navy {
+    background: rgba(39, 56, 115, 0.09);
+    color: var(--hta-navy-accent);
+    border: 1.5px solid rgba(39, 56, 115, 0.2);
+}
+
+.hta-stat-icon-amber {
+    background: rgba(245, 158, 11, 0.1);
+    color: #d97706;
+    border: 1.5px solid rgba(245, 158, 11, 0.25);
+}
+
+.hta-stat-icon-teal {
+    background: rgba(16, 185, 129, 0.1);
+    color: #059669;
+    border: 1.5px solid rgba(16, 185, 129, 0.25);
+}
+
+.hta-stat-icon-violet {
+    background: rgba(124, 58, 237, 0.1);
+    color: #7c3aed;
+    border: 1.5px solid rgba(124, 58, 237, 0.25);
+}
+
+.hta-stat-label {
+    font-size: 0.78rem;
+    color: var(--hta-text-muted);
+    font-weight: 600;
+    margin-bottom: 2px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.hta-stat-value {
+    font-size: 1.45rem;
+    font-weight: 800;
+    color: var(--hta-navy);
+    line-height: 1.2;
+}
+
+/* Modern Pill Buttons */
+.hta-btn-primary {
+    background: var(--hta-navy-accent);
+    border: none;
+    color: #ffffff !important;
+    font-weight: 750;
+    font-size: 0.85rem;
+    letter-spacing: 0.4px;
+    border-radius: 50px;
+    padding: 10px 22px;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    box-shadow: 0 4px 14px rgba(39, 56, 115, 0.28);
+    transition: all 0.22s ease;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+.hta-btn-primary:hover {
+    background: var(--hta-navy-dark);
+    transform: translateY(-1.5px);
+    box-shadow: 0 6px 18px rgba(39, 56, 115, 0.38);
+}
+
+.hta-btn-outline {
+    background: transparent;
+    border: 1.8px solid var(--hta-navy-accent);
+    color: var(--hta-navy-accent) !important;
+    font-weight: 700;
+    font-size: 0.85rem;
+    border-radius: 50px;
+    padding: 8px 20px;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    transition: all 0.22s ease;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+.hta-btn-outline:hover {
+    background: var(--hta-navy-accent);
+    color: #ffffff !important;
+    transform: translateY(-1px);
+}
+
+.hta-btn-sm {
+    padding: 6px 14px;
+    font-size: 0.78rem;
+    border-radius: 50px;
+}
+
+/* Avatar Circle (matching login avatar) */
+.hta-avatar-circle {
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    border: 2px solid var(--hta-navy-accent);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--hta-navy-accent);
+    font-weight: 800;
+    font-size: 0.95rem;
+    background: #ffffff;
+    flex-shrink: 0;
+}
+
+.hta-avatar-circle-lg {
+    width: 76px;
+    height: 76px;
+    border-width: 2.5px;
+    font-size: 1.5rem;
+}
+
+/* Pill Badges */
+.hta-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 5px 12px;
+    border-radius: 50px;
+    font-size: 0.72rem;
+    font-weight: 750;
+    letter-spacing: 0.3px;
+    line-height: 1.2;
+}
+
+.hta-badge-navy {
+    background: rgba(39, 56, 115, 0.1);
+    color: var(--hta-navy-accent);
+    border: 1px solid rgba(39, 56, 115, 0.2);
+}
+
+.hta-badge-teal {
+    background: rgba(16, 185, 129, 0.12);
+    color: #047857;
+    border: 1px solid rgba(16, 185, 129, 0.25);
+}
+
+.hta-badge-amber {
+    background: rgba(245, 158, 11, 0.12);
+    color: #b45309;
+    border: 1px solid rgba(245, 158, 11, 0.25);
+}
+
+.hta-badge-rose {
+    background: rgba(239, 68, 68, 0.12);
+    color: #b91c1c;
+    border: 1px solid rgba(239, 68, 68, 0.25);
+}
+
+.hta-badge-violet {
+    background: rgba(124, 58, 237, 0.12);
+    color: #6d28d9;
+    border: 1px solid rgba(124, 58, 237, 0.25);
+}
+
+/* Forms & Inputs */
+.hta-form-label {
+    font-size: 0.8rem;
+    font-weight: 750;
+    color: var(--hta-navy);
+    margin-bottom: 6px;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.hta-input, .hta-select {
+    height: 44px;
+    border-radius: 12px;
+    border: 1.8px solid #cbd5e1;
+    padding: 0 16px;
+    font-size: 0.88rem;
+    font-weight: 600;
+    color: #1e2850;
+    background-color: #ffffff;
+    transition: all 0.2s ease;
+}
+
+.hta-input:focus, .hta-select:focus {
+    border-color: var(--hta-navy-accent);
+    box-shadow: 0 0 0 3px rgba(39, 56, 115, 0.14);
+    outline: none;
+}
+
+.hta-input.is-invalid, .hta-select.is-invalid {
+    border-color: #ef4444;
+}
+
+/* Tables */
+.hta-table {
+    width: 100%;
+    margin-bottom: 0;
+    border-collapse: separate;
+    border-spacing: 0;
+}
+
+.hta-table thead th {
+    background: #f8fafc;
+    color: var(--hta-navy);
+    font-size: 0.76rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.6px;
+    padding: 14px 18px;
+    border-bottom: 1.5px solid #e2e8f0;
+    white-space: nowrap;
+}
+
+.hta-table tbody td {
+    padding: 16px 18px;
+    vertical-align: middle;
+    border-bottom: 1px solid #f1f5f9;
+    color: #334155;
+    font-size: 0.88rem;
+    background: #ffffff;
+}
+
+.hta-table tbody tr:hover td {
+    background: rgba(39, 56, 115, 0.02);
+}
+
+.hta-code-tag {
+    font-family: SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+    font-weight: 750;
+    font-size: 0.82rem;
+    color: var(--hta-navy-accent);
+    background: rgba(39, 56, 115, 0.08);
+    padding: 3px 8px;
+    border-radius: 6px;
+    letter-spacing: 0.5px;
+}
