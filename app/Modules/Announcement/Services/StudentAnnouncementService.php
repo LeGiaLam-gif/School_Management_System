@@ -4,9 +4,12 @@ namespace App\Modules\Announcement\Services;
 
 use App\Modules\Announcement\Models\Announcement;
 use App\Modules\Identity\Models\User;
+use App\Modules\Teaching\Models\ClassSection;
 use App\Shared\Enums\AnnouncementScope;
 use App\Shared\Enums\EnrollmentStatus;
+use Carbon\CarbonInterface;
 use Illuminate\Support\Collection;
+use stdClass;
 use Throwable;
 
 class StudentAnnouncementService
@@ -14,7 +17,7 @@ class StudentAnnouncementService
     /**
      * Lay danh sach thong bao danh cho sinh vien (Toan truong + Lop hoc phan da dang ky).
      *
-     * @return Collection<int, object>
+     * @return Collection<int, stdClass>
      */
     public function getAnnouncements(?User $user, ?string $scope = null): Collection
     {
@@ -43,18 +46,9 @@ class StudentAnnouncementService
                 $dbAnnouncements = $query->orderByDesc('is_pinned')->orderByDesc('published_at')->get();
 
                 if ($dbAnnouncements->isNotEmpty()) {
-                    return $dbAnnouncements->map(fn ($a) => (object) [
-                        'id' => (string) $a->id,
-                        'title' => $a->title,
-                        'body' => $a->body,
-                        'scope' => $a->scope->value,
-                        'scope_label' => $a->scope === AnnouncementScope::All ? 'Toàn trường' : ('Lớp '.($a->classSection?->code ?? '')),
-                        'scope_badge' => $a->scope === AnnouncementScope::All ? 'bg-primary' : 'bg-info text-dark',
-                        'author_name' => $a->author?->name ?? 'Phòng Đào tạo',
-                        'is_pinned' => $a->is_pinned,
-                        'published_at' => $a->published_at ? $a->published_at->format('d/m/Y H:i') : 'N/A',
-                        'summary' => mb_substr(strip_tags($a->body), 0, 160).'...',
-                    ]);
+                    return $dbAnnouncements->toBase()->map(
+                        fn (Announcement $a): stdClass => $this->mapAnnouncement($a, includeSummary: true)
+                    );
                 }
             } catch (Throwable) {
                 // Fallback Mock Data
@@ -73,17 +67,7 @@ class StudentAnnouncementService
             try {
                 $a = Announcement::published()->with(['author', 'classSection.course'])->find((int) $id);
                 if ($a) {
-                    return (object) [
-                        'id' => (string) $a->id,
-                        'title' => $a->title,
-                        'body' => $a->body,
-                        'scope' => $a->scope->value,
-                        'scope_label' => $a->scope === AnnouncementScope::All ? 'Toàn trường' : ('Lớp '.($a->classSection?->code ?? '')),
-                        'scope_badge' => $a->scope === AnnouncementScope::All ? 'bg-primary' : 'bg-info text-dark',
-                        'author_name' => $a->author?->name ?? 'Phòng Đào tạo',
-                        'is_pinned' => $a->is_pinned,
-                        'published_at' => $a->published_at ? $a->published_at->format('d/m/Y H:i') : 'N/A',
-                    ];
+                    return $this->mapAnnouncement($a);
                 }
             } catch (Throwable) {
                 // Fallback
@@ -95,13 +79,48 @@ class StudentAnnouncementService
         return $all->firstWhere('id', (string) $id);
     }
 
+    private function mapAnnouncement(Announcement $a, bool $includeSummary = false): stdClass
+    {
+        $scope = $a->scope instanceof AnnouncementScope
+            ? $a->scope
+            : AnnouncementScope::tryFrom((string) $a->scope);
+
+        $classSection = $a->classSection;
+        $sectionCode = $classSection instanceof ClassSection ? $classSection->code : '';
+
+        $author = $a->author;
+        $authorName = $author instanceof User ? $author->name : 'Phòng Đào tạo';
+
+        $publishedAt = $a->published_at instanceof CarbonInterface
+            ? $a->published_at->format('d/m/Y H:i')
+            : (is_string($a->published_at) && $a->published_at !== '' ? $a->published_at : 'N/A');
+
+        $data = [
+            'id' => (string) $a->id,
+            'title' => $a->title,
+            'body' => $a->body,
+            'scope' => $scope->value ?? (string) $a->scope,
+            'scope_label' => $scope === AnnouncementScope::All ? 'Toàn trường' : ('Lớp '.$sectionCode),
+            'scope_badge' => $scope === AnnouncementScope::All ? 'bg-primary' : 'bg-info text-dark',
+            'author_name' => $authorName,
+            'is_pinned' => $a->is_pinned,
+            'published_at' => $publishedAt,
+        ];
+
+        if ($includeSummary) {
+            $data['summary'] = mb_substr(strip_tags($a->body), 0, 160).'...';
+        }
+
+        return (object) $data;
+    }
+
     /**
-     * @return Collection<int, object>
+     * @return Collection<int, stdClass>
      */
     private function getMockAnnouncements(?string $scope = null): Collection
     {
-        $all = collect([
-            (object) [
+        $all = $this->toObjectCollection([
+            [
                 'id' => '1',
                 'title' => 'Kế hoạch Đăng ký học phần Học kỳ 1 năm học 2026 - 2027 và Quy định tín chỉ',
                 'body' => "Phòng Đào tạo thông báo tới toàn thể sinh viên về kế hoạch đăng ký học phần Học kỳ 1 năm học 2026 - 2027:\n\n1. Thời gian đăng ký: từ 08:00 ngày 01/11/2026 đến 17:00 ngày 30/11/2026.\n2. Hạn cuối rút bớt học phần: ngày 05/12/2026.\n3. Quy định số tín chỉ: Sinh viên phải đăng ký tối thiểu 14 tín chỉ và tối đa không quá 24 tín chỉ theo quy chế đào tạo.\n4. Sinh viên cần kiểm tra kỹ điều kiện tiên quyết và tránh đăng ký trùng thời khóa biểu giữa các lớp học phần.\n\nMọi thắc mắc vui lòng liên hệ trực tiếp bàn tiếp sinh viên Phòng Đào tạo tại Tòa nhà A.",
@@ -113,7 +132,7 @@ class StudentAnnouncementService
                 'published_at' => '01/11/2026 08:00',
                 'summary' => 'Thông báo kế hoạch mở cổng đăng ký học phần Học kỳ 1 năm học 2026 - 2027, các mốc thời gian quan trọng và quy định số tín chỉ tối thiểu/tối đa...',
             ],
-            (object) [
+            [
                 'id' => '2',
                 'title' => 'Thông báo nộp hồ sơ xét Học bổng khuyến khích học tập Học kỳ vừa qua',
                 'body' => "Nhà trường thông báo xét cấp học bổng khuyến khích học tập cho sinh viên đạt thành tích xuất sắc và giỏi trong học kỳ vừa qua.\n\n- Điều kiện: Điểm trung bình tích lũy GPA từ 3.20 trở lên, điểm rèn luyện từ 80 điểm trở lên và không có học phần nào bị điểm F.\n- Hạn nộp hồ sơ: Trước ngày 20/11/2026 tại Văn phòng Khoa Công nghệ Thông tin.",
@@ -125,7 +144,7 @@ class StudentAnnouncementService
                 'published_at' => '05/11/2026 09:30',
                 'summary' => 'Hướng dẫn tiêu chuẩn xét duyệt và thời hạn nộp hồ sơ xin cấp học bổng khuyến khích học tập dành cho sinh viên có thành tích học tập từ loại Giỏi trở lên...',
             ],
-            (object) [
+            [
                 'id' => '3',
                 'title' => '[Lớp CS102.O11] Nhắc nhở nộp Bài tập lớn Kỹ thuật lập trình và Lịch thi thực hành Lab',
                 'body' => "Chào các bạn sinh viên lớp CS102.O11 - Kỹ thuật lập trình:\n\n- Hạn nộp Bài tập lớn (Báo cáo + Source code): 23:59 ngày 25/11/2026 qua hệ thống nộp bài.\n- Lịch thi thực hành máy: Sẽ diễn ra vào ca sáng ngày 28/11/2026 tại Phòng Lab 2.\n- Đề nghị các bạn có mặt đúng giờ và mang theo thẻ sinh viên.",
@@ -137,7 +156,7 @@ class StudentAnnouncementService
                 'published_at' => '08/11/2026 14:15',
                 'summary' => 'Giảng viên phụ trách thông báo thời hạn chốt nộp bài tập lớn và lịch thi thực hành tập trung tại phòng Lab 2 dành cho sinh viên lớp CS102.O11...',
             ],
-            (object) [
+            [
                 'id' => '4',
                 'title' => '[Lớp SE201.O11] Cung cấp tài liệu tham khảo bài giảng Agile/Scrum & Template báo cáo Use Case',
                 'body' => "Gửi các nhóm sinh viên lớp Nhập môn Công nghệ phần mềm SE201.O11:\n\nThầy đã đính kèm tài liệu về quy trình Agile/Scrum và bộ mẫu biểu đặc tả yêu cầu người dùng (SRS Template). Các nhóm tải về và hoàn thiện đồ án môn học theo đúng tiến độ Sprint 1.",
@@ -149,7 +168,7 @@ class StudentAnnouncementService
                 'published_at' => '10/11/2026 10:00',
                 'summary' => 'Tài liệu hướng dẫn quy trình phát triển phần mềm Agile/Scrum và biểu mẫu phục vụ báo cáo đồ án giữa kỳ của lớp SE201.O11...',
             ],
-            (object) [
+            [
                 'id' => '5',
                 'title' => 'Hội thảo Công nghệ: Xu hướng kiến trúc Microservices & AI Engineering trong năm 2026',
                 'body' => "Khoa Công nghệ Thông tin phối hợp cùng các doanh nghiệp phần mềm đối tác tổ chức buổi Workshop chuyên đề dành cho sinh viên CNTT & Kỹ thuật Phần mềm:\n\n- Thời gian: 08:30 Thứ Bảy ngày 21/11/2026.\n- Địa điểm: Hội trường Lớn (Nhà E).\n- Khách mời: Các kỹ sư trưởng (Principal Architects) đến từ các tập đoàn công nghệ hàng đầu.",
@@ -172,5 +191,14 @@ class StudentAnnouncementService
         }
 
         return $all->values();
+    }
+
+    /**
+     * @param  array<int, array<string, mixed>>  $items
+     * @return Collection<int, stdClass>
+     */
+    private function toObjectCollection(array $items): Collection
+    {
+        return collect($items)->map(static fn (array $item): stdClass => (object) $item);
     }
 }

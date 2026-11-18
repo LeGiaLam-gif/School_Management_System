@@ -23,7 +23,7 @@ class StudentMockService
             try {
                 /** @var Student|null $student */
                 $student = $user->student()
-                    ->with(['program.department', 'administrativeClass.advisor.user'])
+                    ->with(['program.department', 'administrativeClass.advisorLecturer.user'])
                     ->first();
 
                 if ($student !== null) {
@@ -39,15 +39,15 @@ class StudentMockService
                         'gender' => $student->gender?->label() ?? 'Nam',
                         'phone' => session('mock_student_phone', $student->phone ?? '0912345678'),
                         'address' => session('mock_student_address', $student->address ?? '123 Đường Nguyễn Huệ, Phường Bến Nghé, Quận 1, TP. Hồ Chí Minh'),
-                        'department_name' => $student->program?->department?->name ?? 'Công nghệ Thông tin',
-                        'department_code' => $student->program?->department?->code ?? 'CNTT',
-                        'program_name' => $student->program?->name ?? 'Kỹ thuật Phần mềm',
-                        'program_code' => $student->program?->code ?? 'SE01',
-                        'class_code' => $student->administrativeClass?->code ?? 'SE23.01',
-                        'class_name' => $student->administrativeClass?->name ?? 'Lớp Kỹ thuật Phần mềm 2023-01',
-                        'advisor_name' => $student->administrativeClass?->advisor?->user?->name ?? 'ThS. Hoàng Tuấn Anh',
-                        'duration_years' => $student->program?->duration_years ?? 4,
-                        'total_credits_required' => $student->program?->total_credits_required ?? 140,
+                        'department_name' => $student->program->department->name ?? 'Công nghệ Thông tin',
+                        'department_code' => $student->program->department->code ?? 'CNTT',
+                        'program_name' => $student->program->name ?? 'Kỹ thuật Phần mềm',
+                        'program_code' => $student->program->code ?? 'SE01',
+                        'class_code' => $student->administrativeClass->code ?? 'SE23.01',
+                        'class_name' => $student->administrativeClass->name ?? 'Lớp Kỹ thuật Phần mềm 2023-01',
+                        'advisor_name' => $student->administrativeClass->advisorLecturer->user->name ?? 'ThS. Hoàng Tuấn Anh',
+                        'duration_years' => $student->program->duration_years ?? 4,
+                        'total_credits_required' => $student->program->total_credits_required ?? 140,
                     ];
                 }
             } catch (Throwable) {
@@ -57,10 +57,10 @@ class StudentMockService
 
         // 2. Mock Data mau day du
         return (object) [
-            'user_id' => $user?->id ?? 1,
-            'student_code' => $user?->code ?? 'SV20230001',
-            'name' => $user?->name ?? 'Nguyễn Văn An',
-            'email' => $user?->email ?? 'nguyenvanan.sv@sms.edu.vn',
+            'user_id' => $user->id ?? 1,
+            'student_code' => $user->code ?? 'SV20230001',
+            'name' => $user->name ?? 'Nguyễn Văn An',
+            'email' => $user->email ?? 'nguyenvanan.sv@sms.edu.vn',
             'status_label' => 'Đang học',
             'status_badge' => 'bg-success',
             'cohort_year' => 2023,
@@ -155,7 +155,7 @@ class StudentMockService
                         'records' => $warnings,
                     ];
 
-                    $totalCreditsRequired = (int) ($student->program?->total_credits_required ?? 140);
+                    $totalCreditsRequired = (int) ($student->program->total_credits_required ?? 140);
                     $earnedCredits = 52; // Tich luy tu final_results neu co
                     $enrolledCredits = 15;
                     $remainingCredits = max(0, $totalCreditsRequired - $earnedCredits);

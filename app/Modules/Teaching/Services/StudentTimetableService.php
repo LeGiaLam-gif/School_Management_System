@@ -2,8 +2,12 @@
 
 namespace App\Modules\Teaching\Services;
 
+use App\Modules\Academic\Models\Course;
 use App\Modules\Enrollment\Models\Enrollment;
+use App\Modules\Identity\Models\Lecturer;
 use App\Modules\Identity\Models\User;
+use App\Modules\Teaching\Models\ClassSchedule;
+use App\Modules\Teaching\Models\ClassSection;
 use App\Shared\Enums\EnrollmentStatus;
 use Carbon\Carbon;
 use Illuminate\Support\Collection;
@@ -34,8 +38,7 @@ class StudentTimetableService
                     4 => 'Thứ Năm',
                     5 => 'Thứ Sáu',
                     6 => 'Thứ Bảy',
-                    7 => 'Chủ Nhật',
-                    default => 'N/A',
+                    default => 'Chủ Nhật',
                 },
                 'date_formatted' => $dayDate->format('d/m'),
                 'full_date' => $dayDate->format('d/m/Y'),
@@ -108,20 +111,36 @@ class StudentTimetableService
                         $items = collect();
                         foreach ($enrollments as $enr) {
                             $sec = $enr->classSection;
+                            if (! $sec instanceof ClassSection) {
+                                continue;
+                            }
+
+                            $course = $sec->course;
+                            $courseCode = $course instanceof Course ? $course->code : '';
+                            $courseName = $course instanceof Course ? $course->name : '';
+                            $credits = $course instanceof Course ? $course->credits : 0;
+
+                            $lecturer = $sec->lecturer;
+                            $lecturerName = $lecturer instanceof Lecturer ? $lecturer->user->name : 'Chưa phân công';
+
                             foreach ($sec->schedules as $sch) {
+                                if (! $sch instanceof ClassSchedule) {
+                                    continue;
+                                }
+
                                 $items->push((object) [
                                     'class_section_code' => $sec->code,
-                                    'course_code' => $sec->course->code,
-                                    'course_name' => $sec->course->name,
-                                    'credits' => $sec->course->credits,
-                                    'lecturer_name' => $sec->lecturer?->user?->name ?? 'Chưa phân công',
-                                    'room_name' => $sch->room?->code ?? 'Phòng học',
+                                    'course_code' => $courseCode,
+                                    'course_name' => $courseName,
+                                    'credits' => $credits,
+                                    'lecturer_name' => $lecturerName,
+                                    'room_name' => $sch->room->code ?? 'Phòng học',
                                     'day_of_week' => (int) $sch->day_of_week,
                                     'start_period' => (int) $sch->start_period,
                                     'end_period' => (int) $sch->end_period,
                                     'periods_text' => "Tiết {$sch->start_period} - {$sch->end_period}",
                                     'time_text' => $this->getTimeText($sch->start_period, $sch->end_period),
-                                    'card_color' => $this->pickColor($sec->course->code),
+                                    'card_color' => $this->pickColor($courseCode),
                                 ]);
                             }
                         }

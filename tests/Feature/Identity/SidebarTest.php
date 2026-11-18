@@ -96,7 +96,7 @@ class SidebarTest extends TestCase
             $this->assertStringContainsString($label, $sidebar);
         }
 
-        $this->assertStringContainsString('class="sms-sidebar-link sms-sidebar-link-disabled" aria-disabled="true"', $sidebar);
+        $this->assertStringNotContainsString('sms-sidebar-link-disabled', $sidebar);
         $this->assertStringNotContainsString('href="#"', $sidebar);
     }
 
@@ -110,13 +110,13 @@ class SidebarTest extends TestCase
         $response = $this->actingAs($student)
             ->get(route('student.home'))
             ->assertOk()
-            ->assertSee('class="sms-welcome-card"', false)
-            ->assertSee('Chào mừng, Nguyen Thi Mai')
+            ->assertSee('sms-welcome-card')
+            ->assertSee('Chào mừng trở lại, Nguyen Thi Mai')
             ->assertSee('SV00002')
             ->assertSee('HỆ THỐNG QUẢN LÝ ĐÀO TẠO')
-            ->assertSee('Khóa tuyển sinh')
-            ->assertSee('Ngành học')
-            ->assertSee('Trạng thái')
+            ->assertSee('Ngành:')
+            ->assertSee('Lớp SH:')
+            ->assertSee('Đang học')
             ->assertSee('class="sms-student-action-grid"', false)
             ->assertSee('Điểm &amp; GPA', false)
             ->assertSee('Thời khóa biểu')

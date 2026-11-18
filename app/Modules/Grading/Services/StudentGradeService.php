@@ -3,17 +3,12 @@
 namespace App\Modules\Grading\Services;
 
 use App\Modules\Grading\Models\FinalResult;
-use App\Modules\Grading\Queries\StudentGpaQuery;
 use App\Modules\Identity\Models\User;
 use Illuminate\Support\Collection;
 use Throwable;
 
 class StudentGradeService
 {
-    public function __construct(
-        private readonly ?StudentGpaQuery $gpaQuery = null
-    ) {}
-
     /**
      * Lay bang diem chi tiet va GPA cua sinh vien.
      */

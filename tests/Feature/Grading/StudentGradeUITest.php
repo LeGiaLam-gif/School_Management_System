@@ -38,7 +38,7 @@ class StudentGradeUITest extends TestCase
         $response = $this->actingAs($student)->get('/student/grades');
 
         $response->assertStatus(200);
-        $response->assertSee('Bảng Điểm & Điểm Trung Bình (GPA)');
+        $response->assertSee('Bảng Điểm & Điểm Trung Bình (GPA)', false);
         $response->assertSee('GPA Tích lũy (Hệ 4)');
         $response->assertSee('Nhập môn lập trình');
         $response->assertSee('CS101');

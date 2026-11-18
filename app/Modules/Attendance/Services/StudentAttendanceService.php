@@ -2,20 +2,22 @@
 
 namespace App\Modules\Attendance\Services;
 
-use App\Modules\Attendance\Support\AbsenceRateCalculator;
+use App\Modules\Academic\Models\Course;
+use App\Modules\Attendance\Models\AttendanceRecord;
 use App\Modules\Enrollment\Models\Enrollment;
+use App\Modules\Identity\Models\Lecturer;
 use App\Modules\Identity\Models\User;
+use App\Modules\Teaching\Models\ClassSection;
+use App\Modules\Teaching\Models\ClassSession;
 use App\Shared\Enums\AttendanceStatus;
 use App\Shared\Enums\EnrollmentStatus;
 use App\Shared\Enums\SessionStatus;
+use Carbon\CarbonInterface;
+use Illuminate\Database\Eloquent\Collection;
 use Throwable;
 
 class StudentAttendanceService
 {
-    public function __construct(
-        private readonly ?AbsenceRateCalculator $calculator = null
-    ) {}
-
     /**
      * Lay bao cao diem danh va ty le vang cua sinh vien trong hoc ky.
      */
@@ -157,6 +159,9 @@ class StudentAttendanceService
         ];
     }
 
+    /**
+     * @param  Collection<int, Enrollment>  $enrollments
+     */
     private function formatFromDb(User $user, Collection $enrollments): object
     {
         $courses = collect();
@@ -168,6 +173,10 @@ class StudentAttendanceService
 
         foreach ($enrollments as $enr) {
             $sec = $enr->classSection;
+            if (! $sec instanceof ClassSection) {
+                continue;
+            }
+
             $records = $enr->attendanceRecords;
             $heldSessions = $sec->sessions->where('status', SessionStatus::Held->value)->count();
 
@@ -180,28 +189,54 @@ class StudentAttendanceService
             $isBanned = $rate >= 20.0;
             $isWarned = ($rate >= 10.0 && $rate < 20.0);
 
-            $sessionList = $records->map(fn ($r) => (object) [
-                'session_no' => $r->classSession->session_no ?? 1,
-                'date' => $r->classSession->session_date ? $r->classSession->session_date->format('d/m/Y') : 'N/A',
-                'time' => "Tiết {$r->classSession->start_period} - {$r->classSession->end_period}",
-                'room' => $r->classSession->room?->code ?? 'Phòng học',
-                'status' => $r->status->label(),
-                'badge' => match ($r->status) {
-                    AttendanceStatus::Present => 'bg-success',
-                    AttendanceStatus::Late => 'bg-warning text-dark',
-                    AttendanceStatus::Excused => 'bg-info text-dark',
-                    AttendanceStatus::Absent => 'bg-danger',
-                    default => 'bg-secondary',
-                },
-                'note' => $r->note ?? 'Đã ghi nhận',
-            ])->all();
+            $sessionList = $records->toBase()->map(function (mixed $r): ?object {
+                if (! $r instanceof AttendanceRecord) {
+                    return null;
+                }
+
+                $session = $r->classSession;
+                $sessionNo = $session instanceof ClassSession ? ($session->session_no ?? 1) : 1;
+                $sessionDate = $session instanceof ClassSession ? $session->session_date : null;
+                $dateText = $sessionDate instanceof CarbonInterface
+                    ? $sessionDate->format('d/m/Y')
+                    : (is_string($sessionDate) && $sessionDate !== '' ? $sessionDate : 'N/A');
+                $timeText = $session instanceof ClassSession
+                    ? "Tiết {$session->start_period} - {$session->end_period}"
+                    : 'N/A';
+                $roomText = $session instanceof ClassSession
+                    ? ($session->room->code ?? 'Phòng học')
+                    : 'Phòng học';
+
+                $status = $r->status instanceof AttendanceStatus
+                    ? $r->status
+                    : AttendanceStatus::tryFrom((string) $r->status);
+
+                return (object) [
+                    'session_no' => $sessionNo,
+                    'date' => $dateText,
+                    'time' => $timeText,
+                    'room' => $roomText,
+                    'status' => $status instanceof AttendanceStatus ? $status->label() : 'N/A',
+                    'badge' => match ($status) {
+                        AttendanceStatus::Present => 'bg-success',
+                        AttendanceStatus::Late => 'bg-warning text-dark',
+                        AttendanceStatus::Excused => 'bg-info text-dark',
+                        AttendanceStatus::Absent => 'bg-danger',
+                        default => 'bg-secondary',
+                    },
+                    'note' => $r->note ?? 'Đã ghi nhận',
+                ];
+            })->filter()->values()->all();
+
+            $course = $sec->course;
+            $lecturer = $sec->lecturer;
 
             $courses->push((object) [
                 'class_section_code' => $sec->code,
-                'course_code' => $sec->course->code,
-                'course_name' => $sec->course->name,
-                'credits' => $sec->course->credits,
-                'lecturer_name' => $sec->lecturer?->user?->name ?? 'Chưa phân công',
+                'course_code' => $course instanceof Course ? $course->code : '',
+                'course_name' => $course instanceof Course ? $course->name : '',
+                'credits' => $course instanceof Course ? $course->credits : 0,
+                'lecturer_name' => $lecturer instanceof Lecturer ? $lecturer->user->name : 'Chưa phân công',
                 'held_sessions' => $heldSessions,
                 'total_sessions' => 15,
                 'present_count' => $present,

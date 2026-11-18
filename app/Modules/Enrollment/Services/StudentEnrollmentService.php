@@ -2,13 +2,18 @@
 
 namespace App\Modules\Enrollment\Services;
 
+use App\Modules\Academic\Models\Course;
 use App\Modules\Academic\Models\Semester;
 use App\Modules\Enrollment\Models\Enrollment;
+use App\Modules\Identity\Models\Lecturer;
 use App\Modules\Identity\Models\User;
+use App\Modules\Teaching\Models\ClassSchedule;
 use App\Modules\Teaching\Models\ClassSection;
 use App\Shared\Enums\EnrollmentStatus;
 use App\Shared\Exceptions\BusinessRuleException;
+use Carbon\CarbonInterface;
 use Illuminate\Support\Collection;
+use stdClass;
 use Throwable;
 
 class StudentEnrollmentService
@@ -160,20 +165,14 @@ class StudentEnrollmentService
 
         $enrolledSectionIds = $dbEnrollments->pluck('class_section_id')->all();
 
-        $enrolledSections = $dbEnrollments->map(fn ($e) => (object) [
-            'id' => (string) $e->classSection->id,
-            'code' => $e->classSection->code,
-            'course_code' => $e->classSection->course->code,
-            'course_name' => $e->classSection->course->name,
-            'credits' => $e->classSection->course->credits,
-            'lecturer_name' => $e->classSection->lecturer?->user?->name ?? 'Chưa phân công',
-            'schedule_text' => $this->formatScheduleText($e->classSection),
-            'room_name' => $this->formatRoomText($e->classSection),
-            'capacity' => $e->classSection->capacity,
-            'enrolled_count' => $e->classSection->enrolled_count,
-            'registered_at' => $e->registered_at ? $e->registered_at->format('d/m/Y H:i') : null,
-            'is_enrolled' => true,
-        ]);
+        $enrolledSections = $dbEnrollments->toBase()->map(function (Enrollment $e): ?object {
+            $section = $e->classSection;
+            if (! $section instanceof ClassSection) {
+                return null;
+            }
+
+            return $this->mapSection($section, $this->formatDateTime($e->registered_at), true);
+        })->filter()->values();
 
         // 2. Tat ca cac lop mo trong hoc ky
         $openSections = ClassSection::with([
@@ -185,20 +184,9 @@ class StudentEnrollmentService
             ->where('status', 'open')
             ->get();
 
-        $availableSections = $openSections->map(fn ($s) => (object) [
-            'id' => (string) $s->id,
-            'code' => $s->code,
-            'course_code' => $s->course->code,
-            'course_name' => $s->course->name,
-            'credits' => $s->course->credits,
-            'lecturer_name' => $s->lecturer?->user?->name ?? 'Chưa phân công',
-            'schedule_text' => $this->formatScheduleText($s),
-            'room_name' => $this->formatRoomText($s),
-            'capacity' => $s->capacity,
-            'enrolled_count' => $s->enrolled_count,
-            'registered_at' => null,
-            'is_enrolled' => in_array($s->id, $enrolledSectionIds, true),
-        ]);
+        $availableSections = $openSections->toBase()->map(
+            fn (ClassSection $s): object => $this->mapSection($s, null, in_array($s->id, $enrolledSectionIds, true))
+        );
 
         $totalCredits = $enrolledSections->sum('credits');
 
@@ -206,9 +194,9 @@ class StudentEnrollmentService
             'semester' => (object) [
                 'name' => $semester->name,
                 'code' => $semester->code,
-                'registration_open_at' => $semester->registration_open_at?->format('d/m/Y H:i') ?? '01/09/2026 00:00',
-                'registration_close_at' => $semester->registration_close_at?->format('d/m/Y H:i') ?? '30/11/2026 23:59',
-                'drop_deadline' => $semester->drop_deadline?->format('d/m/Y') ?? '15/12/2026',
+                'registration_open_at' => $this->formatDateTime($semester->registration_open_at) ?? '01/09/2026 00:00',
+                'registration_close_at' => $this->formatDateTime($semester->registration_close_at) ?? '30/11/2026 23:59',
+                'drop_deadline' => $this->formatDateTime($semester->drop_deadline, 'd/m/Y') ?? '15/12/2026',
                 'min_credits' => $semester->min_credits ?: 14,
                 'max_credits' => $semester->max_credits ?: 24,
                 'is_open' => true,
@@ -222,13 +210,47 @@ class StudentEnrollmentService
         ];
     }
 
+    private function mapSection(ClassSection $section, ?string $registeredAt, bool $isEnrolled): object
+    {
+        $course = $section->course;
+        $lecturer = $section->lecturer;
+
+        return (object) [
+            'id' => (string) $section->id,
+            'code' => $section->code,
+            'course_code' => $course instanceof Course ? $course->code : '',
+            'course_name' => $course instanceof Course ? $course->name : '',
+            'credits' => $course instanceof Course ? $course->credits : 0,
+            'lecturer_name' => $lecturer instanceof Lecturer ? $lecturer->user->name : 'Chưa phân công',
+            'schedule_text' => $this->formatScheduleText($section),
+            'room_name' => $this->formatRoomText($section),
+            'capacity' => $section->capacity,
+            'enrolled_count' => $section->enrolled_count,
+            'registered_at' => $registeredAt,
+            'is_enrolled' => $isEnrolled,
+        ];
+    }
+
+    private function formatDateTime(mixed $value, string $format = 'd/m/Y H:i'): ?string
+    {
+        if ($value instanceof CarbonInterface) {
+            return $value->format($format);
+        }
+
+        return is_string($value) && $value !== '' ? $value : null;
+    }
+
     private function formatScheduleText(ClassSection $section): string
     {
         if ($section->schedules->isEmpty()) {
             return 'Theo lịch phòng đào tạo';
         }
 
-        return $section->schedules->map(function ($sch) {
+        return $section->schedules->toBase()->map(function (mixed $sch): string {
+            if (! $sch instanceof ClassSchedule) {
+                return '';
+            }
+
             $dayName = match ($sch->day_of_week) {
                 1 => 'Thứ 2',
                 2 => 'Thứ 3',
@@ -240,7 +262,7 @@ class StudentEnrollmentService
             };
 
             return "{$dayName} (Tiết {$sch->start_period}-{$sch->end_period})";
-        })->implode(' · ');
+        })->filter()->implode(' · ');
     }
 
     private function formatRoomText(ClassSection $section): string
@@ -357,12 +379,12 @@ class StudentEnrollmentService
     }
 
     /**
-     * @return Collection<int, object>
+     * @return Collection<int, stdClass>
      */
     private function getAllMockSections(): Collection
     {
-        return collect([
-            (object) [
+        return $this->toObjectCollection([
+            [
                 'id' => 'CS102.O11',
                 'code' => 'CS102.O11',
                 'course_code' => 'CS102',
@@ -375,7 +397,7 @@ class StudentEnrollmentService
                 'enrolled_count' => 48,
                 'registered_at' => '05/11/2026 09:15',
             ],
-            (object) [
+            [
                 'id' => 'CS102.O12',
                 'code' => 'CS102.O12',
                 'course_code' => 'CS102',
@@ -388,7 +410,7 @@ class StudentEnrollmentService
                 'enrolled_count' => 50,
                 'registered_at' => null,
             ],
-            (object) [
+            [
                 'id' => 'CS201.O11',
                 'code' => 'CS201.O11',
                 'course_code' => 'CS201',
@@ -401,7 +423,7 @@ class StudentEnrollmentService
                 'enrolled_count' => 42,
                 'registered_at' => null,
             ],
-            (object) [
+            [
                 'id' => 'CS202.O11',
                 'code' => 'CS202.O11',
                 'course_code' => 'CS202',
@@ -414,7 +436,7 @@ class StudentEnrollmentService
                 'enrolled_count' => 45,
                 'registered_at' => null,
             ],
-            (object) [
+            [
                 'id' => 'SE201.O11',
                 'code' => 'SE201.O11',
                 'course_code' => 'SE201',
@@ -427,7 +449,7 @@ class StudentEnrollmentService
                 'enrolled_count' => 38,
                 'registered_at' => '05/11/2026 09:20',
             ],
-            (object) [
+            [
                 'id' => 'SE205.O11',
                 'code' => 'SE205.O11',
                 'course_code' => 'SE205',
@@ -440,7 +462,7 @@ class StudentEnrollmentService
                 'enrolled_count' => 46,
                 'registered_at' => null,
             ],
-            (object) [
+            [
                 'id' => 'MATH103.O11',
                 'code' => 'MATH103.O11',
                 'course_code' => 'MATH103',
@@ -453,7 +475,7 @@ class StudentEnrollmentService
                 'enrolled_count' => 55,
                 'registered_at' => null,
             ],
-            (object) [
+            [
                 'id' => 'ENG102.O11',
                 'code' => 'ENG102.O11',
                 'course_code' => 'ENG102',
@@ -467,5 +489,14 @@ class StudentEnrollmentService
                 'registered_at' => null,
             ],
         ]);
+    }
+
+    /**
+     * @param  array<int, array<string, mixed>>  $items
+     * @return Collection<int, stdClass>
+     */
+    private function toObjectCollection(array $items): Collection
+    {
+        return collect($items)->map(static fn (array $item): stdClass => (object) $item);
     }
 }

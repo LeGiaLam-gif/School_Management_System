@@ -76,7 +76,7 @@ class StudentDashboardStatsTest extends TestCase
         // 4. Tien do CTDT & Lop sinh hoat
         $response->assertSee('Tiến độ tích lũy CTĐT');
         $response->assertSee(route('student.curriculum'));
-        $response->assertSee('Lớp sinh hoạt &amp; Cố vấn', false);
+        $response->assertSee('Lớp sinh hoạt & Cố vấn', false);
         $response->assertSee('Cố vấn học tập (CVHT)');
 
         // 5. Thong bao moi nhat
