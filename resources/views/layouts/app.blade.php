@@ -8,7 +8,7 @@
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
 <body class="sms-body" x-data="{ sidebarOpen: window.innerWidth >= 768 }">
-    @auth
+    @if (auth()->check() && ! ($hideAppShell ?? false))
         <div class="sms-app-shell" :class="{ 'sidebar-collapsed': !sidebarOpen }">
             @include('layouts.partials.sidebar')
             <div class="sms-main-column">
@@ -18,6 +18,6 @@
         </div>
     @else
         @include('layouts.partials.content')
-    @endauth
+    @endif
 </body>
 </html>

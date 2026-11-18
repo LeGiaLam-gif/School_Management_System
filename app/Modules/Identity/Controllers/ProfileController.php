@@ -27,16 +27,35 @@ class ProfileController extends Controller
         return view('identity::profile.show', compact('user', 'roles'));
     }
 
+    public function showFirstPasswordChange(Request $request): View|RedirectResponse
+    {
+        $user = $request->user();
+
+        if (! $user instanceof User || ! $user->must_change_password) {
+            return redirect()->route('home');
+        }
+
+        return view('identity::auth.first-password-change', ['hideAppShell' => true]);
+    }
+
     public function changePassword(ChangePasswordRequest $request): RedirectResponse
     {
         $user = $request->user();
 
         abort_unless($user instanceof User, 403);
 
+        $firstChange = $user->must_change_password;
+
         $user->forceFill([
             'password' => $request->string('new_password')->toString(),
             'must_change_password' => false,
         ])->save();
+
+        if ($firstChange) {
+            $request->session()->regenerate();
+
+            return redirect()->intended(route('home'))->with('success', 'Đổi mật khẩu thành công.');
+        }
 
         return back()->with('success', 'Đổi mật khẩu thành công.');
     }

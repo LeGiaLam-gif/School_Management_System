@@ -1,4 +1,4 @@
-@auth
+@if (auth()->check() && ! ($hideAppShell ?? false))
     <main class="sms-page-content">
         @include('layouts.partials.alerts')
         @yield('content')
@@ -8,4 +8,4 @@
         @include('layouts.partials.alerts')
         @yield('content')
     </main>
-@endauth
+@endif 
