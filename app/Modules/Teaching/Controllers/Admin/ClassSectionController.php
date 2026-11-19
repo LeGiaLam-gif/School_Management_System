@@ -155,7 +155,10 @@ class ClassSectionController extends Controller
         $lecturerId = $request->input('lecturer_id');
         $classSection->update(['lecturer_id' => $lecturerId]);
 
-        $lecturerName = $classSection->fresh()->lecturer?->user?->name;
+        /** @var ClassSection $fresh */
+        $fresh = $classSection->fresh(['lecturer.user']);
+        $lecturer = $fresh->lecturer;
+        $lecturerName = ($lecturer instanceof Lecturer && $lecturer->user) ? $lecturer->user->name : null;
         $message = $lecturerName
             ? "Đã phân công giảng viên {$lecturerName} phụ trách lớp học phần {$classSection->code}."
             : "Đã hủy gán giảng viên cho lớp học phần {$classSection->code}.";

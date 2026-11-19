@@ -21,7 +21,11 @@ class ProfileController extends Controller
 
         $user->load(['student.program.department', 'lecturer.department']);
         $roles = $user->getRoleNames()->map(
-            static fn (string $role): string => RoleName::tryFrom($role)?->label() ?? $role,
+            static function (string $role): string {
+                $enum = RoleName::tryFrom($role);
+
+                return $enum instanceof RoleName ? $enum->label() : $role;
+            },
         );
 
         return view('identity::profile.show', compact('user', 'roles'));

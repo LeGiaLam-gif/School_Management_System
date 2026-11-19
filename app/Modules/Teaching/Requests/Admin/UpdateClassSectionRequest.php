@@ -2,6 +2,7 @@
 
 namespace App\Modules\Teaching\Requests\Admin;
 
+use App\Modules\Teaching\Models\ClassSection;
 use App\Shared\Enums\ClassSectionStatus;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
@@ -10,7 +11,9 @@ class UpdateClassSectionRequest extends FormRequest
 {
     public function authorize(): bool
     {
-        return $this->user()?->isAdmin() ?? false;
+        $user = $this->user();
+
+        return $user !== null && $user->isAdmin();
     }
 
     protected function prepareForValidation(): void
@@ -27,7 +30,11 @@ class UpdateClassSectionRequest extends FormRequest
      */
     public function rules(): array
     {
-        $classSectionId = $this->route('class_section')?->id ?? $this->route('class_section');
+        /** @var ClassSection|null $classSection */
+        $classSection = $this->route('class_section');
+        $classSectionId = $classSection instanceof ClassSection ? $classSection->id : $classSection;
+        $courseId = $this->input('course_id', $classSection instanceof ClassSection ? $classSection->course_id : null);
+        $semesterId = $this->input('semester_id', $classSection instanceof ClassSection ? $classSection->semester_id : null);
 
         return [
             'lecturer_id' => ['nullable', 'integer', 'exists:lecturers,id'],
@@ -36,8 +43,8 @@ class UpdateClassSectionRequest extends FormRequest
                 'string',
                 'max:30',
                 Rule::unique('class_sections', 'code')
-                    ->where('course_id', $this->input('course_id', $this->route('class_section')?->course_id))
-                    ->where('semester_id', $this->input('semester_id', $this->route('class_section')?->semester_id))
+                    ->where('course_id', $courseId)
+                    ->where('semester_id', $semesterId)
                     ->ignore($classSectionId)
                     ->withoutTrashed(),
             ],

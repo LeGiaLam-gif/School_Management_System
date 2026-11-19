@@ -14,6 +14,7 @@ use App\Modules\Identity\Models\User;
 use App\Modules\Teaching\Models\ClassSection;
 use App\Shared\Enums\RoleName;
 use App\Shared\Enums\UserStatus;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
 use Illuminate\View\View;
@@ -65,7 +66,7 @@ class AdminReportController extends Controller
             ->get();
 
         // 5. Danh sách các lớp học phần trong học kỳ hiện tại (hoặc kỳ mới nhất)
-        $selectedSemesterId = $request->input('semester_id', $currentSemester?->id ?? Semester::max('id'));
+        $selectedSemesterId = $request->input('semester_id', $currentSemester->id ?? Semester::max('id'));
         $selectedSemester = Semester::find($selectedSemesterId);
 
         $sectionsInSemester = ClassSection::with(['course', 'lecturer.user'])
@@ -101,14 +102,25 @@ class AdminReportController extends Controller
                 fputcsv($handle, ['Mã SV', 'Họ và tên', 'Email', 'Khoa/Ngành', 'Lớp hành chính', 'Trạng thái']);
                 Student::with(['user', 'administrativeClass.program.department'])
                     ->chunk(200, function ($students) use ($handle) {
+                        /** @var Collection<int, Student> $students */
                         foreach ($students as $student) {
+                            $adminClass = $student->administrativeClass;
+                            $programName = ($adminClass && $adminClass->program) ? $adminClass->program->name : '';
+                            $adminClassCode = $adminClass ? $adminClass->code : '';
+                            $userStatus = $student->user->status instanceof UserStatus ? $student->user->status->label() : '';
+
+                            $adminClass = $student->administrativeClass;
+                            $programName = ($adminClass && $adminClass->program) ? $adminClass->program->name : '';
+                            $adminClassCode = $adminClass ? $adminClass->code : '';
+                            $userStatus = $student->user->status instanceof \App\Shared\Enums\UserStatus ? $student->user->status->label() : '';
+
                             fputcsv($handle, [
                                 $student->user->code ?? '',
                                 $student->user->name ?? '',
                                 $student->user->email ?? '',
-                                $student->administrativeClass?->program?->name ?? '',
-                                $student->administrativeClass?->code ?? '',
-                                $student->user->status->label() ?? '',
+                                $programName,
+                                $adminClassCode,
+                                $userStatus,
                             ]);
                         }
                     });
@@ -116,13 +128,20 @@ class AdminReportController extends Controller
                 fputcsv($handle, ['Mã Lớp HP', 'Học phần', 'Học kỳ', 'Giảng viên', 'Sĩ số hiện tại', 'Sĩ số tối đa', 'Trạng thái']);
                 ClassSection::with(['course', 'semester', 'lecturer.user'])
                     ->chunk(200, function ($sections) use ($handle) {
+                        /** @var Collection<int, ClassSection> $sections */
+                        /** @var \Illuminate\Database\Eloquent\Collection<int, ClassSection> $sections */
                         foreach ($sections as $sec) {
                             $statusVal = is_object($sec->status) ? $sec->status->value : $sec->status;
+                            $lecturer = $sec->lecturer;
+                            $lecturerName = ($lecturer instanceof Lecturer && $lecturer->user)
+                                ? $lecturer->user->name
+                                : 'Chưa phân công';
+
                             fputcsv($handle, [
                                 $sec->code,
                                 $sec->course->name ?? '',
                                 $sec->semester->name ?? '',
-                                $sec->lecturer?->user?->name ?? 'Chưa phân công',
+                                $lecturerName,
                                 $sec->enrolled_count,
                                 $sec->capacity,
                                 $statusVal,
