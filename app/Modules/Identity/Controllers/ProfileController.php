@@ -5,6 +5,7 @@ namespace App\Modules\Identity\Controllers;
 use App\Modules\Identity\Models\User;
 use App\Modules\Identity\Requests\ChangePasswordRequest;
 use App\Modules\Identity\Requests\UpdateContactRequest;
+use App\Modules\Identity\Support\IntendedPath;
 use App\Shared\Enums\RoleName;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\RedirectResponse;
@@ -54,7 +55,7 @@ class ProfileController extends Controller
         if ($firstChange) {
             $request->session()->regenerate();
 
-            return redirect()->intended('/')->with('success', 'Đổi mật khẩu thành công.');
+            return redirect(IntendedPath::pull($request))->with('success', 'Đổi mật khẩu thành công.');
         }
 
         return back()->with('success', 'Đổi mật khẩu thành công.');
