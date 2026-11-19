@@ -12,6 +12,7 @@ storage/framework/cache/data/*
 storage/framework/sessions/*
 storage/framework/views/*
 storage/framework/.ready
+bootstrap/cache/*.php
 .env
 .env.*
 !.env.example
