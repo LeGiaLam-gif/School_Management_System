@@ -66,11 +66,11 @@ class ClassSectionController extends Controller
         $lecturers = Lecturer::with('user')->get()->sortBy('user.name');
 
         $stats = [
-            'total_sections'      => ClassSection::count(),
-            'open_sections'       => ClassSection::where('status', ClassSectionStatus::Open->value)->count(),
-            'in_progress_sections'=> ClassSection::where('status', ClassSectionStatus::InProgress->value)->count(),
-            'total_enrolled'      => (int) ClassSection::sum('enrolled_count'),
-            'unassigned_count'    => ClassSection::whereNull('lecturer_id')->count(),
+            'total_sections' => ClassSection::count(),
+            'open_sections' => ClassSection::where('status', ClassSectionStatus::Open->value)->count(),
+            'in_progress_sections' => ClassSection::where('status', ClassSectionStatus::InProgress->value)->count(),
+            'total_enrolled' => (int) ClassSection::sum('enrolled_count'),
+            'unassigned_count' => ClassSection::whereNull('lecturer_id')->count(),
         ];
 
         return view('teaching::admin.class-sections.index', compact(

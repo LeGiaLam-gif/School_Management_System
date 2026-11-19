@@ -44,10 +44,10 @@ class CourseController extends Controller
         $departments = Department::orderBy('name')->get();
 
         $stats = [
-            'total_courses'        => Course::count(),
-            'active_courses'       => Course::where('is_active', true)->count(),
-            'total_credits'        => (int) Course::sum('credits'),
-            'courses_with_prereq'  => DB::table('course_prerequisites')->distinct('course_id')->count('course_id'),
+            'total_courses' => Course::count(),
+            'active_courses' => Course::where('is_active', true)->count(),
+            'total_credits' => (int) Course::sum('credits'),
+            'courses_with_prereq' => DB::table('course_prerequisites')->distinct('course_id')->count('course_id'),
         ];
 
         return view('academic::admin.courses.index', compact('courses', 'departments', 'stats'));
@@ -129,6 +129,7 @@ class CourseController extends Controller
     {
         if ($course->requiredBy()->exists()) {
             $dependents = $course->requiredBy->pluck('code')->implode(', ');
+
             return back()->with('error', "Không thể xóa học phần {$course->code} vì đang là môn tiên quyết cho: {$dependents}.");
         }
 

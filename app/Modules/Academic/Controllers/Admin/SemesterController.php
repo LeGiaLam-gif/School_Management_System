@@ -45,9 +45,9 @@ class SemesterController extends Controller
 
         $stats = [
             'total_semesters' => Semester::count(),
-            'current_name'    => $currentSemester ? ($currentSemester->name . ' (' . $currentSemester->academic_year . ')') : 'Chưa thiết lập',
-            'open_reg_count'  => Semester::all()->filter(fn ($s) => $s->isRegistrationOpen())->count(),
-            'total_sections'  => ClassSection::count(),
+            'current_name' => $currentSemester ? ($currentSemester->name.' ('.$currentSemester->academic_year.')') : 'Chưa thiết lập',
+            'open_reg_count' => Semester::all()->filter(fn ($s) => $s->isRegistrationOpen())->count(),
+            'total_sections' => ClassSection::count(),
         ];
 
         return view('academic::admin.semesters.index', compact('semesters', 'academicYears', 'stats', 'currentSemester'));

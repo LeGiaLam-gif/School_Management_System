@@ -106,10 +106,10 @@ class WorkspaceController extends Controller
             $users = $query->orderBy('created_at', 'desc')->paginate(15)->withQueryString();
 
             $stats = [
-                'total_users'     => User::count(),
-                'total_students'  => Student::count(),
+                'total_users' => User::count(),
+                'total_students' => Student::count(),
                 'total_lecturers' => Lecturer::count(),
-                'total_admins'    => User::role(RoleName::Admin->value)->count(),
+                'total_admins' => User::role(RoleName::Admin->value)->count(),
             ];
 
             return view('identity::admin.users.index', compact('users', 'stats'));

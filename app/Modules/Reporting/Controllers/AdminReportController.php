@@ -27,32 +27,32 @@ class AdminReportController extends Controller
 
         // 1. Thống kê người dùng
         $userStats = [
-            'total_students'      => Student::count(),
-            'active_students'     => Student::whereHas('user', fn ($q) => $q->where('status', UserStatus::Active->value))->count(),
-            'locked_students'     => Student::whereHas('user', fn ($q) => $q->where('status', UserStatus::Locked->value))->count(),
-            'total_lecturers'     => Lecturer::count(),
-            'active_lecturers'    => Lecturer::whereHas('user', fn ($q) => $q->where('status', UserStatus::Active->value))->count(),
-            'locked_lecturers'    => Lecturer::whereHas('user', fn ($q) => $q->where('status', UserStatus::Locked->value))->count(),
-            'total_admins'        => User::whereHas('roles', fn ($q) => $q->where('name', RoleName::Admin->value))->count(),
+            'total_students' => Student::count(),
+            'active_students' => Student::whereHas('user', fn ($q) => $q->where('status', UserStatus::Active->value))->count(),
+            'locked_students' => Student::whereHas('user', fn ($q) => $q->where('status', UserStatus::Locked->value))->count(),
+            'total_lecturers' => Lecturer::count(),
+            'active_lecturers' => Lecturer::whereHas('user', fn ($q) => $q->where('status', UserStatus::Active->value))->count(),
+            'locked_lecturers' => Lecturer::whereHas('user', fn ($q) => $q->where('status', UserStatus::Locked->value))->count(),
+            'total_admins' => User::whereHas('roles', fn ($q) => $q->where('name', RoleName::Admin->value))->count(),
         ];
 
         // 2. Thống kê học vụ & cơ cấu
         $academicStats = [
-            'total_departments'   => Department::count(),
-            'total_programs'      => Program::count(),
+            'total_departments' => Department::count(),
+            'total_programs' => Program::count(),
             'total_admin_classes' => AdministrativeClass::count(),
-            'total_courses'       => Course::count(),
-            'active_courses'      => Course::where('is_active', true)->count(),
-            'total_semesters'     => Semester::count(),
+            'total_courses' => Course::count(),
+            'active_courses' => Course::where('is_active', true)->count(),
+            'total_semesters' => Semester::count(),
         ];
 
         // 3. Thống kê lớp học phần & giảng dạy
         $teachingStats = [
-            'total_sections'      => ClassSection::count(),
-            'current_sections'    => $currentSemester ? ClassSection::where('semester_id', $currentSemester->id)->count() : 0,
-            'total_enrolled'      => (int) ClassSection::sum('enrolled_count'),
+            'total_sections' => ClassSection::count(),
+            'current_sections' => $currentSemester ? ClassSection::where('semester_id', $currentSemester->id)->count() : 0,
+            'total_enrolled' => (int) ClassSection::sum('enrolled_count'),
             'unassigned_sections' => ClassSection::whereNull('lecturer_id')->count(),
-            'total_enrollments'   => Enrollment::count(),
+            'total_enrollments' => Enrollment::count(),
         ];
 
         // 4. Thống kê sinh viên theo Khoa
@@ -91,7 +91,7 @@ class AdminReportController extends Controller
     public function exportCsv(Request $request): StreamedResponse
     {
         $type = $request->input('type', 'class_sections');
-        $fileName = 'hta_report_' . $type . '_' . now()->format('Ymd_His') . '.csv';
+        $fileName = 'hta_report_'.$type.'_'.now()->format('Ymd_His').'.csv';
 
         return response()->streamDownload(function () use ($type) {
             $handle = fopen('php://output', 'w');

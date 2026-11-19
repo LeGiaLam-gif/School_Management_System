@@ -7,6 +7,7 @@ use App\Modules\Academic\Models\Department;
 use App\Modules\Academic\Models\Semester;
 use App\Modules\Identity\Models\User;
 use App\Shared\Enums\RoleName;
+use Illuminate\Foundation\Http\Middleware\ValidateCsrfToken;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\CreatesRoles;
 use Tests\TestCase;
@@ -16,13 +17,14 @@ class AdminAcademicManagementTest extends TestCase
     use CreatesRoles, RefreshDatabase;
 
     private User $admin;
+
     private Department $department;
 
     protected function setUp(): void
     {
         parent::setUp();
         $this->seedRoles();
-        $this->withoutMiddleware(\Illuminate\Foundation\Http\Middleware\ValidateCsrfToken::class);
+        $this->withoutMiddleware(ValidateCsrfToken::class);
 
         $this->admin = User::factory()->withRole(RoleName::Admin)->create();
         $this->department = Department::factory()->create([

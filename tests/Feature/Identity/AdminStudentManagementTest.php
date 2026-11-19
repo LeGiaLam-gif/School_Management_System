@@ -10,6 +10,7 @@ use App\Shared\Enums\Gender;
 use App\Shared\Enums\RoleName;
 use App\Shared\Enums\StudentStatus;
 use App\Shared\Enums\UserStatus;
+use Illuminate\Foundation\Http\Middleware\ValidateCsrfToken;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\CreatesRoles;
 use Tests\TestCase;
@@ -19,12 +20,13 @@ class AdminStudentManagementTest extends TestCase
     use CreatesRoles, RefreshDatabase;
 
     protected User $admin;
+
     protected Program $program;
 
     protected function setUp(): void
     {
         parent::setUp();
-        $this->withoutMiddleware(\Illuminate\Foundation\Http\Middleware\ValidateCsrfToken::class);
+        $this->withoutMiddleware(ValidateCsrfToken::class);
         $this->seedRoles();
 
         $this->admin = User::factory()->withRole(RoleName::Admin)->create();

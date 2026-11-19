@@ -10,6 +10,7 @@ use App\Modules\Identity\Models\User;
 use App\Modules\Teaching\Models\ClassSection;
 use App\Shared\Enums\ClassSectionStatus;
 use App\Shared\Enums\RoleName;
+use Illuminate\Foundation\Http\Middleware\ValidateCsrfToken;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\CreatesRoles;
 use Tests\TestCase;
@@ -19,15 +20,18 @@ class AdminClassSectionTest extends TestCase
     use CreatesRoles, RefreshDatabase;
 
     private User $admin;
+
     private Course $course;
+
     private Semester $semester;
+
     private Lecturer $lecturer;
 
     protected function setUp(): void
     {
         parent::setUp();
         $this->seedRoles();
-        $this->withoutMiddleware(\Illuminate\Foundation\Http\Middleware\ValidateCsrfToken::class);
+        $this->withoutMiddleware(ValidateCsrfToken::class);
 
         $this->admin = User::factory()->withRole(RoleName::Admin)->create();
 

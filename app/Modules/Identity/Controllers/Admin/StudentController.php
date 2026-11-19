@@ -53,15 +53,15 @@ class StudentController extends Controller
         $students = $query->orderBy('student_code')->paginate(15)->withQueryString();
 
         $programs = Program::orderBy('name')->get();
-        $classes  = AdministrativeClass::orderBy('name')->get();
+        $classes = AdministrativeClass::orderBy('name')->get();
         $cohortYears = Student::select('cohort_year')
             ->distinct()
             ->orderBy('cohort_year', 'desc')
             ->pluck('cohort_year');
 
         $stats = [
-            'total_students'     => Student::count(),
-            'studying_students'  => Student::where('status', StudentStatus::Studying->value)->count(),
+            'total_students' => Student::count(),
+            'studying_students' => Student::where('status', StudentStatus::Studying->value)->count(),
             'suspended_students' => Student::where('status', StudentStatus::Suspended->value)->count(),
             'graduated_students' => Student::where('status', StudentStatus::Graduated->value)->count(),
         ];
@@ -74,11 +74,11 @@ class StudentController extends Controller
     public function create(Request $request): View
     {
         $programs = Program::with('department')->orderBy('name')->get();
-        $classes  = AdministrativeClass::orderBy('name')->get();
-        $genders  = Gender::cases();
+        $classes = AdministrativeClass::orderBy('name')->get();
+        $genders = Gender::cases();
         $statuses = StudentStatus::cases();
 
-        $selectedClassId   = $request->input('class_id');
+        $selectedClassId = $request->input('class_id');
         $selectedProgramId = $request->input('program_id');
 
         return view('identity::admin.students.create', compact(
@@ -91,22 +91,22 @@ class StudentController extends Controller
         $validated = $request->validated();
 
         $account = [
-            'code'     => $validated['student_code'],
-            'name'     => $validated['name'],
-            'email'    => $validated['email'],
+            'code' => $validated['student_code'],
+            'name' => $validated['name'],
+            'email' => $validated['email'],
             'password' => Hash::make($validated['password']),
         ];
 
         $profile = [
-            'student_code'  => $validated['student_code'],
-            'program_id'    => $validated['program_id'],
-            'class_id'      => $validated['class_id'] ?? null,
-            'cohort_year'   => $validated['cohort_year'],
+            'student_code' => $validated['student_code'],
+            'program_id' => $validated['program_id'],
+            'class_id' => $validated['class_id'] ?? null,
+            'cohort_year' => $validated['cohort_year'],
             'date_of_birth' => $validated['date_of_birth'] ?? null,
-            'gender'        => $validated['gender'] ?? null,
-            'phone'         => $validated['phone'] ?? null,
-            'address'       => $validated['address'] ?? null,
-            'status'        => $validated['status'] ?? StudentStatus::Studying->value,
+            'gender' => $validated['gender'] ?? null,
+            'phone' => $validated['phone'] ?? null,
+            'address' => $validated['address'] ?? null,
+            'status' => $validated['status'] ?? StudentStatus::Studying->value,
         ];
 
         $user = $userService->createStudent($account, $profile);
@@ -135,8 +135,8 @@ class StudentController extends Controller
         $student->load(['user', 'program', 'administrativeClass']);
 
         $programs = Program::with('department')->orderBy('name')->get();
-        $classes  = AdministrativeClass::orderBy('name')->get();
-        $genders  = Gender::cases();
+        $classes = AdministrativeClass::orderBy('name')->get();
+        $genders = Gender::cases();
         $statuses = StudentStatus::cases();
 
         return view('identity::admin.students.edit', compact(
@@ -150,9 +150,9 @@ class StudentController extends Controller
 
         DB::transaction(function () use ($validated, $student) {
             $userPayload = [
-                'name'  => $validated['name'],
+                'name' => $validated['name'],
                 'email' => $validated['email'],
-                'code'  => $validated['student_code'],
+                'code' => $validated['student_code'],
             ];
 
             if (! empty($validated['password'])) {
@@ -166,15 +166,15 @@ class StudentController extends Controller
             $student->user->update($userPayload);
 
             $student->update([
-                'student_code'  => $validated['student_code'],
-                'program_id'    => $validated['program_id'],
-                'class_id'      => $validated['class_id'] ?? null,
-                'cohort_year'   => $validated['cohort_year'],
+                'student_code' => $validated['student_code'],
+                'program_id' => $validated['program_id'],
+                'class_id' => $validated['class_id'] ?? null,
+                'cohort_year' => $validated['cohort_year'],
                 'date_of_birth' => $validated['date_of_birth'] ?? null,
-                'gender'        => $validated['gender'] ?? null,
-                'phone'         => $validated['phone'] ?? null,
-                'address'       => $validated['address'] ?? null,
-                'status'        => $validated['status'] ?? $student->status->value,
+                'gender' => $validated['gender'] ?? null,
+                'phone' => $validated['phone'] ?? null,
+                'address' => $validated['address'] ?? null,
+                'status' => $validated['status'] ?? $student->status->value,
             ]);
         });
 
@@ -221,4 +221,3 @@ class StudentController extends Controller
             ->with('success', "Đã xóa sinh viên {$name} thành công.");
     }
 }
-
