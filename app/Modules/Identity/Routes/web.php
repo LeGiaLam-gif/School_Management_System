@@ -30,6 +30,7 @@ Route::middleware(['auth', 'active'])->group(function () {
 
     // Lop 1: role middleware. Lop 2 (Policy theo doi tuong) nam trong controller cua tung module.
     Route::get('/admin', [DashboardController::class, 'admin'])->middleware('role:admin')->name('admin.home');
+    Route::get('/admin/dashboard', [DashboardController::class, 'admin'])->middleware('role:admin')->name('admin.dashboard');
     Route::get('/lecturer', [DashboardController::class, 'lecturer'])->middleware('role:lecturer')->name('lecturer.home');
     Route::get('/student', [DashboardController::class, 'student'])->middleware('role:student')->name('student.home');
 
