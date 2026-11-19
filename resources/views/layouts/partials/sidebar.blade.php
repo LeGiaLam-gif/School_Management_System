@@ -45,20 +45,6 @@
         <span>Hexa Tech <strong>Academy</strong></span>
     </a>
     <nav class="sms-sidebar-nav" aria-label="Điều hướng chính">
-        <div class="sms-sidebar-nav-heading">
-            <button
-                class="sms-sidebar-toggle"
-                type="button"
-                @click="sidebarOpen = !sidebarOpen"
-                :aria-expanded="sidebarOpen.toString()"
-                aria-controls="app-sidebar"
-                aria-label="Ẩn hoặc hiện thanh điều hướng"
-            >
-                <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
-                    <path d="M3 6h18M3 12h18M3 18h18" />
-                </svg>
-            </button>
-        </div>
         @if ($dashboard)
             <a
                 class="sms-sidebar-link {{ request()->routeIs($dashboard['route']) ? 'active' : '' }}"
