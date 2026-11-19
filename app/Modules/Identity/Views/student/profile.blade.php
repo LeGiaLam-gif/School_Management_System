@@ -82,11 +82,13 @@
                         <label class="form-label text-muted small mb-1">Cố vấn học tập</label>
                         <div class="p-2 bg-light rounded border">
                             @php($advisorName = trim(($student->advisor_academic_title ?? '') . ' ' . ($student->advisor_name ?? 'Chưa cập nhật')))
-                            @if (!empty($student->advisor_email))
-                                <a class="text-primary text-break" href="mailto:{{ $student->advisor_email }}">{{ $advisorName }}</a>
-                            @else
-                                {{ $advisorName }}
-                            @endif
+                            <strong>
+                                @if (!empty($student->advisor_email))
+                                    <a class="text-primary text-break" href="mailto:{{ $student->advisor_email }}">{{ $advisorName }}</a>
+                                @else
+                                    {{ $advisorName }}
+                                @endif
+                            </strong>
                         </div>
                     </div>
                     <div class="col-md-6">
@@ -164,34 +166,34 @@
                     Đổi mật khẩu tài khoản
                 </h6>
             </div>
-            <div class="card-body p-4">
+            <div class="card-body p-3">
                 <form method="POST" action="{{ route('profile.password') }}">
                     @csrf
                     @method('PUT')
 
-                    <div class="d-flex flex-column gap-3 mb-3">
-                        <div>
-                            <label for="current_password" class="form-label small fw-semibold">Mật khẩu hiện tại</label>
-                            <input type="password" class="form-control @error('current_password') is-invalid @enderror" id="current_password" name="current_password" required autocomplete="current-password">
+                    <div class="row g-2 mb-2">
+                        <div class="col-12 col-xl-4">
+                            <label for="current_password" class="form-label small fw-semibold mb-1">Mật khẩu hiện tại</label>
+                            <input type="password" class="form-control form-control-sm @error('current_password') is-invalid @enderror" id="current_password" name="current_password" required autocomplete="current-password">
                             @error('current_password')
                                 <div class="invalid-feedback">{{ $message }}</div>
                             @enderror
                         </div>
-                        <div>
-                            <label for="new_password" class="form-label small fw-semibold">Mật khẩu mới (tối thiểu 8 ký tự)</label>
-                            <input type="password" class="form-control @error('new_password') is-invalid @enderror" id="new_password" name="new_password" required autocomplete="new-password">
+                        <div class="col-12 col-xl-4">
+                            <label for="new_password" class="form-label small fw-semibold mb-1">Mật khẩu mới (tối thiểu 8 ký tự)</label>
+                            <input type="password" class="form-control form-control-sm @error('new_password') is-invalid @enderror" id="new_password" name="new_password" required autocomplete="new-password">
                             @error('new_password')
                                 <div class="invalid-feedback">{{ $message }}</div>
                             @enderror
                         </div>
-                        <div>
-                            <label for="new_password_confirmation" class="form-label small fw-semibold">Xác nhận mật khẩu mới</label>
-                            <input type="password" class="form-control" id="new_password_confirmation" name="new_password_confirmation" required autocomplete="new-password">
+                        <div class="col-12 col-xl-4">
+                            <label for="new_password_confirmation" class="form-label small fw-semibold mb-1">Xác nhận mật khẩu mới</label>
+                            <input type="password" class="form-control form-control-sm" id="new_password_confirmation" name="new_password_confirmation" required autocomplete="new-password">
                         </div>
                     </div>
 
                     <div class="d-flex justify-content-end">
-                        <button type="submit" class="btn btn-outline-danger px-4">
+                        <button type="submit" class="btn btn-sm btn-outline-danger px-3">
                             Đổi mật khẩu
                         </button>
                     </div>
