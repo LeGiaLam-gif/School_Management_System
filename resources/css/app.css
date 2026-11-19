@@ -1142,27 +1142,34 @@ body.sms-body {
     box-shadow: 3px 6px 18px rgba(39, 56, 115, 0.2);
 }
 
+.sms-sidebar-reopen-tab:hover .sms-sidebar-reopen-arrow {
+    transform: translateX(3px);
+}
+
 .sms-sidebar-reopen-tab:focus-visible {
     outline: 2px solid #273873;
     outline-offset: 2px;
 }
 
-.sms-sidebar-reopen-bar {
-    display: inline-block;
-    width: 3px;
-    height: 18px;
-    background-color: #273873;
-    border-radius: 2px;
-}
-
 .sms-sidebar-reopen-icon {
-    width: 20px;
-    height: 20px;
+    width: 18px;
+    height: 18px;
     fill: none;
     stroke: currentColor;
     stroke-width: 2.2;
     stroke-linecap: round;
     stroke-linejoin: round;
+}
+
+.sms-sidebar-reopen-arrow {
+    width: 18px;
+    height: 18px;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 2.4;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    transition: transform 180ms ease;
 }
 
 /* Các lớp tiện ích layout */

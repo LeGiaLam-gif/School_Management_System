@@ -23,9 +23,11 @@
                 aria-controls="app-sidebar"
                 title="Mở thanh điều hướng"
             >
-                <span class="sms-sidebar-reopen-bar" aria-hidden="true"></span>
                 <svg class="sms-sidebar-reopen-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
                     <path d="M4 6h16M4 12h16M4 18h16" />
+                </svg>
+                <svg class="sms-sidebar-reopen-arrow" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+                    <path d="M5 12h14M12 5l7 7-7 7" />
                 </svg>
             </button>
 
