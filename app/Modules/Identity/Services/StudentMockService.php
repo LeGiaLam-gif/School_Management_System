@@ -27,6 +27,8 @@ class StudentMockService
                     ->first();
 
                 if ($student !== null) {
+                    $advisor = $student->administrativeClass?->advisorLecturer;
+
                     return (object) [
                         'user_id' => $user->id,
                         'student_code' => $student->student_code ?? $user->code,
@@ -45,7 +47,9 @@ class StudentMockService
                         'program_code' => $student->program->code ?? 'SE01',
                         'class_code' => $student->administrativeClass->code ?? 'SE23.01',
                         'class_name' => $student->administrativeClass->name ?? 'Lớp Kỹ thuật Phần mềm 2023-01',
-                        'advisor_name' => $student->administrativeClass->advisorLecturer->user->name ?? 'ThS. Hoàng Tuấn Anh',
+                        'advisor_name' => $advisor?->user?->name,
+                        'advisor_academic_title' => $advisor?->academic_title,
+                        'advisor_email' => $advisor?->user?->email,
                         'duration_years' => $student->program->duration_years ?? 4,
                         'total_credits_required' => $student->program->total_credits_required ?? 140,
                     ];
@@ -75,6 +79,8 @@ class StudentMockService
             'class_code' => 'SE23.01',
             'class_name' => 'Lớp Kỹ thuật Phần mềm 2023-01',
             'advisor_name' => 'ThS. Hoàng Tuấn Anh',
+            'advisor_academic_title' => null,
+            'advisor_email' => null,
             'duration_years' => 4,
             'total_credits_required' => 140,
         ];

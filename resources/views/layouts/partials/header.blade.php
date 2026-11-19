@@ -1,6 +1,6 @@
 <header class="sms-topbar">
     <button
-        class="sms-sidebar-toggle sms-sidebar-toggle-mobile"
+        class="sms-sidebar-toggle"
         type="button"
         @click="sidebarOpen = !sidebarOpen"
         :aria-expanded="sidebarOpen.toString()"

@@ -344,17 +344,20 @@ body.sms-body {
     background: #fff;
 }
 
+.sms-student-dashboard .card,
 .sms-student-profile-page .card {
     border-color: #e0e9e1;
     border-radius: 15px;
     box-shadow: 0 6px 18px rgba(43, 62, 54, 0.045) !important;
 }
 
+.sms-student-dashboard .card-header,
 .sms-student-profile-page .card-header {
     color: var(--sms-teal-dark);
     background: #f7faf7 !important;
 }
 
+.sms-student-dashboard .text-primary,
 .sms-student-profile-page .text-primary {
     color: var(--sms-teal-dark) !important;
 }
@@ -379,11 +382,13 @@ body.sms-body {
     border-color: var(--sms-teal-dark);
 }
 
+.sms-student-dashboard .btn-outline-primary,
 .sms-student-profile-page .btn-outline-primary {
     color: var(--sms-teal-dark);
     border-color: #78ad9d;
 }
 
+.sms-student-dashboard .btn-outline-primary:hover,
 .sms-student-profile-page .btn-outline-primary:hover {
     color: #fff;
     background-color: var(--sms-teal);
@@ -1671,5 +1676,70 @@ body.sms-body {
     background: linear-gradient(135deg, #226b5c 0%, #378b78 100%);
     color: white;
     border-radius: 14px;
+}
+
+
+#student-profile-page {
+    --bs-primary-rgb: 34, 107, 92;
+    --bs-primary-bg-subtle: #e8f4ef;
+    --bs-border-color: #d4e9e0;
+}
+
+#student-profile-page .card {
+    --bs-card-border-color: var(--bs-border-color);
+}
+
+#student-profile-page .btn-primary {
+    --bs-btn-bg: var(--sms-teal-dark);
+    --bs-btn-border-color: var(--sms-teal-dark);
+}
+
+#student-profile-page .btn-outline-primary {
+    --bs-btn-color: var(--sms-teal-dark);
+    --bs-btn-border-color: var(--sms-teal-dark);
+}
+
+#student-profile-page :is(.btn-primary, .btn-outline-primary) {
+    --bs-btn-hover-bg: var(--sms-teal);
+    --bs-btn-hover-border-color: var(--sms-teal);
+    --bs-btn-active-bg: var(--sms-teal-dark);
+    --bs-btn-active-border-color: var(--sms-teal-dark);
+    --bs-btn-focus-shadow-rgb: var(--bs-primary-rgb);
+}
+
+.sms-student-dashboard .sms-student-action-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.sms-student-dashboard .sms-student-action-card:not(.is-available) {
+    background: #f3f5f4;
+}
+
+.sms-student-dashboard .sms-student-action-card:not(.is-available) .sms-student-action-icon {
+    color: #697674;
+    background: #e8ecea;
+}
+
+.sms-student-dashboard .sms-student-action-card:focus-within {
+    outline: 2px solid var(--sms-teal-dark);
+    outline-offset: 2px;
+}
+
+.sms-student-dashboard .sms-credit-ring {
+    display: block;
+    flex: 0 0 auto;
+}
+
+@media (max-width: 767.98px) {
+    .sms-app-shell:has(.sms-student-dashboard, #student-profile-page) .sms-sidebar {
+        top: 70px;
+        height: calc(100dvh - 70px);
+    }
+}
+
+@media (min-width: 576px) {
+    .sms-student-dashboard .sms-student-action-grid {
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+    }
 }
 
