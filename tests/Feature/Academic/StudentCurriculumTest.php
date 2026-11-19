@@ -40,8 +40,9 @@ class StudentCurriculumTest extends TestCase
         $response = $this->actingAs($student)->get('/student/curriculum');
 
         $response->assertStatus(200);
-        $response->assertSee('Khung Chương Trình Đào Tạo');
-        $response->assertSee('Kỹ thuật Phần mềm');
+        $response->assertSee('Chương trình khung');
+        $response->assertSee('SE01');
+        $response->assertSee('Số tín chỉ');
         $response->assertSee('Học kỳ 1');
         $response->assertSee('CS101');
         $response->assertSee('Nhập môn lập trình');

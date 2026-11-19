@@ -38,7 +38,7 @@ class StudentAnnouncementUITest extends TestCase
         $response = $this->actingAs($student)->get('/student/announcements');
 
         $response->assertStatus(200);
-        $response->assertSee('Hộp Thông Báo Sinh Viên');
+        $response->assertSee('Hộp thông báo sinh viên');
         $response->assertSee('Kế hoạch Đăng ký học phần');
     }
 

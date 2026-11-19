@@ -106,7 +106,7 @@
         <div class="row g-3">
             <section class="col-12 col-lg-6" aria-labelledby="student-stats">
                 <div class="card h-100">
-                    <div class="card-header bg-light d-flex flex-wrap align-items-center justify-content-between gap-2 py-3">
+                    <div class="card-header d-flex flex-wrap align-items-center justify-content-between gap-2 py-3">
                         <h2 id="student-stats" class="h6 mb-0">Thống kê học tập</h2>
                         <a href="{{ route('student.curriculum') }}" class="btn btn-sm btn-outline-success"
                             style="--bs-btn-color: var(--sms-teal-dark); --bs-btn-border-color: var(--sms-teal);
@@ -159,7 +159,7 @@
 
             <div class="col-12 col-lg-6 d-flex flex-column gap-3">
                 <a href="{{ route('student.announcements') }}"
-                    class="card text-decoration-none {{ $announcementCount > 0 ? 'bg-danger-subtle text-danger-emphasis border-danger-subtle' : 'text-body' }}">
+                    class="card sms-student-announcement-card text-decoration-none">
                     <div class="card-body d-flex flex-wrap align-items-center justify-content-between gap-2">
                         <h2 class="h6 mb-0">Thông báo mới</h2>
                         <span class="small fw-semibold">
@@ -168,8 +168,8 @@
                     </div>
                 </a>
 
-                <section class="card" aria-labelledby="student-schedule" style="--bs-border-color: #d4e9e0;">
-                    <div class="card-header bg-light d-flex flex-wrap align-items-center justify-content-between gap-2 py-3">
+                <section class="card" aria-labelledby="student-schedule">
+                    <div class="card-header d-flex flex-wrap align-items-center justify-content-between gap-2 py-3">
                         <h2 id="student-schedule" class="h6 mb-0">Lịch học trong ngày</h2>
                         <a href="{{ route('student.timetable') }}" class="btn btn-sm btn-outline-success"
                             style="--bs-btn-color: var(--sms-teal-dark); --bs-btn-border-color: var(--sms-teal);
