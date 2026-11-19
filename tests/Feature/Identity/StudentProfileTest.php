@@ -55,11 +55,11 @@ class StudentProfileTest extends TestCase
         $response->assertSee((string) $student->cohort_year);
         $response->assertSee($student->program->name);
         $response->assertSee($student->program->department->name);
-        $response->assertSee('>Khoa trực thuộc</label>', false);
+        $response->assertSee('>Khoa</label>', false);
         $response->assertSee(route('profile.password'));
         $response->assertDontSee('KTPM');
         $response->assertDontSee('CNTT');
-        $response->assertSee('Thông tin Khoa, Ngành & Lớp sinh hoạt', false);
+        $this->assertMatchesRegularExpression('/<\/svg>\s*Thông tin\s*<\/h6>/', $response->getContent());
     }
 
     public function test_student_can_update_contact_info(): void

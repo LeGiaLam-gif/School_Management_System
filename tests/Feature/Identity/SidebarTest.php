@@ -100,11 +100,10 @@ class SidebarTest extends TestCase
         $this->assertStringNotContainsString('href="#"', $sidebar);
     }
 
-    public function test_student_dashboard_uses_the_shared_welcome_design_and_student_details(): void
+    public function test_student_dashboard_shows_the_welcome_banner_and_seven_shortcuts(): void
     {
         $student = User::factory()->student()->create([
             'name' => 'Nguyen Thi Mai',
-            'code' => 'SV00002',
         ]);
 
         $response = $this->actingAs($student)
@@ -112,24 +111,27 @@ class SidebarTest extends TestCase
             ->assertOk()
             ->assertSee('sms-welcome-card')
             ->assertSee('Chào mừng trở lại, Nguyen Thi Mai')
-            ->assertSee('SV00002')
             ->assertSee('HỆ THỐNG QUẢN LÝ ĐÀO TẠO')
-            ->assertSee('Ngành:')
-            ->assertSee('Lớp SH:')
             ->assertSee('Đang học')
-            ->assertSee('class="sms-student-action-grid"', false)
             ->assertSee('Điểm &amp; GPA', false)
             ->assertSee('Thời khóa biểu')
             ->assertSee('Chuyên cần')
             ->assertSee('Thông báo')
-            ->assertDontSee('>Học vụ<', false)
             ->assertDontSee('>Kết quả<', false)
             ->assertDontSee('href="#"', false)
             ->assertDontSee('Theo dõi lịch học', false)
             ->assertDontSee('Xem thông tin sinh viên', false)
-            ->assertSee(route('student.profile'));
+            ->assertSee('Hồ sơ cá nhân');
 
-        $this->assertSame(7, substr_count($response->getContent(), 'class="sms-student-action-card'));
+        $this->assertMatchesRegularExpression(
+            '/<nav class="sms-student-action-grid(?:\s[^"]*)?"/',
+            $response->getContent(),
+        );
+        $this->assertSame(7, substr_count($response->getContent(), '<article class="sms-student-action-card '));
+        $this->assertMatchesRegularExpression(
+            '/<a class="stretched-link" href="'.preg_quote(route('student.profile'), '/').'">\s*Hồ sơ cá nhân\s*<\/a>/',
+            $response->getContent(),
+        );
     }
 
     public function test_non_student_sidebar_does_not_show_student_navigation(): void
