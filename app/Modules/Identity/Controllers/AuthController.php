@@ -36,7 +36,7 @@ class AuthController extends Controller
             return redirect()->route('password.first.edit');
         }
 
-        return redirect()->intended(route('home'));
+        return redirect()->intended('/');
     }
 
     public function logout(Request $request): RedirectResponse

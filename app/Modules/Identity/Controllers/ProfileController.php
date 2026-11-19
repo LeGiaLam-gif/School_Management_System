@@ -54,7 +54,7 @@ class ProfileController extends Controller
         if ($firstChange) {
             $request->session()->regenerate();
 
-            return redirect()->intended(route('home'))->with('success', 'Đổi mật khẩu thành công.');
+            return redirect()->intended('/')->with('success', 'Đổi mật khẩu thành công.');
         }
 
         return back()->with('success', 'Đổi mật khẩu thành công.');
