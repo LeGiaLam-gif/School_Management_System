@@ -4,6 +4,7 @@ namespace App\Modules\Identity\Controllers;
 
 use App\Modules\Identity\Requests\LoginRequest;
 use App\Modules\Identity\Services\AuthService;
+use App\Modules\Identity\Support\IntendedPath;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -36,7 +37,7 @@ class AuthController extends Controller
             return redirect()->route('password.first.edit');
         }
 
-        return redirect()->intended(route('home'));
+        return redirect(IntendedPath::pull($request));
     }
 
     public function logout(Request $request): RedirectResponse
