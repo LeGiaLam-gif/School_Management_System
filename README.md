@@ -25,16 +25,18 @@ Tài khoản mẫu (mật khẩu `password`): `superadmin@example.com`, `admin@e
 Lệnh thường dùng: `make test`, `make lint`, `make analyse`, `make fresh`, `make shell` (xem `Makefile`).
 Chạy không cần Docker: xem [docs/04-team/kickoff.md](docs/04-team/kickoff.md).
 
-## Deploy lên Render
+## Triển khai Cloud (Render + TiDB)
 
-Tạo Web Service kiểu Docker, dùng thư mục gốc repository làm Docker Context và đặt Dockerfile là
-`docker/render/Dockerfile`. Nginx và PHP-FPM chạy trong cùng container; Nginx tự lắng nghe cổng `PORT` do Render cấp.
-Health check path: `/up`.
+- **Live Demo:** https://hexatech.onrender.com
 
-Thiết lập các biến môi trường trên Render (không đưa bí mật vào Git): `APP_KEY`, `APP_URL` (URL HTTPS của service),
-`APP_ENV=production`, `APP_DEBUG=false`, cùng cấu hình `DB_*` và `REDIS_*` trỏ đến database/cache có thể truy cập từ
-Render. Chạy `php artisan migrate --force` khi triển khai phiên bản có migration mới; image không tự chạy seeder dữ liệu
-mẫu trong môi trường production.
+Bên cạnh môi trường phát triển local với Docker Compose, dự án đã được triển khai thực tế theo mô hình **Cloud (PaaS + DBaaS)** — đây là một phương án triển khai hoàn chỉnh và là **điểm cộng** về khả năng vận hành của hệ thống:
+
+- **Ứng dụng (Render):** Triển khai Laravel trên Render Web Service, tự động build và chạy ở chế độ production.
+- **Cơ sở dữ liệu (TiDB Cloud):** Sử dụng TiDB (cơ sở dữ liệu phân tán tương thích giao thức MySQL) làm DBaaS trên cloud, kết nối bảo mật qua SSL/TLS.
+- **Ý nghĩa & Điểm cộng:**
+  - Chứng minh hệ thống sẵn sàng cho môi trường production thực tế, không chỉ giới hạn ở local.
+  - Đảm bảo tính tương thích và khả năng chuyển đổi linh hoạt giữa MySQL 8 (local/CI) và TiDB (cloud).
+  - Tách biệt hạ tầng ứng dụng và cơ sở dữ liệu, dễ dàng cấu hình qua biến môi trường (`.env`) và mở rộng khi cần.
 
 ## Cấu trúc
 
