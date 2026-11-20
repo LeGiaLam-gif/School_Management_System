@@ -11,6 +11,17 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
+/**
+ * @property int $author_id
+ * @property int|null $class_section_id
+ * @property \App\Shared\Enums\AnnouncementScope $scope
+ * @property string $title
+ * @property string $body
+ * @property bool $is_pinned
+ * @property \Carbon\CarbonInterface $published_at
+ * @property-read \App\Modules\Identity\Models\User $author
+ * @property-read \App\Modules\Teaching\Models\ClassSection $classSection
+ */
 class Announcement extends Model
 {
     use HasFactory;

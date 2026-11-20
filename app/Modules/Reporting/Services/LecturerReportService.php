@@ -217,7 +217,7 @@ class LecturerReportService
             $sectionWarnings = 0;
 
             $course = $section->course;
-            $courseName = $course instanceof Course ? $course->name : '—';
+            $courseName = $course->name;
 
             foreach ($sectionEnrollments as $enrollment) {
                 $absentCount = (int) ($absentCountsByEnrollment->get($enrollment->id) ?? 0);

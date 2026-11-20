@@ -107,12 +107,7 @@ class AdminReportController extends Controller
                             $adminClass = $student->administrativeClass;
                             $programName = ($adminClass && $adminClass->program) ? $adminClass->program->name : '';
                             $adminClassCode = $adminClass ? $adminClass->code : '';
-                            $userStatus = $student->user->status instanceof UserStatus ? $student->user->status->label() : '';
-
-                            $adminClass = $student->administrativeClass;
-                            $programName = ($adminClass && $adminClass->program) ? $adminClass->program->name : '';
-                            $adminClassCode = $adminClass ? $adminClass->code : '';
-                            $userStatus = $student->user->status instanceof \App\Shared\Enums\UserStatus ? $student->user->status->label() : '';
+                            $userStatus = $student->user->isActive() ? 'Hoạt động' : 'Đã khóa';
 
                             fputcsv($handle, [
                                 $student->user->code ?? '',

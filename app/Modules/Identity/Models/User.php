@@ -16,6 +16,21 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Spatie\Permission\Traits\HasRoles;
 
+/**
+ * @property int $id
+ * @property string $code
+ * @property string $name
+ * @property string $email
+ * @property string $password
+ * @property UserStatus $status
+ * @property bool $must_change_password
+ * @property string|null $phone
+ * @property string|null $address
+ * @property \Carbon\CarbonInterface|null $email_verified_at
+ * @property \Carbon\CarbonInterface|null $last_login_at
+ * @property-read \App\Modules\Identity\Models\Student|null $student
+ * @property-read \App\Modules\Teaching\Models\Lecturer|null $lecturer
+ */
 class User extends Authenticatable
 {
     use Auditable, HasFactory, HasRoles, Notifiable, SoftDeletes;

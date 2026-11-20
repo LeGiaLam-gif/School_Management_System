@@ -90,7 +90,7 @@ class LecturerReportController
             foreach ($report['classSummaries'] as $item) {
                 $section = $item['section'];
                 $course = $section->course;
-                $courseName = $course instanceof Course ? $course->name : '';
+                $courseName = $course->name;
                 $status = $section->status;
                 $statusLabel = $status instanceof ClassSectionStatus ? $status->label() : (string) $status;
 
