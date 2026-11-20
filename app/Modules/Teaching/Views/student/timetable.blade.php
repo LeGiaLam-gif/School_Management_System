@@ -75,17 +75,11 @@
         gap: 4px;
     }
     .sms-student-timetable .sms-timetable-lesson {
-        height: 158px;
+        min-height: 168px;
         display: flex;
         flex-direction: column;
-        justify-content: space-between;
-    }
-    .sms-student-timetable .sms-timetable-lesson .text-truncate {
-        white-space: normal;
-        display: -webkit-box;
-        -webkit-box-orient: vertical;
-        -webkit-line-clamp: 2;
-        overflow: hidden;
+        gap: .25rem;
+        overflow-wrap: anywhere;
     }
     .sms-student-timetable > .col-12:first-child > .card {
         background: linear-gradient(112deg, #d6a36e 0%, #a9a574 52%, #498f76 100%);
@@ -186,7 +180,7 @@
     <div class="col-12" x-show="viewMode === 'grid'">
         <div class="card border-0 shadow-sm rounded-3 overflow-hidden">
             <div class="table-responsive">
-                <table class="table table-bordered align-middle mb-0 text-center" style="min-width: 1500px; table-layout: fixed;">
+                <table class="table table-bordered align-middle mb-0 text-center" style="min-width: 1900px;">
                     <thead class="table-light">
                         <tr>
                             <th class="sms-shift-column py-3 text-muted small">Ca học</th>
@@ -216,7 +210,7 @@
                                     @endphp
                                     <td class="p-2 align-top {{ $d['is_today'] ? 'bg-light bg-opacity-50' : '' }}" style="height: 125px;">
                                         @if ($items->isNotEmpty())
-                                            <div class="d-flex flex-column gap-2">
+                                            <div class="d-flex flex-column gap-3">
                                                 @foreach ($items as $item)
                                                     <div class="sms-timetable-lesson p-2 rounded-2 text-start shadow-sm">
                                                         <div class="d-flex justify-content-between align-items-center mb-1">
@@ -225,14 +219,14 @@
                                                             </span>
                                                             <span class="small text-muted font-monospace">{{ $item->periods_text }}</span>
                                                         </div>
-                                                        <div class="fw-bold text-dark small text-truncate" title="{{ $item->course_name }}">
+                                                        <div class="fw-bold text-dark small text-nowrap" title="{{ $item->course_name }}">
                                                             {{ $item->course_name }}
                                                         </div>
                                                         <div class="small text-primary fw-semibold mt-1">
                                                             <svg class="sms-timetable-icon" style="color: #338cb2;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M20 10c0 6-8 12-8 12S4 16 4 10a8 8 0 1 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg>{{ $item->room_name }}
                                                         </div>
-                                                        <div class="small text-muted text-truncate fw-bold" title="{{ $item->lecturer_name }}">
-                                                            <svg class="sms-timetable-icon" style="color: #9471b8;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="7" r="4"/><path d="M4 21v-2a8 8 0 0 1 16 0v2"/></svg>{{ $item->lecturer_name }}
+                                                        <div class="small text-muted fw-bold text-nowrap" title="GV: {{ $item->lecturer_name }}">
+                                                            <svg class="sms-timetable-icon" style="color: #9471b8;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="7" r="4"/><path d="M4 21v-2a8 8 0 0 1 16 0v2"/></svg>GV: {{ $item->lecturer_name }}
                                                         </div>
                                                     </div>
                                                 @endforeach

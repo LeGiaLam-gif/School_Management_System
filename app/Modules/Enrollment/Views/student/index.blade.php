@@ -117,6 +117,36 @@
     .sms-student-enrollment > .col-12:first-child .card-body > .d-flex > div:first-child .text-muted {
         color: #fff !important;
     }
+    .sms-credit-summary {
+        flex-shrink: 0;
+        color: #455b53;
+    }
+
+    .sms-credit-summary__icon {
+        display: grid;
+        place-items: center;
+        flex-shrink: 0;
+        width: 3.25rem;
+        height: 3.25rem;
+        border: 1px solid #bde4d6;
+        border-radius: 1rem;
+        background: #e3f5ee;
+        color: #217b63;
+    }
+
+    .sms-credit-summary__value {
+        color: #217b63;
+    }
+
+    .sms-credit-summary__value--over-limit {
+        color: #bf5661;
+    }
+
+    .sms-credit-summary__warning {
+        background-color: #f8dfe2;
+        color: #953f49;
+        white-space: normal;
+    }
 </style>
 <div class="row g-4 sms-student-enrollment" x-data="{ searchKeyword: '' }">
     <!-- Header thông tin đợt đăng ký & Tín chỉ -->
@@ -143,19 +173,25 @@
                     </div>
 
                     <!-- Thống kê tín chỉ sinh viên -->
-                    <div class="bg-light p-3 rounded-3 border text-center text-md-end min-w-200">
-                        <span class="text-muted small fw-semibold">Tín chỉ đã chọn:</span>
-                        <div class="d-flex align-items-baseline justify-content-center justify-content-md-end gap-1 mt-1">
-                            <h2 class="fw-bold text-primary mb-0">{{ $data->total_credits }}</h2>
-                            <span class="text-muted fs-6">/ {{ $data->max_credits }} TC</span>
-                        </div>
-                        <div class="small text-muted mt-1 d-flex flex-wrap justify-content-center justify-content-md-end gap-3">
-                            <span>Tối thiểu {{ $data->min_credits }} tín chỉ</span>
-                            <span>Tối đa {{ $data->max_credits }} tín chỉ</span>
-                        </div>
-                        <span class="badge {{ $data->total_credits >= $data->min_credits ? 'bg-success' : 'bg-warning text-dark' }} mt-1">
-                            {{ $data->total_credits >= $data->min_credits ? 'Đủ tín chỉ tối thiểu' : 'Chưa đủ tín chỉ tối thiểu' }}
+                    <div class="sms-credit-summary d-flex align-items-center gap-3 bg-light py-2 px-3 rounded-3 border">
+                        <span class="sms-credit-summary__icon" aria-hidden="true">
+                            <svg class="sms-enrollment-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M9 4H5v17h14V4h-4M9 2h6v4H9zM8 13l3 3 5-6" />
+                            </svg>
                         </span>
+                        <div>
+                            <p class="mb-1">
+                                <strong @class(['sms-credit-summary__value', 'sms-credit-summary__value--over-limit' => $data->total_credits > $data->max_credits])>{{ $data->total_credits }}</strong><span>/{{ $data->max_credits }} tín chỉ</span>
+                            </p>
+                            <p class="small border-top pt-1 mb-1">Tối thiểu {{ $data->min_credits }} tín chỉ</p>
+                            @if ($data->total_credits > $data->max_credits)
+                                <span class="badge sms-credit-summary__warning">Vượt giới hạn {{ $data->total_credits - $data->max_credits }} tín chỉ</span>
+                            @elseif ($data->total_credits < $data->min_credits)
+                                <span class="badge bg-warning text-dark">Còn thiếu {{ $data->min_credits - $data->total_credits }} tín chỉ</span>
+                            @else
+                                <span class="badge bg-success">Trong giới hạn</span>
+                            @endif
+                        </div>
                     </div>
                 </div>
 
@@ -208,14 +244,13 @@
                                     </span>
                                 </td>
                                 <td>
-                                    <span class="small">{{ $item->lecturer_name }}</span>
+                                    <span class="small fw-bold text-dark">{{ $item->lecturer_name }}</span>
+                                </td>
+                                <td class="text-nowrap">
+                                    <span class="small fw-bold text-dark">{{ $item->schedule_text }} <span class="ms-2">{{ $item->room_name }}</span></span>
                                 </td>
                                 <td>
-                                    <div class="small fw-semibold text-dark">{{ $item->schedule_text }}</div>
-                                    <div class="small text-muted">{{ $item->room_name }}</div>
-                                </td>
-                                <td>
-                                    <span class="small text-muted">{{ $item->registered_at ?? 'Đã đăng ký' }}</span>
+                                    <span class="small fw-bold text-dark">{{ $item->registered_at ?? 'Đã đăng ký' }}</span>
                                 </td>
                                 <td class="text-center px-3">
                                     <form method="POST" action="{{ route('student.enrollment.drop') }}" 
@@ -298,14 +333,13 @@
                                     </span>
                                 </td>
                                 <td>
-                                    <span class="small">{{ $sec->lecturer_name }}</span>
+                                    <span class="small fw-bold text-dark">{{ $sec->lecturer_name }}</span>
                                 </td>
-                                <td>
-                                    <div class="small fw-semibold text-dark">{{ $sec->schedule_text }}</div>
-                                    <div class="small text-muted">{{ $sec->room_name }}</div>
+                                <td class="text-nowrap">
+                                    <span class="small fw-bold text-dark">{{ $sec->schedule_text }} <span class="ms-2">{{ $sec->room_name }}</span></span>
                                 </td>
                                 <td class="text-center">
-                                    <span class="small fw-semibold">{{ $sec->enrolled_count }} / {{ $sec->capacity }}</span>
+                                    <span class="small fw-bold text-dark">{{ $sec->enrolled_count }} / {{ $sec->capacity }}</span>
                                     <div>
                                         @if ($isFull)
                                             <span class="badge bg-danger-subtle text-danger border border-danger-subtle">Hết chỗ</span>
