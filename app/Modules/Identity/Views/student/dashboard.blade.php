@@ -112,7 +112,7 @@
             ['route' => 'student.curriculum', 'title' => 'Chương trình', 'second_line' => 'đào tạo', 'icon' => 'book'],
             ['route' => 'student.enrollment', 'title' => 'Đăng ký học phần', 'icon' => 'edit'],
             ['route' => 'student.timetable', 'title' => 'Thời khóa biểu', 'icon' => 'calendar'],
-            ['route' => 'student.grades', 'title' => 'Điểm & GPA', 'icon' => 'chart'],
+            ['route' => 'student.grades', 'title' => 'Kết quả học tập', 'icon' => 'chart'],
             ['route' => 'student.attendance', 'title' => 'Chuyên cần', 'icon' => 'check'],
             ['route' => 'student.announcements', 'title' => 'Thông báo', 'icon' => 'bell'],
         ];
