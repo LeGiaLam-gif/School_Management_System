@@ -8,6 +8,7 @@ use App\Modules\Identity\Notifications\ResetPasswordNotification;
 use App\Shared\Enums\RoleName;
 use App\Shared\Enums\UserStatus;
 use App\Shared\Traits\Auditable;
+use Carbon\CarbonInterface;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
@@ -26,10 +27,10 @@ use Spatie\Permission\Traits\HasRoles;
  * @property bool $must_change_password
  * @property string|null $phone
  * @property string|null $address
- * @property \Carbon\CarbonInterface|null $email_verified_at
- * @property \Carbon\CarbonInterface|null $last_login_at
- * @property-read \App\Modules\Identity\Models\Student|null $student
- * @property-read \App\Modules\Identity\Models\Lecturer|null $lecturer
+ * @property CarbonInterface|null $email_verified_at
+ * @property CarbonInterface|null $last_login_at
+ * @property-read Student|null $student
+ * @property-read Lecturer|null $lecturer
  */
 class User extends Authenticatable
 {

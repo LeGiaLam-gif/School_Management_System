@@ -3,7 +3,6 @@
 namespace App\Modules\Announcement\Database\Seeders;
 
 use App\Modules\Announcement\Models\Announcement;
-use App\Modules\Identity\Models\Lecturer;
 use App\Modules\Identity\Models\User;
 use App\Modules\Teaching\Models\ClassSection;
 use App\Shared\Enums\AnnouncementScope;
@@ -20,7 +19,7 @@ class AnnouncementDemoSeeder extends Seeder
 
         foreach (ClassSection::with(['course', 'lecturer'])->orderBy('id')->get() as $section) {
             Announcement::firstOrCreate(
-                ['class_section_id' => $section->id, 'title' => 'Thông báo lớp ' . $section->course->name],
+                ['class_section_id' => $section->id, 'title' => 'Thông báo lớp '.$section->course->name],
                 [
                     'author_id' => $section->lecturer->user_id ?? $admin->id,
                     'scope' => AnnouncementScope::ClassSection,

@@ -124,7 +124,7 @@ class AdminReportController extends Controller
                 ClassSection::with(['course', 'semester', 'lecturer.user'])
                     ->chunk(200, function ($sections) use ($handle) {
                         /** @var Collection<int, ClassSection> $sections */
-                        /** @var \Illuminate\Database\Eloquent\Collection<int, ClassSection> $sections */
+                        /** @var Collection<int, ClassSection> $sections */
                         foreach ($sections as $sec) {
                             $statusVal = is_object($sec->status) ? $sec->status->value : $sec->status;
                             $lecturer = $sec->lecturer;

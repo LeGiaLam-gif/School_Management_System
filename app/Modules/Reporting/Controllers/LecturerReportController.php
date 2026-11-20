@@ -2,7 +2,6 @@
 
 namespace App\Modules\Reporting\Controllers;
 
-use App\Modules\Academic\Models\Course;
 use App\Modules\Identity\Models\User;
 use App\Modules\Reporting\Services\LecturerReportService;
 use App\Shared\Enums\ClassSectionStatus;

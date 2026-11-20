@@ -2,7 +2,6 @@
 
 namespace App\Modules\Reporting\Services;
 
-use App\Modules\Academic\Models\Course;
 use App\Modules\Academic\Models\Semester;
 use App\Modules\Attendance\Models\AttendanceRecord;
 use App\Modules\Attendance\Support\AbsenceRateCalculator;
