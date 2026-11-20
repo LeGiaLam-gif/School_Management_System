@@ -1123,6 +1123,114 @@ body.sms-body {
     display: none !important;
 }
 
+/* Nút tab nhỏ ghim cố định ở mép trái màn hình khi Sidebar ẩn */
+.sms-sidebar-reopen-tab {
+    position: fixed;
+    top: 1.25rem; /* top-5 = 20px */
+    left: 0;
+    z-index: 1050; /* z-50 */
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 7px;
+    height: 42px;
+    padding: 0 13px 0 10px;
+    background-color: #e5efe8;
+    color: #273873;
+    border: 1px solid #c9ded6;
+    border-left: none;
+    border-radius: 0 14px 14px 0; /* rounded-r-xl */
+    box-shadow: 2px 4px 14px rgba(39, 56, 115, 0.12);
+    cursor: pointer;
+    text-decoration: none;
+    transition: all 180ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.sms-sidebar-reopen-tab:hover {
+    background-color: #d8e8dc;
+    color: #1b2559;
+    padding-right: 17px;
+    box-shadow: 3px 6px 18px rgba(39, 56, 115, 0.2);
+}
+
+.sms-sidebar-reopen-tab:hover .sms-sidebar-reopen-arrow {
+    transform: translateX(3px);
+}
+
+.sms-sidebar-reopen-tab:focus-visible {
+    outline: 2px solid #273873;
+    outline-offset: 2px;
+}
+
+.sms-sidebar-reopen-icon {
+    width: 18px;
+    height: 18px;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 2.2;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+}
+
+.sms-sidebar-reopen-arrow {
+    width: 18px;
+    height: 18px;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 2.4;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    transition: transform 180ms ease;
+}
+
+/* Các lớp tiện ích layout */
+.fixed {
+    position: fixed !important;
+}
+
+.top-5 {
+    top: 1.25rem !important;
+}
+
+.left-0 {
+    left: 0 !important;
+}
+
+.z-50 {
+    z-index: 1050 !important;
+}
+
+.rounded-r-xl {
+    border-top-right-radius: 0.85rem !important;
+    border-bottom-right-radius: 0.85rem !important;
+}
+
+.pl-10 {
+    padding-left: 2.5rem !important;
+}
+
+.pl-12 {
+    padding-left: 3rem !important;
+}
+
+/* Khi Sidebar ở trạng thái ẩn, tự động thêm padding bên trái cho topbar và header trên cùng của main */
+.sidebar-collapsed .sms-topbar {
+    padding-left: clamp(68px, 5.5vw, 90px);
+    transition: padding-left 180ms ease;
+}
+
+.sidebar-collapsed .sms-sidebar-toggle-mobile {
+    display: none !important;
+}
+
+.sidebar-collapsed-content > :first-child,
+.sidebar-collapsed .hta-page-header,
+.sidebar-collapsed .sms-welcome-card,
+.sidebar-collapsed .sms-workspace-page-heading {
+    padding-left: clamp(48px, 4vw, 64px);
+    transition: padding-left 180ms ease;
+}
+
 @media (max-width: 1050px) {
     .sms-sidebar {
         flex-basis: 218px;

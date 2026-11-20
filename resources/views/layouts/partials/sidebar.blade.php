@@ -139,6 +139,35 @@
             @else
                 </span>
             @endif
+
+            @if ($user->isAdmin() && $item['route'] === 'admin.users.index')
+                <div class="ps-3 ms-2 my-1 border-start d-flex flex-column gap-1" style="border-color: rgba(39, 56, 115, 0.2) !important;">
+                    <a
+                        class="sms-sidebar-link py-1 px-2 {{ request()->routeIs('admin.students.*') ? 'active' : '' }}"
+                        href="{{ route('admin.students.index') }}"
+                        style="min-height: 32px; font-size: 12px;"
+                    >
+                        <svg class="sms-sidebar-icon" style="width: 14px; height: 14px;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></svg>
+                        Sinh viên
+                    </a>
+                    <a
+                        class="sms-sidebar-link py-1 px-2 {{ request()->routeIs('admin.lecturers.*') ? 'active' : '' }}"
+                        href="{{ route('admin.lecturers.index') }}"
+                        style="min-height: 32px; font-size: 12px;"
+                    >
+                        <svg class="sms-sidebar-icon" style="width: 14px; height: 14px;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="9" cy="8" r="3"/><path d="M3 20a6 6 0 0 1 12 0M16 5a3 3 0 0 1 0 6M18 14a5 5 0 0 1 3 4v2"/></svg>
+                        Giảng viên
+                    </a>
+                    <a
+                        class="sms-sidebar-link py-1 px-2 {{ request()->routeIs('admin.administrative-classes.*') ? 'active' : '' }}"
+                        href="{{ route('admin.administrative-classes.index') }}"
+                        style="min-height: 32px; font-size: 12px;"
+                    >
+                        <svg class="sms-sidebar-icon" style="width: 14px; height: 14px;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>
+                        Lớp hành chính
+                    </a>
+                </div>
+            @endif
         @endforeach
     </nav>
     <div class="sms-sidebar-footer">

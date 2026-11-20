@@ -15,7 +15,19 @@ abstract class TestCase extends BaseTestCase
         $_SERVER['APP_ENV'] = 'testing';
 
         $application = parent::createApplication();
-        $connection = $application->make('db')->connection();
+        $connectionName = $application->make('config')->get('database.default');
+        $connectionConfig = $application->make('config')->get("database.connections.{$connectionName}");
+        $driver = $connectionConfig['driver'] ?? null;
+        $database = $connectionConfig['database'] ?? null;
+
+        if ($driver === 'mysql' && is_string($database) && !str_ends_with($database, '_testing')) {
+            $application->make('config')->set(
+                "database.connections.{$connectionName}.database",
+                "{$database}_testing",
+            );
+        }
+
+        $connection = $application->make('db')->connection($connectionName);
         $driver = $connection->getDriverName();
         $database = $connection->getDatabaseName();
 
