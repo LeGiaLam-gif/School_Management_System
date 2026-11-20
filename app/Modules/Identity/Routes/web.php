@@ -56,5 +56,6 @@ Route::middleware(['auth', 'active'])->group(function () {
     Route::middleware('role:student')->prefix('student')->name('student.')->group(function () {
         Route::get('/profile', [StudentProfileController::class, 'show'])->name('profile');
         Route::put('/profile/contact', [StudentProfileController::class, 'updateContact'])->name('profile.contact');
+        Route::put('/profile/password', [ProfileController::class, 'changePassword'])->name('profile.password');
     });
 });

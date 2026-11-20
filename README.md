@@ -25,6 +25,17 @@ Tài khoản mẫu (mật khẩu `password`): `superadmin@example.com`, `admin@e
 Lệnh thường dùng: `make test`, `make lint`, `make analyse`, `make fresh`, `make shell` (xem `Makefile`).
 Chạy không cần Docker: xem [docs/04-team/kickoff.md](docs/04-team/kickoff.md).
 
+## Deploy lên Render
+
+Tạo Web Service kiểu Docker, dùng thư mục gốc repository làm Docker Context và đặt Dockerfile là
+`docker/render/Dockerfile`. Nginx và PHP-FPM chạy trong cùng container; Nginx tự lắng nghe cổng `PORT` do Render cấp.
+Health check path: `/up`.
+
+Thiết lập các biến môi trường trên Render (không đưa bí mật vào Git): `APP_KEY`, `APP_URL` (URL HTTPS của service),
+`APP_ENV=production`, `APP_DEBUG=false`, cùng cấu hình `DB_*` và `REDIS_*` trỏ đến database/cache có thể truy cập từ
+Render. Chạy `php artisan migrate --force` khi triển khai phiên bản có migration mới; image không tự chạy seeder dữ liệu
+mẫu trong môi trường production.
+
 ## Cấu trúc
 
 ```

@@ -36,6 +36,27 @@ class EnrollmentService
 
                 $this->rules->ensureEligible(new EnrollmentContext($student, $section, now()));
 
+                $existing = Enrollment::where('student_id', $student->id)
+                    ->where('class_section_id', $section->id)
+                    ->first();
+
+                if ($existing !== null) {
+                    if ($existing->status === EnrollmentStatus::Registered) {
+                        throw new BusinessRuleException('Bạn đã đăng ký lớp học phần này.', 'BR-01');
+                    }
+
+                    // Tai kich hoat lai dang ky sau khi da tung huy
+                    $existing->update([
+                        'status' => EnrollmentStatus::Registered,
+                        'registered_at' => now(),
+                        'dropped_at' => null,
+                    ]);
+
+                    $section->increment('enrolled_count');
+
+                    return $existing;
+                }
+
                 $enrollment = Enrollment::create([
                     'student_id' => $student->id,
                     'class_section_id' => $section->id,
