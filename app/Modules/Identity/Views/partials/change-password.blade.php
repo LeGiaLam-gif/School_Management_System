@@ -10,22 +10,22 @@
             @csrf
             @method('PUT')
 
-            <div class="d-flex flex-column gap-3 mb-3">
-                <div>
+            <div class="{{ ($showPasswordColumns ?? false) ? 'row g-2' : 'd-flex flex-column gap-3' }} mb-3">
+                <div @class(['col-12 col-xl-4' => $showPasswordColumns ?? false])>
                     <label for="current_password" class="form-label small fw-semibold">Mật khẩu hiện tại</label>
                     <input type="password" class="form-control @error('current_password') is-invalid @enderror" id="current_password" name="current_password" required autocomplete="current-password">
                     @error('current_password')
                         <div class="invalid-feedback">{{ $message }}</div>
                     @enderror
                 </div>
-                <div>
+                <div @class(['col-12 col-xl-4' => $showPasswordColumns ?? false])>
                     <label for="new_password" class="form-label small fw-semibold">Mật khẩu mới (tối thiểu 8 ký tự)</label>
                     <input type="password" class="form-control @error('new_password') is-invalid @enderror" id="new_password" name="new_password" required autocomplete="new-password">
                     @error('new_password')
                         <div class="invalid-feedback">{{ $message }}</div>
                     @enderror
                 </div>
-                <div>
+                <div @class(['col-12 col-xl-4' => $showPasswordColumns ?? false])>
                     <label for="new_password_confirmation" class="form-label small fw-semibold">Xác nhận mật khẩu mới</label>
                     <input type="password" class="form-control" id="new_password_confirmation" name="new_password_confirmation" required autocomplete="new-password">
                 </div>

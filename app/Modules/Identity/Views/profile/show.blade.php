@@ -4,7 +4,8 @@
 
 @section('content')
     <div class="sms-profile-page sms-student-profile-page">
-        <h1 class="h3 sms-profile-title">Hồ sơ cá nhân</h1>
+        @php($isLecturer = $user->isLecturer())
+        <h1 class="{{ $isLecturer ? 'visually-hidden' : 'h3 sms-profile-title' }}">Hồ sơ cá nhân</h1>
 
         <div class="row g-4">
             <div class="col-lg-4">
@@ -107,7 +108,7 @@
                                     <div class="p-2 bg-light rounded border fw-semibold">{{ $user->lecturer->department->name }}</div>
                                 </div>
                                 <div class="col-md-6">
-                                    <label class="form-label text-muted small mb-1">Học hàm / học vị</label>
+                                    <label class="form-label text-muted small mb-1">{{ $isLecturer ? 'Học vị' : 'Học hàm / học vị' }}</label>
                                     <div class="p-2 bg-light rounded border">{{ $user->lecturer->academic_title ?? 'Chưa cập nhật' }}</div>
                                 </div>
                             </div>
@@ -138,7 +139,7 @@
                                         @enderror
                                     </div>
                                     <div class="col-md-6">
-                                        <label class="form-label small fw-semibold text-muted">Email (Cố định)</label>
+                                        <label class="form-label small fw-semibold text-muted">{{ $isLecturer ? 'Email' : 'Email (Cố định)' }}</label>
                                         <input type="email" class="form-control bg-light" value="{{ $user->email }}" disabled readonly>
                                     </div>
                                     <div class="col-12">
@@ -151,14 +152,14 @@
                                 </div>
 
                                 <div class="d-flex justify-content-end">
-                                    <button type="submit" class="btn btn-primary px-4">Lưu thông tin liên hệ</button>
+                                    <button type="submit" class="btn btn-primary {{ $isLecturer ? 'px-2' : 'px-4' }}">Lưu thông tin liên hệ</button>
                                 </div>
                             </form>
                         </div>
                     </section>
                 @endif
 
-                @include('identity::partials.change-password')
+                @include('identity::partials.change-password', ['showPasswordColumns' => $isLecturer])
             </div>
         </div>
     </div>

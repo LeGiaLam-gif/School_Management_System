@@ -1012,6 +1012,21 @@ body.sms-body {
     background: #eaf2f8;
 }
 
+.sms-lecturer-action-icon.sms-action-icon-rose {
+    color: #ac4d4d;
+    background: #fbeaea;
+}
+
+.sms-lecturer-action-icon.sms-action-icon-gold {
+    color: #876214;
+    background: #fff4d2;
+}
+
+.sms-lecturer-action-icon.sms-action-icon-pink {
+    color: #a34580;
+    background: #fae9f4;
+}
+
 .sms-lecturer-action-content {
     display: flex;
     min-height: 38px;
