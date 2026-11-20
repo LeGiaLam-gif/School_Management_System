@@ -29,7 +29,7 @@ use Spatie\Permission\Traits\HasRoles;
  * @property \Carbon\CarbonInterface|null $email_verified_at
  * @property \Carbon\CarbonInterface|null $last_login_at
  * @property-read \App\Modules\Identity\Models\Student|null $student
- * @property-read \App\Modules\Teaching\Models\Lecturer|null $lecturer
+ * @property-read \App\Modules\Identity\Models\Lecturer|null $lecturer
  */
 class User extends Authenticatable
 {
