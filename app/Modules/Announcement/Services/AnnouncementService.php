@@ -8,9 +8,9 @@ use App\Modules\Teaching\Models\ClassSection;
 use App\Shared\Enums\AnnouncementScope;
 use App\Shared\Enums\EnrollmentStatus;
 use App\Shared\Enums\UserStatus;
+use Carbon\CarbonInterface;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Database\Eloquent\Collection as EloquentCollection;
-use Illuminate\Support\Carbon;
 use Illuminate\Support\Collection;
 
 class AnnouncementService
@@ -108,7 +108,7 @@ class AnnouncementService
     }
 
     /**
-     * @param  array{title: string, body: string, is_pinned?: bool, published_at?: Carbon|null}  $data
+     * @param  array{title: string, body: string, is_pinned?: bool, published_at?: CarbonInterface|null}  $data
      */
     public function createClassAnnouncement(User $author, ClassSection $classSection, array $data): Announcement
     {
@@ -124,7 +124,7 @@ class AnnouncementService
     }
 
     /**
-     * @param  array{title: string, body: string, is_pinned?: bool, published_at?: Carbon|null}  $data
+     * @param  array{title: string, body: string, is_pinned?: bool, published_at?: CarbonInterface|null}  $data
      */
     public function updateClassAnnouncement(Announcement $announcement, ClassSection $classSection, array $data): Announcement
     {

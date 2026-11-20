@@ -21,7 +21,7 @@ class AnnouncementDemoSeeder extends Seeder
             Announcement::firstOrCreate(
                 ['class_section_id' => $section->id, 'title' => 'Thông báo lớp '.$section->course->name],
                 [
-                    'author_id' => $section->lecturer->user_id,
+                    'author_id' => $section->lecturer->user_id ?? $admin->id,
                     'scope' => AnnouncementScope::ClassSection,
                     'body' => 'Sinh viên chuẩn bị tài liệu và xem trước nội dung buổi học tới.',
                     'published_at' => now(),

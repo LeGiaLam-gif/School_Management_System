@@ -2,7 +2,6 @@
 
 namespace App\Modules\Reporting\Controllers;
 
-use App\Modules\Academic\Models\Course;
 use App\Modules\Identity\Models\User;
 use App\Modules\Reporting\Services\LecturerReportService;
 use App\Shared\Enums\ClassSectionStatus;
@@ -90,7 +89,7 @@ class LecturerReportController
             foreach ($report['classSummaries'] as $item) {
                 $section = $item['section'];
                 $course = $section->course;
-                $courseName = $course instanceof Course ? $course->name : '';
+                $courseName = $course->name;
                 $status = $section->status;
                 $statusLabel = $status instanceof ClassSectionStatus ? $status->label() : (string) $status;
 

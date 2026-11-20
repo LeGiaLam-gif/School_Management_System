@@ -1,8 +1,10 @@
 <?php
 
 use App\Modules\Academic\Controllers\Admin\AdministrativeClassController;
+use App\Modules\Academic\Controllers\Admin\CourseController;
 use App\Modules\Academic\Controllers\Admin\DepartmentController;
 use App\Modules\Academic\Controllers\Admin\ProgramController;
+use App\Modules\Academic\Controllers\Admin\SemesterController;
 use App\Modules\Academic\Controllers\StudentCurriculumController;
 use Illuminate\Support\Facades\Route;
 
@@ -20,4 +22,7 @@ Route::middleware(['auth', 'active', 'role:admin'])->prefix('admin')->name('admi
     Route::resource('departments', DepartmentController::class);
     Route::resource('programs', ProgramController::class);
     Route::resource('administrative-classes', AdministrativeClassController::class);
+    Route::post('semesters/{semester}/set-current', [SemesterController::class, 'setCurrent'])->name('semesters.set-current');
+    Route::resource('semesters', SemesterController::class);
+    Route::resource('courses', CourseController::class);
 });

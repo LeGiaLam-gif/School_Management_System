@@ -10,6 +10,27 @@
 <body class="sms-body" x-data="{ sidebarOpen: window.innerWidth >= 768 }">
     @if (auth()->check() && ! ($hideAppShell ?? false))
         <div class="sms-app-shell" :class="{ 'sidebar-collapsed': !sidebarOpen }">
+            {{-- Nút tab ghim cố định ở mép trái màn hình khi Sidebar ẩn --}}
+            <button
+                type="button"
+                id="sms-sidebar-reopen-btn"
+                class="sms-sidebar-reopen-tab fixed top-5 left-0 z-50 rounded-r-xl"
+                x-show="!sidebarOpen"
+                x-cloak
+                @click="sidebarOpen = true"
+                aria-label="Mở thanh điều hướng"
+                :aria-expanded="sidebarOpen.toString()"
+                aria-controls="app-sidebar"
+                title="Mở thanh điều hướng"
+            >
+                <svg class="sms-sidebar-reopen-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+                    <path d="M4 6h16M4 12h16M4 18h16" />
+                </svg>
+                <svg class="sms-sidebar-reopen-arrow" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+                    <path d="M5 12h14M12 5l7 7-7 7" />
+                </svg>
+            </button>
+
             @include('layouts.partials.sidebar')
             <div class="sms-main-column">
                 @include('layouts.partials.header')

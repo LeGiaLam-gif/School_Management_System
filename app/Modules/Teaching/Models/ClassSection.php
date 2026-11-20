@@ -17,12 +17,31 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
+/**
+ * @property int $id
+ * @property int $course_id
+ * @property int $semester_id
+ * @property int|null $lecturer_id
+ * @property string $code
+ * @property int $capacity
+ * @property int $enrolled_count
+ * @property ClassSectionStatus $status
+ * @property-read Course $course
+ * @property-read Semester $semester
+ * @property-read Lecturer|null $lecturer
+ */
 class ClassSection extends Model
 {
     use HasFactory, SoftDeletes;
 
     protected $fillable = [
-        'course_id', 'semester_id', 'lecturer_id', 'code', 'capacity', 'enrolled_count', 'status',
+        'course_id',
+        'semester_id',
+        'lecturer_id',
+        'code',
+        'capacity',
+        'enrolled_count',
+        'status',
     ];
 
     protected static function newFactory(): ClassSectionFactory

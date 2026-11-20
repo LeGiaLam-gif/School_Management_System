@@ -1,5 +1,5 @@
 @if (auth()->check() && ! ($hideAppShell ?? false))
-    <main class="sms-page-content">
+    <main class="sms-page-content" :class="{ 'sidebar-collapsed-content pl-12': !sidebarOpen }">
         @include('layouts.partials.alerts')
         @yield('content')
     </main>
@@ -8,4 +8,4 @@
         @include('layouts.partials.alerts')
         @yield('content')
     </main>
-@endif 
+@endif

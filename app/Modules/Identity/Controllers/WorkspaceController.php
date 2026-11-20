@@ -2,6 +2,10 @@
 
 namespace App\Modules\Identity\Controllers;
 
+use App\Modules\Identity\Models\Lecturer;
+use App\Modules\Identity\Models\Student;
+use App\Modules\Identity\Models\User;
+use App\Shared\Enums\RoleName;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
@@ -78,6 +82,39 @@ class WorkspaceController extends Controller
 
     public function admin(Request $request): View
     {
+        $page = $request->route('page');
+
+        if ($page === 'users') {
+            $query = User::with(['roles', 'student', 'lecturer']);
+
+            if ($search = $request->input('search')) {
+                $query->where(function ($q) use ($search) {
+                    $q->where('name', 'like', "%{$search}%")
+                        ->orWhere('email', 'like', "%{$search}%")
+                        ->orWhere('code', 'like', "%{$search}%");
+                });
+            }
+
+            if ($role = $request->input('role')) {
+                $query->role($role);
+            }
+
+            if ($status = $request->input('status')) {
+                $query->where('status', $status);
+            }
+
+            $users = $query->orderBy('created_at', 'desc')->paginate(15)->withQueryString();
+
+            $stats = [
+                'total_users' => User::count(),
+                'total_students' => Student::count(),
+                'total_lecturers' => Lecturer::count(),
+                'total_admins' => User::role(RoleName::Admin->value)->count(),
+            ];
+
+            return view('identity::admin.users.index', compact('users', 'stats'));
+        }
+
         return $this->render($request, self::ADMIN_PAGES, 'Quản trị viên', 'admin.home');
     }
 

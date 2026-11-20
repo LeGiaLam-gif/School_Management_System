@@ -1,6 +1,7 @@
 <?php
 
 use App\Modules\Identity\Controllers\Admin\LecturerController;
+use App\Modules\Identity\Controllers\Admin\StudentController;
 use App\Modules\Identity\Controllers\AuthController;
 use App\Modules\Identity\Controllers\DashboardController;
 use App\Modules\Identity\Controllers\PasswordResetController;
@@ -29,6 +30,7 @@ Route::middleware(['auth', 'active'])->group(function () {
 
     // Lop 1: role middleware. Lop 2 (Policy theo doi tuong) nam trong controller cua tung module.
     Route::get('/admin', [DashboardController::class, 'admin'])->middleware('role:admin')->name('admin.home');
+    Route::get('/admin/dashboard', [DashboardController::class, 'admin'])->middleware('role:admin')->name('admin.dashboard');
     Route::get('/lecturer', [DashboardController::class, 'lecturer'])->middleware('role:lecturer')->name('lecturer.home');
     Route::get('/student', [DashboardController::class, 'student'])->middleware('role:student')->name('student.home');
 
@@ -36,10 +38,8 @@ Route::middleware(['auth', 'active'])->group(function () {
         Route::get('/users', [WorkspaceController::class, 'admin'])->defaults('page', 'users')->name('users.index');
         Route::post('/lecturers/{lecturer}/toggle-status', [LecturerController::class, 'toggleStatus'])->name('lecturers.toggle-status');
         Route::resource('lecturers', LecturerController::class);
-        Route::get('/courses', [WorkspaceController::class, 'admin'])->defaults('page', 'courses')->name('courses.index');
-        Route::get('/semesters', [WorkspaceController::class, 'admin'])->defaults('page', 'semesters')->name('semesters.index');
-        Route::get('/class-sections', [WorkspaceController::class, 'admin'])->defaults('page', 'class-sections')->name('class-sections.index');
-        Route::get('/reports', [WorkspaceController::class, 'admin'])->defaults('page', 'reports')->name('reports.index');
+        Route::post('/students/{student}/toggle-status', [StudentController::class, 'toggleStatus'])->name('students.toggle-status');
+        Route::resource('students', StudentController::class);
     });
 
     Route::middleware('role:lecturer')->prefix('lecturer')->name('lecturer.')->group(function () {

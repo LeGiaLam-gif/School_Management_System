@@ -5,6 +5,7 @@ namespace App\Modules\Teaching\Policies;
 use App\Modules\Identity\Models\User;
 use App\Modules\Teaching\Models\ClassSection;
 use App\Shared\Authorization\Permission;
+use App\Shared\Enums\ClassSectionStatus;
 
 /**
  * Lecturer chi thao tac tren lop co lecturer_id la minh; Student chi thay lop dang mo (muc 2.5).
@@ -26,7 +27,7 @@ class ClassSectionPolicy
             return $section->isTaughtBy($user);
         }
 
-        return $user->can(Permission::CLASS_SECTIONS_VIEW) && $section->status->acceptsEnrollment();
+        return $user->can(Permission::CLASS_SECTIONS_VIEW) && $section->status === ClassSectionStatus::Open;
     }
 
     public function create(User $user): bool

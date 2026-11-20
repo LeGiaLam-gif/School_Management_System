@@ -8,6 +8,7 @@ parameters:
         - database
     level: 5
     treatPhpDocTypesAsCertain: false
+    reportUnmatchedIgnoredErrors: false
     tmpDir: .phpstan.cache
     # Larastan suy ra cot cua Model tu migration; migration nam trong tung module.
     databaseMigrationsPath:

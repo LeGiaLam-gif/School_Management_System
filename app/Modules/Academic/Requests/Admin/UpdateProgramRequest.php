@@ -10,7 +10,9 @@ class UpdateProgramRequest extends FormRequest
 {
     public function authorize(): bool
     {
-        return $this->user()?->can('academic.manage') ?? false;
+        $user = $this->user();
+
+        return $user !== null && $user->can('academic.manage');
     }
 
     /**

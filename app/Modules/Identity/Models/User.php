@@ -8,6 +8,7 @@ use App\Modules\Identity\Notifications\ResetPasswordNotification;
 use App\Shared\Enums\RoleName;
 use App\Shared\Enums\UserStatus;
 use App\Shared\Traits\Auditable;
+use Carbon\CarbonInterface;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
@@ -16,6 +17,21 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Spatie\Permission\Traits\HasRoles;
 
+/**
+ * @property int $id
+ * @property string $code
+ * @property string $name
+ * @property string $email
+ * @property string $password
+ * @property UserStatus $status
+ * @property bool $must_change_password
+ * @property string|null $phone
+ * @property string|null $address
+ * @property CarbonInterface|null $email_verified_at
+ * @property CarbonInterface|null $last_login_at
+ * @property-read Student|null $student
+ * @property-read Lecturer|null $lecturer
+ */
 class User extends Authenticatable
 {
     use Auditable, HasFactory, HasRoles, Notifiable, SoftDeletes;
