@@ -1,9 +1,9 @@
 @extends('layouts.app')
 
 @section('title', match ($authMode ?? 'login') {
-    'forgot' => 'Quên mật khẩu · Hexa Tech Academy',
-    'reset' => 'Đặt lại mật khẩu · Hexa Tech Academy',
-    default => 'Đăng nhập · Hexa Tech Academy',
+    'forgot' => 'Quên mật khẩu',
+    'reset' => 'Đặt lại mật khẩu',
+    default => 'Đăng nhập',
 })
 
 @section('content')
@@ -214,6 +214,46 @@
 
     .pill-input.is-invalid {
         border-color: #dc3545;
+    }
+
+    .login-password-input {
+        padding-right: 52px;
+    }
+
+    .password-toggle {
+        position: absolute;
+        right: 10px;
+        top: calc(var(--input-height) / 2);
+        transform: translateY(-50%);
+        width: 34px;
+        height: 34px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 0;
+        border: 0;
+        border-radius: 50%;
+        background: transparent;
+        color: #273873;
+        cursor: pointer;
+    }
+
+    .password-toggle:focus-visible {
+        outline: 2px solid #273873;
+        outline-offset: 2px;
+    }
+
+    .password-toggle svg {
+        width: 19px;
+        height: 19px;
+    }
+
+    .password-toggle .eye-slash {
+        display: none;
+    }
+
+    .password-toggle[aria-pressed="true"] .eye-slash {
+        display: block;
     }
 
     /* Submit Button */
@@ -642,9 +682,18 @@
                         </svg>
                     </span>
                     <input id="password" name="password" type="password"
-                           class="pill-input @error('password') is-invalid @enderror"
+                           class="pill-input login-password-input @error('password') is-invalid @enderror"
                            placeholder="Nhập mật khẩu"
                            autocomplete="current-password" required>
+                    <button type="button" class="password-toggle" aria-label="Hiện mật khẩu"
+                            aria-controls="password" aria-pressed="false">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                             stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                            <path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12Z"></path>
+                            <circle cx="12" cy="12" r="3"></circle>
+                            <path class="eye-slash" d="m3 3 18 18"></path>
+                        </svg>
+                    </button>
                     @error('password')
                         <div class="text-danger small mt-1 ps-3" style="font-size: 0.75rem;">{{ $message }}</div>
                     @enderror
@@ -698,4 +747,15 @@
         </div>
     </div>
 </div>
+<script>
+    document.querySelectorAll('.password-toggle').forEach(function (button) {
+        button.addEventListener('click', function () {
+            const input = document.getElementById(button.getAttribute('aria-controls'));
+            const showPassword = input.type === 'password';
+            input.type = showPassword ? 'text' : 'password';
+            button.setAttribute('aria-pressed', String(showPassword));
+            button.setAttribute('aria-label', showPassword ? 'Ẩn mật khẩu' : 'Hiện mật khẩu');
+        });
+    });
+</script>
 @endsection

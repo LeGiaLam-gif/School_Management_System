@@ -1,15 +1,118 @@
 @extends('layouts.app')
 
-@section('title', 'Trang sinh viên · Hexa Tech Academy')
+@section('title', 'Trang sinh viên')
 
 @section('content')
+    <style>
+        .sms-student-dashboard {
+            --sms-teal: #35b394;
+            --sms-teal-dark: #21866e;
+        }
+
+        .sms-student-dashboard .sms-study-status {
+            border: 1px solid #fff;
+            border-radius: 999px;
+            padding: 6px 12px !important;
+        }
+
+        .sms-student-dashboard .sms-student-action-card {
+            background: #fff;
+            border: 1px solid #ccebdd;
+            box-shadow: 0 5px 16px rgba(25, 57, 64, .07);
+            transition: background .2s, transform .2s;
+        }
+
+        .sms-student-dashboard .sms-student-action-icon {
+            background: #d6f5e7;
+            color: #21866e;
+        }
+
+        .sms-student-dashboard .sms-student-action-card:nth-child(1) .sms-student-action-icon {
+            background: #e9edfb;
+            color: #5367b8;
+        }
+
+        .sms-student-dashboard .sms-student-action-card:nth-child(2) .sms-student-action-icon {
+            background: #e5f7ef;
+            color: #149b75;
+        }
+
+        .sms-student-dashboard .sms-student-action-card:nth-child(3) .sms-student-action-icon {
+            background: #fff2df;
+            color: #bd740d;
+        }
+
+        .sms-student-dashboard .sms-student-action-card:nth-child(4) .sms-student-action-icon {
+            background: #e5f2fd;
+            color: #297db5;
+        }
+
+        .sms-student-dashboard .sms-student-action-card:nth-child(5) .sms-student-action-icon {
+            background: #f1e9fc;
+            color: #8b56b5;
+        }
+
+        .sms-student-dashboard .sms-student-action-card:nth-child(6) .sms-student-action-icon {
+            background: #eaf5de;
+            color: #648b29;
+        }
+
+        .sms-student-dashboard .sms-student-action-card:nth-child(7) .sms-student-action-icon {
+            background: #fdebea;
+            color: #c46363;
+        }
+
+        .sms-student-dashboard .sms-student-action-card:hover {
+            background: #def8eb;
+            transform: translateY(-3px);
+        }
+
+        .sms-student-dashboard .card {
+            border-color: #d1eadf;
+            box-shadow: 0 6px 20px rgba(25, 57, 64, .06);
+        }
+
+        .sms-student-dashboard .card-header {
+            background: linear-gradient(110deg, #d5f4e5, #effbf5);
+            color: #217b63;
+            border-bottom-color: #c5e8d7;
+        }
+
+        .sms-student-dashboard .card-header .btn {
+            --bs-btn-color: #217b63 !important;
+            --bs-btn-border-color: #7ccaae !important;
+            --bs-btn-hover-bg: #21866e !important;
+            --bs-btn-hover-color: #fff;
+        }
+
+        .sms-student-dashboard .bg-light {
+            background-color: #f3fbf7 !important;
+            border-color: #d8eee2 !important;
+        }
+
+        .sms-student-dashboard .sms-student-announcement-card {
+            background: linear-gradient(110deg, #279c7e, #37ae90);
+            color: #fff;
+            border-color: #37ae90;
+        }
+
+        .sms-student-dashboard .sms-student-announcement-card h2 {
+            color: inherit;
+        }
+
+        .sms-notification-icon {
+            width: 22px;
+            height: 22px;
+            flex-shrink: 0;
+        }
+    </style>
     @php
         $studentActions = [
             ['route' => 'student.profile', 'title' => 'Hồ sơ cá nhân', 'icon' => 'user'],
             ['route' => 'student.curriculum', 'title' => 'Chương trình', 'second_line' => 'đào tạo', 'icon' => 'book'],
             ['route' => 'student.enrollment', 'title' => 'Đăng ký học phần', 'icon' => 'edit'],
             ['route' => 'student.timetable', 'title' => 'Thời khóa biểu', 'icon' => 'calendar'],
-            ['route' => 'student.grades', 'title' => 'Điểm & GPA', 'icon' => 'chart'],
+            ['route' => 'student.grades', 'title' => 'Kết quả học tập', 'icon' => 'chart'],
             ['route' => 'student.attendance', 'title' => 'Chuyên cần', 'icon' => 'check'],
             ['route' => 'student.announcements', 'title' => 'Thông báo', 'icon' => 'bell'],
         ];
@@ -36,7 +139,7 @@
                 </p>
                 <div class="d-flex align-items-center gap-2 mt-3">
                     <span class="sms-role-pill mt-0">Sinh viên</span>
-                    <span class="badge {{ $student->status_badge ?? 'bg-success' }} px-2 py-1">{{ $student->status_label ?? 'Đang học' }}</span>
+                    <span class="sms-study-status badge {{ $student->status_badge ?? 'bg-success' }} px-2 py-1">{{ $student->status_label ?? 'Đang học' }}</span>
                 </div>
             </div>
             <div class="sms-welcome-art" aria-hidden="true">
@@ -107,7 +210,12 @@
             <section class="col-12 col-lg-6" aria-labelledby="student-stats">
                 <div class="card h-100">
                     <div class="card-header d-flex flex-wrap align-items-center justify-content-between gap-2 py-3">
-                        <h2 id="student-stats" class="h6 mb-0">Thống kê học tập</h2>
+                        <h2 id="student-stats" class="h6 mb-0 d-flex align-items-center gap-2">
+                            <svg class="sms-notification-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                                <path d="M4 20V10M10 20V4M16 20v-7M22 20H2" />
+                            </svg>
+                            Thống kê học tập
+                        </h2>
                         <a href="{{ route('student.curriculum') }}" class="btn btn-sm btn-outline-success"
                             style="--bs-btn-color: var(--sms-teal-dark); --bs-btn-border-color: var(--sms-teal);
                                    --bs-btn-hover-bg: var(--sms-teal-dark); --bs-btn-hover-border-color: var(--sms-teal-dark);
@@ -161,7 +269,12 @@
                 <a href="{{ route('student.announcements') }}"
                     class="card sms-student-announcement-card text-decoration-none">
                     <div class="card-body d-flex flex-wrap align-items-center justify-content-between gap-2">
-                        <h2 class="h6 mb-0">Thông báo mới</h2>
+                        <h2 class="h6 mb-0 d-flex align-items-center gap-2">
+                            <svg class="sms-notification-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                                <path d="M18 8a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9M10 21h4" />
+                            </svg>
+                            Thông báo mới
+                        </h2>
                         <span class="small fw-semibold">
                             {{ $announcementCount > 0 ? "Có $announcementCount thông báo" : 'Không có thông báo' }}
                         </span>
@@ -170,7 +283,13 @@
 
                 <section class="card" aria-labelledby="student-schedule">
                     <div class="card-header d-flex flex-wrap align-items-center justify-content-between gap-2 py-3">
-                        <h2 id="student-schedule" class="h6 mb-0">Lịch học trong ngày</h2>
+                        <h2 id="student-schedule" class="h6 mb-0 d-flex align-items-center gap-2">
+                            <svg class="sms-notification-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                                <rect x="3" y="5" width="18" height="16" rx="2" />
+                                <path d="M16 3v4M8 3v4M3 10h18" />
+                            </svg>
+                            Lịch học trong ngày
+                        </h2>
                         <a href="{{ route('student.timetable') }}" class="btn btn-sm btn-outline-success"
                             style="--bs-btn-color: var(--sms-teal-dark); --bs-btn-border-color: var(--sms-teal);
                                    --bs-btn-hover-bg: var(--sms-teal-dark); --bs-btn-hover-border-color: var(--sms-teal-dark);

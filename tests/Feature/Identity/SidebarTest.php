@@ -92,7 +92,7 @@ class SidebarTest extends TestCase
         $this->assertNotSame('', $sidebar);
         $this->assertStringContainsString(route('student.profile'), $sidebar);
 
-        foreach (['Chương trình đào tạo', 'Đăng ký học phần', 'Thời khóa biểu', 'Điểm &amp; GPA', 'Chuyên cần', 'Thông báo'] as $label) {
+        foreach (['Chương trình đào tạo', 'Đăng ký học phần', 'Thời khóa biểu', 'Kết quả học tập', 'Chuyên cần', 'Thông báo'] as $label) {
             $this->assertStringContainsString($label, $sidebar);
         }
 
@@ -113,7 +113,7 @@ class SidebarTest extends TestCase
             ->assertSee('Chào mừng trở lại, Nguyen Thi Mai')
             ->assertSee('HỆ THỐNG QUẢN LÝ ĐÀO TẠO')
             ->assertSee('Đang học')
-            ->assertSee('Điểm &amp; GPA', false)
+            ->assertSee('Kết quả học tập')
             ->assertSee('Thời khóa biểu')
             ->assertSee('Chuyên cần')
             ->assertSee('Thông báo')

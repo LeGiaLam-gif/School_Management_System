@@ -3,79 +3,82 @@
 @section('title', 'Theo dõi Chuyên cần & Điểm danh · Cổng Sinh Viên')
 
 @section('content')
-<div class="row g-4">
-    <!-- Header Thống kê Chuyên cần -->
+<style>
+    .sms-student-attendance .sms-attendance-course {
+        background: #edf4f0;
+        color: #35564c;
+    }
+
+    .sms-student-attendance .sms-curriculum-table thead th {
+        --bs-table-bg: #f6f8f7;
+        --bs-table-color: #465850;
+        font-weight: 600;
+    }
+
+    .sms-student-attendance .sms-curriculum-table > tbody > tr > td {
+        background: #fff;
+        box-shadow: none;
+    }
+
+    .sms-student-attendance .sms-attendance-toggle[aria-expanded="true"] svg {
+        transform: rotate(180deg);
+    }
+    .sms-student-attendance .sms-attendance-status.bg-success {
+        background-color: #e4f3eb !important;
+        color: #236347;
+    }
+
+    .sms-student-attendance .sms-attendance-status.bg-warning {
+        background-color: #fff3d9 !important;
+        color: #755312 !important;
+    }
+
+    .sms-student-attendance .sms-attendance-status.bg-danger {
+        background-color: #fbe8ea !important;
+        color: #8d3440;
+    }
+</style>
+<div class="row g-4 sms-student-attendance">
     <div class="col-12">
-        <div class="card border-0 shadow-sm rounded-3">
-            <div class="card-body p-4 p-md-5">
-                <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3 mb-4">
-                    <div>
-                        <div class="d-flex align-items-center gap-2 mb-2">
-                            <span class="badge bg-primary px-3 py-2 rounded-pill fs-7">
-                                📋 Điểm danh học kỳ
-                            </span>
-                            <span class="badge bg-light text-dark border px-3 py-2">
-                                {{ $attendance->semester_name }}
-                            </span>
-                        </div>
-                        <h3 class="fw-bold mb-1 text-dark">
-                            Theo Dõi Điểm Danh & Chuyên Cần
-                        </h3>
-                        <p class="text-muted small mb-0">
-                            Quy chế đào tạo: Sinh viên vắng từ <strong>20% số buổi</strong> trở lên sẽ bị <strong>cấm thi kết thúc học phần</strong> (BR-09).
-                        </p>
-                    </div>
-
-                    <div class="text-md-end">
-                        <span class="text-muted small fw-semibold">Tỷ lệ vắng trung bình:</span>
-                        <div class="d-flex align-items-baseline justify-content-md-end gap-1 mt-1">
-                            <h2 class="fw-bold {{ $attendance->overall_rate >= 20.0 ? 'text-danger' : ($attendance->overall_rate >= 10.0 ? 'text-warning' : 'text-success') }} mb-0">
-                                {{ number_format($attendance->overall_rate, 1) }}%
-                            </h2>
-                            <span class="text-muted fs-6">/ Max 20%</span>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- 4 Thẻ thống kê buổi học -->
-                <div class="row g-3 text-center">
-                    <div class="col-6 col-lg-3">
-                        <div class="p-3 bg-light rounded-3 border">
-                            <span class="text-muted small fw-semibold">Tổng số buổi đã diễn ra</span>
-                            <h3 class="fw-bold text-dark mb-0 mt-1">{{ $attendance->overall_held }}</h3>
-                            <span class="badge bg-secondary-subtle text-secondary mt-1">Buổi học</span>
-                        </div>
-                    </div>
-
-                    <div class="col-6 col-lg-3">
-                        <div class="p-3 bg-light rounded-3 border">
-                            <span class="text-muted small fw-semibold">Số buổi có mặt</span>
-                            <h3 class="fw-bold text-success mb-0 mt-1">{{ $attendance->overall_present }}</h3>
-                            <span class="badge bg-success-subtle text-success mt-1">Đúng giờ</span>
-                        </div>
-                    </div>
-
-                    <div class="col-6 col-lg-3">
-                        <div class="p-3 bg-light rounded-3 border">
-                            <span class="text-muted small fw-semibold">Số buổi vào muộn</span>
-                            <h3 class="fw-bold text-warning mb-0 mt-1">{{ $attendance->overall_late }}</h3>
-                            <span class="badge bg-warning-subtle text-warning mt-1">Đi muộn</span>
-                        </div>
-                    </div>
-
-                    <div class="col-6 col-lg-3">
-                        <div class="p-3 bg-light rounded-3 border">
-                            <span class="text-muted small fw-semibold">Số buổi vắng mặt</span>
-                            <h3 class="fw-bold {{ $attendance->overall_absent > 0 ? 'text-danger' : 'text-success' }} mb-0 mt-1">
-                                {{ $attendance->overall_absent }}
-                            </h3>
-                            <span class="badge {{ $attendance->overall_absent > 0 ? 'bg-danger' : 'bg-success' }} mt-1">
-                                {{ $attendance->overall_absent > 0 ? 'Có vắng học' : 'Nghiêm túc 100%' }}
-                            </span>
-                        </div>
-                    </div>
+        <header class="sms-curriculum-banner p-3 p-md-4 px-lg-5 d-flex flex-column flex-md-row align-items-md-center justify-content-between gap-3">
+            <div>
+                <h1 class="h3 fw-bold d-flex align-items-center gap-2 mb-2">
+                    <svg width="25" height="25" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="m8 12 3 3 5-6"/></svg>
+                    Chuyên cần
+                </h1>
+                <span class="sms-role-pill mt-0">{{ $attendance->semester_name }}</span>
+            </div>
+            <div class="align-self-start align-self-md-center rounded-3 bg-white text-dark px-3 py-2">
+                <span class="text-muted small">Tỷ lệ vắng trung bình</span>
+                <div>
+                    <strong class="fs-5 {{ $attendance->overall_rate >= 20.0 ? 'text-danger-emphasis' : ($attendance->overall_rate >= 10.0 ? 'text-warning-emphasis' : 'text-success-emphasis') }}">
+                        {{ number_format($attendance->overall_rate, 1) }}%
+                    </strong>
                 </div>
             </div>
+        </header>
+    </div>
+
+    <div class="col-12">
+        <div class="row g-2 g-md-3">
+            @foreach ([
+                ['Buổi đã diễn ra', $attendance->overall_held, 'navy', 'M4 6h16v15H4zM8 3v6m8-6v6M4 11h16'],
+                ['Buổi có mặt', $attendance->overall_present, 'teal', 'm5 12 4 4L19 6'],
+                ['Buổi đi muộn', $attendance->overall_late, 'amber', 'M12 7v5l3 2m6-2a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z'],
+                ['Buổi vắng', $attendance->overall_absent.' / '.$attendance->overall_held, 'navy', 'm8 8 8 8m0-8-8 8m13-4a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z'],
+            ] as [$label, $value, $tone, $iconPath])
+                <div class="col-6 col-xl-3">
+                    <div class="hta-stat-card sms-curriculum-stat h-100 py-2">
+                        <span class="hta-stat-icon hta-stat-icon-{{ $tone }} flex-shrink-0" aria-hidden="true">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="{{ $iconPath }}"/></svg>
+                        </span>
+                        <dl class="mb-0">
+                            <dt class="small fw-semibold text-muted">{{ $label }}</dt>
+                            <dd class="fs-4 fw-bold mb-0">{{ $value }}</dd>
+                        </dl>
+                    </div>
+                </div>
+            @endforeach
         </div>
     </div>
 
@@ -83,72 +86,72 @@
     <div class="col-12">
         <div class="d-flex flex-column gap-4">
             @foreach ($attendance->courses as $cIdx => $c)
-                <div class="card border-0 shadow-sm rounded-3 overflow-hidden">
-                    <div class="card-header bg-white py-3 px-4 border-0 d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-2">
+                <div class="card border shadow-sm rounded-4 overflow-hidden">
+                    <div class="card-header sms-attendance-course py-3 px-4 border-0 d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-2">
                         <div>
-                            <div class="d-flex align-items-center gap-2 mb-1">
-                                <span class="badge bg-primary font-monospace">{{ $c->class_section_code }}</span>
-                                <h5 class="fw-bold mb-0 text-dark">{{ $c->course_name }}</h5>
-                                <span class="badge bg-light text-dark border">{{ $c->credits }} TC</span>
+                            <div class="d-flex flex-wrap align-items-center gap-2 mb-1">
+                                <span class="sms-curriculum-course-code small fw-semibold font-monospace">{{ $c->class_section_code }}</span>
+                                <h5 class="fw-semibold mb-0">{{ $c->course_name }}</h5>
+                                <span class="badge bg-light text-dark border">{{ $c->credits }} tín chỉ</span>
                             </div>
                             <span class="text-muted small">
                                 Giảng viên phụ trách: <strong>{{ $c->lecturer_name }}</strong>
                             </span>
                         </div>
 
-                        <div class="d-flex align-items-center gap-3">
+                        <div class="d-flex flex-wrap align-items-center gap-3">
                             <div class="text-end">
                                 <span class="text-muted small">Tỷ lệ vắng:</span>
-                                <span class="fw-bold {{ $c->absence_rate >= 20.0 ? 'text-danger' : ($c->absence_rate >= 10.0 ? 'text-warning' : 'text-success') }} ms-1">
+                                <span class="fw-bold {{ $c->absence_rate >= 20.0 ? 'text-danger-emphasis' : ($c->absence_rate >= 10.0 ? 'text-warning-emphasis' : 'text-success-emphasis') }} ms-1">
                                     {{ number_format($c->absence_rate, 1) }}%
                                 </span>
                             </div>
-                            <span class="badge {{ $c->status_badge }} px-3 py-2 rounded-pill">
-                                {{ $c->status_label }}
+                            <span class="badge sms-attendance-status {{ $c->status_badge }} px-3 py-2 rounded-pill">
+                                {{ $c->is_banned ? 'Cấm thi' : $c->status_label }}
                             </span>
                         </div>
                     </div>
 
                     <!-- Tiến trình chuyên cần của môn -->
                     <div class="px-4 py-2 bg-light border-top border-bottom small d-flex flex-wrap justify-content-between align-items-center gap-2">
-                        <div>
-                            Đã học: <strong>{{ $c->held_sessions }}/{{ $c->total_sessions }} buổi</strong> · 
-                            Có mặt: <span class="text-success fw-bold">{{ $c->present_count }}</span> · 
-                            Muộn: <span class="text-warning fw-bold">{{ $c->late_count }}</span> · 
-                            Vắng: <span class="text-danger fw-bold">{{ $c->absent_count }}</span>
+                        <div class="d-flex flex-wrap gap-3">
+                            <span>Đã học: <strong>{{ $c->held_sessions }}/{{ $c->total_sessions }} buổi</strong></span>
+                            <span>Có mặt: <span class="text-success-emphasis fw-semibold">{{ $c->present_count }}</span></span>
+                            <span>Muộn: <span class="text-warning-emphasis fw-semibold">{{ $c->late_count }}</span></span>
+                            <span>Vắng: <span class="text-danger-emphasis fw-semibold">{{ $c->absent_count }}</span></span>
                         </div>
-                        <button class="btn btn-sm btn-outline-secondary" type="button" data-bs-toggle="collapse" data-bs-target="#collapseSessions{{ $cIdx }}" aria-expanded="false">
-                            Xem nhật ký buổi học ▼
+                        <button class="btn btn-sm btn-outline-secondary sms-attendance-toggle" type="button" data-bs-toggle="collapse" data-bs-target="#collapseSessions{{ $cIdx }}" aria-expanded="true" aria-controls="collapseSessions{{ $cIdx }}">
+                            Xem nhật ký buổi học <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg>
                         </button>
                     </div>
 
                     <!-- Nhật ký từng buổi học (Collapse) -->
                     <div class="collapse show" id="collapseSessions{{ $cIdx }}">
                         <div class="table-responsive">
-                            <table class="table table-hover align-middle mb-0 text-center">
-                                <thead class="table-light text-muted small">
+                            <table class="table sms-curriculum-table align-middle mb-0 text-center">
+                                <thead class="small text-nowrap">
                                     <tr>
                                         <th class="ps-4 text-start" style="width: 80px;">Buổi</th>
                                         <th style="width: 140px;">Ngày học</th>
                                         <th style="width: 160px;">Thời gian</th>
                                         <th style="width: 120px;">Phòng</th>
                                         <th style="width: 140px;">Trạng thái</th>
-                                        <th class="text-end pe-4">Ghi chú</th>
+                                        <th class="text-start ps-3 pe-4">Ghi chú</th>
                                     </tr>
                                 </thead>
                                 <tbody>
                                     @forelse ($c->sessions as $s)
                                         <tr>
-                                            <td class="ps-4 text-start fw-bold text-muted">#{{ $s->session_no }}</td>
+                                            <td class="ps-4 text-start fw-bold text-muted">{{ $s->session_no }}</td>
                                             <td class="font-monospace fw-semibold">{{ $s->date }}</td>
                                             <td class="small">{{ $s->time }}</td>
-                                            <td><span class="badge bg-light text-dark border">📍 {{ $s->room }}</span></td>
+                                            <td><span class="badge bg-light text-dark border">{{ $s->room }}</span></td>
                                             <td>
-                                                <span class="badge {{ $s->badge }} px-3 py-1">
+                                                <span class="badge sms-attendance-status {{ $s->badge }} px-3 py-1">
                                                     {{ $s->status }}
                                                 </span>
                                             </td>
-                                            <td class="text-end pe-4 small text-muted">{{ $s->note }}</td>
+                                            <td class="text-start ps-3 pe-4 small text-muted">{{ $s->note }}</td>
                                         </tr>
                                     @empty
                                         <tr>

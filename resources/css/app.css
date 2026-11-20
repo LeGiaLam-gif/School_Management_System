@@ -1,5 +1,58 @@
 @import 'bootstrap/dist/css/bootstrap.min.css';
 
+/* Bright mint palette shared by student pages. */
+body.sms-student-theme {
+    --sms-teal: #35b394;
+    --sms-teal-dark: #21866e;
+    --bs-primary-rgb: 33, 134, 110;
+    --bs-link-color: #21866e;
+    --bs-link-hover-color: #196b58;
+}
+
+.sms-student-theme .card {
+    --bs-card-border-color: #d1eadf;
+    --bs-card-cap-bg: #e3f7ed;
+    --bs-card-cap-color: #217b63;
+    box-shadow: 0 6px 20px rgba(25, 100, 75, .06);
+}
+
+.sms-student-theme .card-header {
+    background: linear-gradient(110deg, #d5f4e5, #effbf5);
+    color: #217b63;
+    border-bottom-color: #c5e8d7;
+}
+
+.sms-student-theme .table {
+    --bs-table-border-color: #d8eee2;
+    --bs-table-striped-bg: #f3fbf7;
+    --bs-table-hover-bg: #e8f8ef;
+}
+
+.sms-student-theme .table > thead {
+    --bs-table-bg: #e3f7ed;
+    --bs-table-color: #217b63;
+}
+
+.sms-student-theme .bg-light {
+    background-color: #f3fbf7 !important;
+}
+
+.sms-student-theme .btn-primary,
+.sms-student-theme .btn-success {
+    --bs-btn-bg: #21866e;
+    --bs-btn-border-color: #21866e;
+    --bs-btn-hover-bg: #196b58;
+    --bs-btn-hover-border-color: #196b58;
+    --bs-btn-active-bg: #196b58;
+    --bs-btn-active-border-color: #196b58;
+}
+
+.sms-student-theme .form-control:focus,
+.sms-student-theme .form-select:focus {
+    border-color: #70cbae;
+    box-shadow: 0 0 0 .2rem rgba(53, 179, 148, .15);
+}
+
 :root {
     --sms-ink: #263638;
     --sms-muted: #829091;
@@ -959,6 +1012,21 @@ body.sms-body {
     background: #eaf2f8;
 }
 
+.sms-lecturer-action-icon.sms-action-icon-rose {
+    color: #ac4d4d;
+    background: #fbeaea;
+}
+
+.sms-lecturer-action-icon.sms-action-icon-gold {
+    color: #876214;
+    background: #fff4d2;
+}
+
+.sms-lecturer-action-icon.sms-action-icon-pink {
+    color: #a34580;
+    background: #fae9f4;
+}
+
 .sms-lecturer-action-content {
     display: flex;
     min-height: 38px;
@@ -1871,8 +1939,9 @@ body.sms-body {
     --bs-table-color: var(--sms-teal-dark);
 }
 
-.sms-curriculum-table tbody tr:nth-child(even) {
-    --bs-table-bg: #f5faf7;
+.sms-curriculum-table tbody tr {
+    --bs-table-bg: #fff;
+    --bs-table-hover-bg: #fff;
 }
 
 .sms-curriculum-course-code {
@@ -1913,13 +1982,40 @@ body.sms-body {
 
 
 #student-profile-page {
-    --bs-primary-rgb: 34, 107, 92;
+    --bs-primary-rgb: 33, 134, 110;
     --bs-primary-bg-subtle: #e8f4ef;
     --bs-border-color: #d4e9e0;
 }
 
 #student-profile-page .card {
     --bs-card-border-color: var(--bs-border-color);
+}
+
+#student-profile-page .card-header {
+    background: linear-gradient(110deg, #d5f4e5, #effbf5);
+    color: #217b63;
+    border-bottom-color: #c5e8d7;
+}
+
+#student-profile-page .bg-light {
+    background-color: #f3fbf7 !important;
+    border-color: #d8eee2 !important;
+}
+
+.sms-student-curriculum .sms-curriculum-semester {
+    background: linear-gradient(110deg, #d5f4e5, #effbf5);
+    color: #217b63;
+}
+
+.sms-student-curriculum .sms-curriculum-table thead th {
+    --bs-table-bg: #e3f7ed;
+    --bs-table-color: #217b63;
+}
+
+.sms-student-curriculum .hta-stat-icon {
+    background: #d6f5e7;
+    color: #21866e;
+    border-color: #bce8d4;
 }
 
 #student-profile-page .btn-primary {

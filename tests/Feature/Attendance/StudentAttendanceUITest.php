@@ -38,7 +38,7 @@ class StudentAttendanceUITest extends TestCase
         $response = $this->actingAs($student)->get('/student/attendance');
 
         $response->assertStatus(200);
-        $response->assertSee('Theo Dõi Điểm Danh & Chuyên Cần', false);
+        $response->assertSee('Tỷ lệ vắng trung bình');
         $response->assertSee('Kỹ thuật lập trình');
         $response->assertSee('Nhập môn Công nghệ phần mềm');
         $response->assertSee('Đủ điều kiện dự thi');

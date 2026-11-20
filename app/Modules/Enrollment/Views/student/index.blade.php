@@ -1,9 +1,154 @@
 @extends('layouts.app')
 
-@section('title', 'Đăng ký học phần · Cổng Sinh Viên')
+@section('title', 'Đăng ký học phần')
 
 @section('content')
-<div class="row g-4" x-data="{ searchKeyword: '' }">
+<style>
+    .sms-student-enrollment {
+        --bs-primary-rgb: 33, 134, 110;
+        --sms-teal: #35b394;
+        --sms-teal-dark: #21866e;
+    }
+
+    .sms-student-enrollment .card {
+        border: 1px solid #d1eadf !important;
+        border-radius: 15px !important;
+        box-shadow: 0 6px 18px rgba(43, 62, 54, .045) !important;
+    }
+
+    .sms-student-enrollment .card-header {
+        background: linear-gradient(110deg, #d5f4e5, #effbf5) !important;
+        border-bottom: 1px solid #c5e8d7 !important;
+        color: #217b63;
+    }
+
+    .sms-student-enrollment .card-header h5,
+    .sms-student-enrollment .card-body h3 {
+        color: #217b63 !important;
+    }
+
+    .sms-student-enrollment .text-primary {
+        color: #21866e !important;
+    }
+
+    .sms-student-enrollment .bg-primary {
+        background-color: #21866e !important;
+    }
+
+    .sms-student-enrollment .bg-light {
+        background-color: #f3fbf7 !important;
+        border-color: #d8eee2 !important;
+    }
+
+    .sms-student-enrollment .table > thead > tr > th {
+        --bs-table-bg: #f5f6f8;
+        --bs-table-color: #53616b;
+        border-color: #d8eee2;
+        padding-top: 12px;
+        padding-bottom: 12px;
+    }
+
+    .sms-student-enrollment .table > tbody > tr > td {
+        --bs-table-bg: #fff;
+        --bs-table-hover-bg: #f3fbf7;
+        border-color: #e1ece6;
+        padding-top: 12px;
+        padding-bottom: 12px;
+    }
+
+    .sms-student-enrollment .sms-registration-open {
+        background: #eef9e9;
+        color: #387d33;
+        border: 1px solid #a9d99a;
+    }
+
+    .sms-student-enrollment > .col-12:last-child .card-header {
+        background: linear-gradient(110deg, #e8f2ff, #f6faff) !important;
+        border-bottom-color: #d5e5f7 !important;
+    }
+
+    .sms-student-enrollment > .col-12:last-child .card-header h5 {
+        color: #3973a8 !important;
+    }
+
+    .sms-student-enrollment .btn-outline-danger {
+        --bs-btn-color: #c45760;
+        --bs-btn-border-color: #efbdc2;
+        --bs-btn-bg: #fff5f5;
+    }
+
+    .sms-student-enrollment .badge.bg-light {
+        background-color: #fff8e8 !important;
+        border-color: #efdfb4 !important;
+        color: #8b6926 !important;
+    }
+
+    .sms-student-enrollment .btn-primary {
+        --bs-btn-bg: #21866e;
+        --bs-btn-border-color: #21866e;
+        --bs-btn-hover-bg: #196b58;
+        --bs-btn-hover-border-color: #196b58;
+    }
+
+    .sms-student-enrollment .form-control:focus {
+        border-color: #70cbae;
+        box-shadow: 0 0 0 .2rem rgba(53, 179, 148, .15);
+    }
+
+    .sms-enrollment-icon {
+        width: 20px;
+        height: 20px;
+        flex-shrink: 0;
+    }
+
+    .sms-student-enrollment .sms-enrollment-section-code {
+        display: inline-block;
+        padding: .15rem .5rem;
+        border-radius: .375rem;
+        background: #e3f1ea;
+        color: #21866e;
+        font-weight: 600;
+    }
+    .sms-student-enrollment > .col-12:first-child > .card {
+        background: linear-gradient(112deg, #d6a36e 0%, #a9a574 52%, #498f76 100%);
+        color: #fff;
+    }
+    .sms-student-enrollment > .col-12:first-child .card-body h3,
+    .sms-student-enrollment > .col-12:first-child .card-body > .d-flex > div:first-child .text-muted {
+        color: #fff !important;
+    }
+    .sms-credit-summary {
+        flex-shrink: 0;
+        color: #455b53;
+    }
+
+    .sms-credit-summary__icon {
+        display: grid;
+        place-items: center;
+        flex-shrink: 0;
+        width: 3.25rem;
+        height: 3.25rem;
+        border: 1px solid #bde4d6;
+        border-radius: 1rem;
+        background: #e3f5ee;
+        color: #217b63;
+    }
+
+    .sms-credit-summary__value {
+        color: #217b63;
+    }
+
+    .sms-credit-summary__value--over-limit {
+        color: #bf5661;
+    }
+
+    .sms-credit-summary__warning {
+        background-color: #f8dfe2;
+        color: #953f49;
+        white-space: normal;
+    }
+</style>
+<div class="row g-4 sms-student-enrollment" x-data="{ searchKeyword: '' }">
     <!-- Header thông tin đợt đăng ký & Tín chỉ -->
     <div class="col-12">
         <div class="card border-0 shadow-sm rounded-3">
@@ -11,51 +156,46 @@
                 <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3">
                     <div>
                         <div class="d-flex align-items-center gap-2 mb-2">
-                            <span class="badge bg-success px-3 py-2 rounded-pill fs-7">
-                                ● Cổng đăng ký ĐANG MỞ
+                            <span class="badge sms-registration-open px-3 py-2 rounded-3 fs-7">
+                                ĐANG MỞ
                             </span>
                             <span class="badge bg-light text-dark border px-3 py-2 font-monospace">
                                 {{ $data->semester->code }}
                             </span>
                         </div>
                         <h3 class="fw-bold mb-1 text-dark">
-                            Đăng Ký Học Phần: {{ $data->semester->name }}
+                            Đăng ký học phần: {{ $data->semester->name }}
                         </h3>
                         <p class="text-muted small mb-0">
-                            Thời gian mở đăng ký: <strong>{{ $data->semester->registration_open_at }}</strong> đến <strong>{{ $data->semester->registration_close_at }}</strong> · 
-                            Hạn rút học phần: <strong>{{ $data->semester->drop_deadline }}</strong>
+                            <span class="d-inline-block me-4"><strong>{{ $data->semester->registration_open_at }}</strong> đến <strong>{{ $data->semester->registration_close_at }}</strong></span>
+                            <span class="d-inline-block">Rút học phần trước <strong>{{ $data->semester->drop_deadline }}</strong></span>
                         </p>
                     </div>
 
                     <!-- Thống kê tín chỉ sinh viên -->
-                    <div class="bg-light p-3 rounded-3 border text-center text-md-end min-w-200">
-                        <span class="text-muted small fw-semibold">Tín chỉ đã chọn:</span>
-                        <div class="d-flex align-items-baseline justify-content-center justify-content-md-end gap-1 mt-1">
-                            <h2 class="fw-bold text-primary mb-0">{{ $data->total_credits }}</h2>
-                            <span class="text-muted fs-6">/ {{ $data->max_credits }} TC</span>
-                        </div>
-                        <span class="badge {{ $data->total_credits >= $data->min_credits ? 'bg-success' : 'bg-warning text-dark' }} mt-1">
-                            {{ $data->total_credits >= $data->min_credits ? '✓ Đạt ngưỡng tối thiểu' : 'Chưa đạt tối thiểu ('.$data->min_credits.' TC)' }}
+                    <div class="sms-credit-summary d-flex align-items-center gap-3 bg-light py-2 px-3 rounded-3 border">
+                        <span class="sms-credit-summary__icon" aria-hidden="true">
+                            <svg class="sms-enrollment-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M9 4H5v17h14V4h-4M9 2h6v4H9zM8 13l3 3 5-6" />
+                            </svg>
                         </span>
+                        <div>
+                            <p class="mb-1">
+                                <strong @class(['sms-credit-summary__value', 'sms-credit-summary__value--over-limit' => $data->total_credits > $data->max_credits])>{{ $data->total_credits }}</strong><span>/{{ $data->max_credits }} tín chỉ</span>
+                            </p>
+                            <p class="small border-top pt-1 mb-1">Tối thiểu {{ $data->min_credits }} tín chỉ</p>
+                            @if ($data->total_credits > $data->max_credits)
+                                <span class="badge sms-credit-summary__warning">Vượt giới hạn {{ $data->total_credits - $data->max_credits }} tín chỉ</span>
+                            @elseif ($data->total_credits < $data->min_credits)
+                                <span class="badge bg-warning text-dark">Còn thiếu {{ $data->min_credits - $data->total_credits }} tín chỉ</span>
+                            @else
+                                <span class="badge bg-success">Trong giới hạn</span>
+                            @endif
+                        </div>
                     </div>
                 </div>
 
-                <hr class="my-4">
 
-                <!-- Thanh tiến trình tín chỉ -->
-                <div>
-                    <div class="d-flex justify-content-between small text-muted mb-1">
-                        <span>Tiến trình tín chỉ đăng ký</span>
-                        <span>Quy định: Tối thiểu <strong>{{ $data->min_credits }} TC</strong> - Tối đa <strong>{{ $data->max_credits }} TC</strong></span>
-                    </div>
-                    @php
-                        $progressPercent = min(100, round(($data->total_credits / $data->max_credits) * 100));
-                        $barColor = $data->total_credits < $data->min_credits ? 'bg-warning' : ($data->total_credits <= $data->max_credits ? 'bg-primary' : 'bg-danger');
-                    @endphp
-                    <div class="progress" style="height: 12px;">
-                        <div class="progress-bar {{ $barColor }}" role="progressbar" style="width: {{ $progressPercent }}%;" aria-valuenow="{{ $data->total_credits }}" aria-valuemin="0" aria-valuemax="{{ $data->max_credits }}"></div>
-                    </div>
-                </div>
             </div>
         </div>
     </div>
@@ -66,14 +206,12 @@
             <div class="card-header bg-white py-3 px-4 border-0 d-flex justify-content-between align-items-center">
                 <div>
                     <h5 class="fw-bold mb-0 text-dark d-flex align-items-center gap-2">
-                        <span>📋 Lớp học phần đã đăng ký</span>
-                        <span class="badge bg-primary rounded-pill">{{ count($data->enrolled_sections) }} môn</span>
+                        <svg class="sms-enrollment-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                            <path d="M9 4H5v17h14V4h-4M9 2h6v4H9zM8 13l3 3 5-6" />
+                        </svg>
+                        <span>Lớp học phần đã đăng ký</span>
                     </h5>
-                    <span class="text-muted small">Các lớp đã được ghi nhận trong thời khóa biểu chính thức của bạn</span>
                 </div>
-                <span class="badge bg-light text-primary border px-3 py-2 fw-semibold">
-                    Tổng: {{ $data->total_credits }} Tín chỉ
-                </span>
             </div>
 
             <div class="table-responsive">
@@ -83,11 +221,11 @@
                             <th class="ps-4" style="width: 50px;">STT</th>
                             <th style="width: 130px;">Mã lớp HP</th>
                             <th>Tên học phần</th>
-                            <th class="text-center" style="width: 90px;">Số TC</th>
+                            <th class="text-center" style="width: 90px;">Số tín chỉ</th>
                             <th style="width: 180px;">Giảng viên</th>
-                            <th style="width: 250px;">Lịch học & Phòng</th>
-                            <th style="width: 160px;">Thời gian ĐK</th>
-                            <th class="text-end pe-4" style="width: 130px;">Thao tác</th>
+                            <th style="width: 250px;">Lịch học</th>
+                            <th style="width: 160px;">Thời gian</th>
+                            <th class="text-center px-3" style="width: 130px;">Thao tác</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -95,28 +233,26 @@
                             <tr>
                                 <td class="ps-4 text-muted small">{{ $index + 1 }}</td>
                                 <td>
-                                    <span class="fw-bold font-monospace text-primary">{{ $item->code }}</span>
+                                    <span class="sms-enrollment-section-code font-monospace">{{ $item->code }}</span>
                                 </td>
                                 <td>
                                     <span class="fw-semibold text-dark">{{ $item->course_name }}</span>
-                                    <div class="small text-muted font-monospace">{{ $item->course_code }}</div>
                                 </td>
                                 <td class="text-center">
                                     <span class="badge bg-light text-dark border fw-bold px-2 py-1">
-                                        {{ $item->credits }} TC
+                                        {{ $item->credits }}
                                     </span>
                                 </td>
                                 <td>
-                                    <span class="small">{{ $item->lecturer_name }}</span>
+                                    <span class="small fw-bold text-dark">{{ $item->lecturer_name }}</span>
+                                </td>
+                                <td class="text-nowrap">
+                                    <span class="small fw-bold text-dark">{{ $item->schedule_text }} <span class="ms-2">{{ $item->room_name }}</span></span>
                                 </td>
                                 <td>
-                                    <div class="small fw-semibold text-dark">{{ $item->schedule_text }}</div>
-                                    <div class="small text-muted">{{ $item->room_name }}</div>
+                                    <span class="small fw-bold text-dark">{{ $item->registered_at ?? 'Đã đăng ký' }}</span>
                                 </td>
-                                <td>
-                                    <span class="small text-muted">{{ $item->registered_at ?? 'Đã đăng ký' }}</span>
-                                </td>
-                                <td class="text-end pe-4">
+                                <td class="text-center px-3">
                                     <form method="POST" action="{{ route('student.enrollment.drop') }}" 
                                           onsubmit="return confirm('Bạn có chắc chắn muốn hủy đăng ký lớp học phần {{ $item->code }} ({{ $item->course_name }})?');"
                                           class="d-inline">
@@ -149,9 +285,11 @@
             <div class="card-header bg-white py-3 px-4 border-0 d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3">
                 <div>
                     <h5 class="fw-bold mb-0 text-dark d-flex align-items-center gap-2">
-                        <span>📚 Danh sách lớp học phần mở trong kỳ</span>
+                        <svg class="sms-enrollment-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                            <path d="M4 5.5A2.5 2.5 0 0 1 6.5 3H20v17H6.5A2.5 2.5 0 0 0 4 22zM4 5.5v16M8 7h8M8 11h8" />
+                        </svg>
+                        <span>Danh sách lớp học phần mở trong kỳ</span>
                     </h5>
-                    <span class="text-muted small">Chọn lớp phù hợp với thời khóa biểu và nhu cầu học tập của bạn</span>
                 </div>
 
                 <!-- Input tìm kiếm nhanh -->
@@ -169,11 +307,11 @@
                         <tr>
                             <th class="ps-4" style="width: 140px;">Mã lớp HP</th>
                             <th>Tên học phần</th>
-                            <th class="text-center" style="width: 90px;">Số TC</th>
+                            <th class="text-center" style="width: 90px;">Số tín chỉ</th>
                             <th style="width: 180px;">Giảng viên</th>
-                            <th style="width: 250px;">Lịch học & Phòng</th>
+                            <th style="width: 250px;">Lịch học</th>
                             <th class="text-center" style="width: 130px;">Sĩ số</th>
-                            <th class="text-end pe-4" style="width: 140px;">Đăng ký</th>
+                            <th class="text-center px-3" style="width: 140px;">Đăng ký</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -184,35 +322,31 @@
                             @endphp
                             <tr x-show="searchKeyword === '' || '{{ $searchTarget }}'.includes(searchKeyword.toLowerCase())">
                                 <td class="ps-4">
-                                    <span class="fw-bold font-monospace text-primary">{{ $sec->code }}</span>
+                                    <span class="sms-enrollment-section-code font-monospace">{{ $sec->code }}</span>
                                 </td>
                                 <td>
                                     <span class="fw-semibold text-dark">{{ $sec->course_name }}</span>
-                                    <div class="small text-muted font-monospace">{{ $sec->course_code }}</div>
                                 </td>
                                 <td class="text-center">
                                     <span class="badge bg-light text-dark border fw-bold px-2 py-1">
-                                        {{ $sec->credits }} TC
+                                        {{ $sec->credits }}
                                     </span>
                                 </td>
                                 <td>
-                                    <span class="small">{{ $sec->lecturer_name }}</span>
+                                    <span class="small fw-bold text-dark">{{ $sec->lecturer_name }}</span>
                                 </td>
-                                <td>
-                                    <div class="small fw-semibold text-dark">{{ $sec->schedule_text }}</div>
-                                    <div class="small text-muted">{{ $sec->room_name }}</div>
+                                <td class="text-nowrap">
+                                    <span class="small fw-bold text-dark">{{ $sec->schedule_text }} <span class="ms-2">{{ $sec->room_name }}</span></span>
                                 </td>
                                 <td class="text-center">
-                                    <span class="small fw-semibold">{{ $sec->enrolled_count }} / {{ $sec->capacity }}</span>
+                                    <span class="small fw-bold text-dark">{{ $sec->enrolled_count }} / {{ $sec->capacity }}</span>
                                     <div>
                                         @if ($isFull)
                                             <span class="badge bg-danger-subtle text-danger border border-danger-subtle">Hết chỗ</span>
-                                        @else
-                                            <span class="badge bg-success-subtle text-success border border-success-subtle">Còn {{ $sec->capacity - $sec->enrolled_count }} chỗ</span>
                                         @endif
                                     </div>
                                 </td>
-                                <td class="text-end pe-4">
+                                <td class="text-center px-3">
                                     @if (!empty($sec->is_enrolled))
                                         <span class="badge bg-success px-3 py-2">
                                             ✓ Đã đăng ký
