@@ -20,7 +20,7 @@ abstract class TestCase extends BaseTestCase
         $driver = $connectionConfig['driver'] ?? null;
         $database = $connectionConfig['database'] ?? null;
 
-        if ($driver === 'mysql' && is_string($database) && !str_ends_with($database, '_testing')) {
+        if ($driver === 'mysql' && is_string($database) && ! str_ends_with($database, '_testing')) {
             $application->make('config')->set(
                 "database.connections.{$connectionName}.database",
                 "{$database}_testing",
