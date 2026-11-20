@@ -27,17 +27,6 @@ abstract class TestCase extends BaseTestCase
             );
         }
 
-        $connection = $application->make('db')->connection($connectionName);        $connectionConfig = $application->make('config')->get("database.connections.{$connectionName}");
-        $driver = $connectionConfig['driver'] ?? null;
-        $database = $connectionConfig['database'] ?? null;
-
-        if ($driver === 'mysql' && is_string($database) && !str_ends_with($database, '_testing')) {
-            $application->make('config')->set(
-                "database.connections.{$connectionName}.database",
-                "{$database}_testing",
-            );
-        }
-
         $connection = $application->make('db')->connection($connectionName);
         $driver = $connection->getDriverName();
         $database = $connection->getDatabaseName();

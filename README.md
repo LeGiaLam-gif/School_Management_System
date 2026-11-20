@@ -38,6 +38,16 @@ Bên cạnh môi trường phát triển local với Docker Compose, dự án đ
   - Đảm bảo tính tương thích và khả năng chuyển đổi linh hoạt giữa MySQL 8 (local/CI) và TiDB (cloud).
   - Tách biệt hạ tầng ứng dụng và cơ sở dữ liệu, dễ dàng cấu hình qua biến môi trường (`.env`) và mở rộng khi cần.
 
+### Bài học triển khai Render: các lỗi cần tránh
+
+Các sự cố triển khai trước đây cho thấy những điểm sau cần được kiểm tra trong mọi thay đổi liên quan đến proxy, URL và Docker:
+
+- **Không chỉ bật `trustProxies` rồi giả định URL sẽ đúng.** Request đi qua Render, Nginx rồi mới đến PHP-FPM. Nginx phải chuyển tiếp host và scheme nhất quán; trong `fastcgi` cần đặt `include fastcgi_params` trước các giá trị `fastcgi_param` tùy chỉnh. Nếu `HTTP_HOST`/`X-Forwarded-Host` bị thiếu hoặc bị ghi đè, middleware xác thực có thể tạo `Location` sai như `https:/https:/login`. Cấu hình hiện tại đặt `HTTP_HOST` và `X-Forwarded-Host` theo `$host`.
+- **Không ép root URL cố định cho request web sau reverse proxy một cách tùy tiện.** `APP_URL` phục vụ cấu hình URL của ứng dụng và các tác vụ console; với request web, Laravel cần nhận host từ proxy đáng tin cậy. Không ghép thủ công scheme, host và path; chỉ ép HTTPS khi đó là chính sách production, đồng thời xác minh URL thực tế qua response header.
+- **Không truyền URL tuyệt đối vào redirect hoặc dùng URL tuyệt đối làm fallback `intended`.** Dùng named route hoặc path tương đối; kiểm soát giá trị `url.intended` trong session vì fallback chỉ được dùng khi session không có URL intended.
+- **Không coi “đúng branch” hoặc “deploy thành công” là bằng chứng lỗi đã hết.** Xác nhận Render báo deployment mới ở trạng thái Live với đúng commit, sau đó kiểm tra HTTP từ bên ngoài. Với `/`, xem status và `Location`; kỳ vọng redirect đến `/login` trên host HTTPS chuẩn, không có `https:` trong path. Kiểm tra thêm `/login`, luồng đăng nhập và đổi mật khẩu lần đầu.
+- **Không đưa cache bootstrap của máy local vào image production.** Cache cấu hình/package discovery có thể chứa provider hoặc package development không có trong image production. Loại `bootstrap/cache` khỏi build context và chạy Composer autoload/package discovery trong Docker build theo đúng thứ tự.
+
 ## Cấu trúc
 
 ```
