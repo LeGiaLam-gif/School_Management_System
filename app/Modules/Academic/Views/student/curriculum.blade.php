@@ -1,8 +1,23 @@
 @extends('layouts.app')
 
-@section('title', 'Chương trình khung · Hexa Tech Academy')
+@section('title', 'Chương trình khung')
 
 @section('content')
+<style>
+    .sms-student-curriculum .sms-curriculum-table > tbody > tr > td {
+        --bs-table-bg: #fff;
+        --bs-table-accent-bg: transparent;
+        --bs-table-striped-bg: #fff;
+        --bs-table-hover-bg: #fff;
+        background-color: #fff;
+        box-shadow: none;
+    }
+
+    .sms-student-curriculum .sms-curriculum-semester {
+        background: linear-gradient(110deg, #f5f6f7, #fff);
+        color: #217b63;
+    }
+</style>
 <div class="row g-4 sms-student-curriculum">
     <div class="col-12">
         <header class="sms-curriculum-banner p-3 p-md-4 px-lg-5">

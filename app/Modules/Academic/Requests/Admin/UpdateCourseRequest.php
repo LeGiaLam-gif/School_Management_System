@@ -33,7 +33,7 @@ class UpdateCourseRequest extends FormRequest
     {
         /** @var Course|null $course */
         $course = $this->route('course');
-        $courseId = $course instanceof Course ? $course->id : $course;
+        $courseId = $course->id;
 
         return [
             'code' => [

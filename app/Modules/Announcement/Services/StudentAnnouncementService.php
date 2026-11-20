@@ -81,9 +81,7 @@ class StudentAnnouncementService
 
     private function mapAnnouncement(Announcement $a, bool $includeSummary = false): stdClass
     {
-        $scope = $a->scope instanceof AnnouncementScope
-            ? $a->scope
-            : AnnouncementScope::tryFrom((string) $a->scope);
+        $scope = $a->scope;
 
         $classSection = $a->classSection;
         $sectionCode = $classSection instanceof ClassSection ? $classSection->code : '';
@@ -99,7 +97,7 @@ class StudentAnnouncementService
             'id' => (string) $a->id,
             'title' => $a->title,
             'body' => $a->body,
-            'scope' => $scope->value ?? (string) $a->scope,
+            'scope' => $scope->value,
             'scope_label' => $scope === AnnouncementScope::All ? 'Toàn trường' : ('Lớp '.$sectionCode),
             'scope_badge' => $scope === AnnouncementScope::All ? 'bg-primary' : 'bg-info text-dark',
             'author_name' => $authorName,

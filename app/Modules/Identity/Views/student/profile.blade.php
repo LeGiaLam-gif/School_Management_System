@@ -1,8 +1,25 @@
 @extends('layouts.app')
 
-@section('title', 'Hồ sơ cá nhân · Hexa Tech Academy')
+@section('title', 'Hồ sơ cá nhân')
 
 @section('content')
+<style>
+    #student-profile-page {
+        --sms-teal: #35b394;
+        --sms-teal-dark: #21866e;
+    }
+
+    #student-profile-page .card-header {
+        background: linear-gradient(110deg, #d5f4e5, #effbf5);
+        color: #217b63;
+        border-bottom-color: #c5e8d7;
+    }
+
+    #student-profile-page .bg-light {
+        background-color: #f3fbf7 !important;
+        border-color: #d8eee2 !important;
+    }
+</style>
 <div class="row g-4 sms-profile-page sms-student-profile-page" id="student-profile-page">
     <!-- Cột bên trái: Thẻ tóm tắt thông tin sinh viên -->
     <div class="col-lg-4">

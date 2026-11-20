@@ -6,8 +6,13 @@
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>@yield('title', config('app.name'))</title>
     @vite(['resources/css/app.css', 'resources/js/app.js'])
+    <style>
+        .sms-student-theme .sms-sidebar {
+            background: linear-gradient(110deg, #d5f4e5, #effbf5);
+        }
+    </style>
 </head>
-<body class="sms-body" x-data="{ sidebarOpen: window.innerWidth >= 768 }">
+<body class="sms-body {{ request()->routeIs('student.*') ? 'sms-student-theme' : '' }}" x-data="{ sidebarOpen: window.innerWidth >= 768 }">
     @if (auth()->check() && ! ($hideAppShell ?? false))
         <div class="sms-app-shell" :class="{ 'sidebar-collapsed': !sidebarOpen }">
             {{-- Nút tab ghim cố định ở mép trái màn hình khi Sidebar ẩn --}}

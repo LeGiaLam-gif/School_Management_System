@@ -10,6 +10,19 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
+/**
+ * @property string $code
+ * @property string $name
+ * @property string $academic_year
+ * @property CarbonInterface $start_date
+ * @property CarbonInterface $end_date
+ * @property CarbonInterface|null $registration_open_at
+ * @property CarbonInterface|null $registration_close_at
+ * @property CarbonInterface|null $drop_deadline
+ * @property int $min_credits
+ * @property int $max_credits
+ * @property bool $is_current
+ */
 class Semester extends Model
 {
     use HasFactory;

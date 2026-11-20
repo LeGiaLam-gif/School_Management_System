@@ -1,18 +1,6 @@
 parameters:
 	ignoreErrors:
 		-
-			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$name\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Modules/Announcement/Database/Seeders/AnnouncementDemoSeeder.php
-
-		-
-			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$user_id\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Modules/Announcement/Database/Seeders/AnnouncementDemoSeeder.php
-
-		-
 			message: '#^Call to an undefined method Illuminate\\Database\\Eloquent\\Model\:\:isTaughtBy\(\)\.$#'
 			identifier: method.notFound
 			count: 1
@@ -55,18 +43,6 @@ parameters:
 			path: app/Modules/Attendance/Policies/AttendancePolicy.php
 
 		-
-			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$is_current\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Modules/Enrollment/Database/Seeders/EnrollmentDemoSeeder.php
-
-		-
-			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$start_date\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Modules/Enrollment/Database/Seeders/EnrollmentDemoSeeder.php
-
-		-
 			message: '#^Call to an undefined method Illuminate\\Database\\Eloquent\\Relations\\HasMany\:\:active\(\)\.$#'
 			identifier: method.notFound
 			count: 1
@@ -77,30 +53,6 @@ parameters:
 			identifier: method.notFound
 			count: 1
 			path: app/Modules/Enrollment/Policies/EnrollmentPolicy.php
-
-		-
-			message: '#^Call to an undefined method Illuminate\\Database\\Eloquent\\Model\:\:canDropOn\(\)\.$#'
-			identifier: method.notFound
-			count: 1
-			path: app/Modules/Enrollment/Services/EnrollmentService.php
-
-		-
-			message: '#^Cannot call method acceptsEnrollment\(\) on string\.$#'
-			identifier: method.nonObject
-			count: 1
-			path: app/Modules/Enrollment/Services/Rules/ClassOpenRule.php
-
-		-
-			message: '#^Call to an undefined method Illuminate\\Database\\Eloquent\\Model\:\:isRegistrationOpen\(\)\.$#'
-			identifier: method.notFound
-			count: 1
-			path: app/Modules/Enrollment/Services/Rules/RegistrationWindowRule.php
-
-		-
-			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$end_date\.$#'
-			identifier: property.notFound
-			count: 4
-			path: app/Modules/Grading/Database/Seeders/GradingDemoSeeder.php
 
 		-
 			message: '#^Call to an undefined method Illuminate\\Database\\Eloquent\\Model\:\:auditFilter\(\)\.$#'
@@ -179,9 +131,3 @@ parameters:
 			identifier: argument.type
 			count: 1
 			path: app/Modules/Teaching/Models/ClassSchedule.php
-
-		-
-			message: '#^Cannot call method acceptsEnrollment\(\) on string\.$#'
-			identifier: method.nonObject
-			count: 1
-			path: app/Modules/Teaching/Policies/ClassSectionPolicy.php

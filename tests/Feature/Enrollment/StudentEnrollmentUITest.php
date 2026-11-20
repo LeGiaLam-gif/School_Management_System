@@ -38,7 +38,7 @@ class StudentEnrollmentUITest extends TestCase
         $response = $this->actingAs($student)->get('/student/enrollment');
 
         $response->assertStatus(200);
-        $response->assertSee('Đăng Ký Học Phần');
+        $response->assertSeeText('Đăng ký học phần:');
         $response->assertSee('Học kỳ 1 năm học 2026 - 2027');
         $response->assertSee('Lớp học phần đã đăng ký');
         $response->assertSee('Danh sách lớp học phần mở trong kỳ');

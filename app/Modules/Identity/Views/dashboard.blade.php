@@ -4,6 +4,7 @@
 
 @section('content')
     @php($user = auth()->user())
+    @php($isLecturer = $user->isLecturer())
     @php($adminActions = [
         ['route' => 'admin.users.index', 'title' => 'Quản lý người dùng', 'icon' => 'users', 'color' => 'teal'],
         ['route' => 'admin.departments.index', 'title' => 'Quản lý khoa', 'icon' => 'building', 'color' => 'orange'],
@@ -15,24 +16,35 @@
     ])
     @php($lecturerActions = [
         ['route' => 'profile.show', 'title' => 'Hồ sơ cá nhân', 'icon' => 'user', 'color' => 'teal'],
-        ['route' => 'lecturer.classes', 'title' => 'Lớp được phân công', 'icon' => 'book', 'color' => 'teal'],
+        ['route' => 'lecturer.classes', 'title' => 'Lớp được phân công', 'icon' => 'book', 'color' => 'rose'],
         ['route' => 'lecturer.students', 'title' => 'Danh sách sinh viên', 'icon' => 'users', 'color' => 'violet'],
         ['route' => 'lecturer.timetable', 'title' => 'Lịch dạy', 'icon' => 'calendar', 'color' => 'orange'],
         ['route' => 'lecturer.attendance', 'title' => 'Điểm danh', 'icon' => 'check', 'color' => 'green'],
         ['route' => 'lecturer.grades', 'title' => 'Quản lý điểm', 'icon' => 'chart', 'color' => 'blue'],
-        ['route' => 'lecturer.announcements', 'title' => 'Thông báo', 'icon' => 'bell', 'color' => 'teal'],
-        ['route' => 'lecturer.reports', 'title' => 'Báo cáo & xuất dữ liệu', 'icon' => 'report', 'color' => 'orange'],
+        ['route' => 'lecturer.announcements', 'title' => 'Thông báo', 'icon' => 'bell', 'color' => 'gold'],
+        ['route' => 'lecturer.reports', 'title' => 'Báo cáo & xuất dữ liệu', 'icon' => 'report', 'color' => 'pink'],
     ])
 
     <section class="sms-welcome-card">
         <div class="sms-welcome-copy">
-            <span class="sms-eyebrow">HEXA TECH ACADEMY · HỆ THỐNG QUẢN LÝ ĐÀO TẠO</span>
+            <span class="sms-eyebrow">HEXA TECH ACADEMY</span>
             <h2>Chào mừng, {{ $user->name }}</h2>
             <p>
                 Không gian làm việc dành cho {{ mb_strtolower($role->label()) }},
-                tập trung các hoạt động học vụ trên cùng một nền tảng.
+                tập trung các hoạt động học vụ trên cùng một nền tảng{{ $isLecturer ? '' : '.' }}
             </p>
-            <span class="sms-role-pill">{{ $role->label() }}</span>
+            @if ($isLecturer)
+                <div class="d-flex flex-wrap align-items-center gap-2">
+                    <span class="sms-role-pill">{{ $role->label() }}</span>
+                    <span @class([
+                        'sms-role-pill',
+                        'text-bg-success' => $user->isActive(),
+                        'text-bg-secondary' => !$user->isActive(),
+                    ])>{{ $user->isActive() ? 'Đang hoạt động' : $user->status->label() }}</span>
+                </div>
+            @else
+                <span class="sms-role-pill">{{ $role->label() }}</span>
+            @endif
         </div>
         <div class="sms-welcome-art" aria-hidden="true">
             <svg viewBox="0 0 180 150" focusable="false">
@@ -48,6 +60,7 @@
         </div>
     </section>
 
+    @unless ($isLecturer)
     <section class="sms-summary-grid" aria-label="Thông tin tài khoản">
         <article class="sms-summary-card">
             <span class="sms-summary-icon sms-icon-teal" aria-hidden="true">
@@ -78,15 +91,16 @@
             <strong class="sms-summary-email">{{ $user->email }}</strong>
         </article>
     </section>
+    @endunless
 
-    <section class="sms-workspace-card">
+    <section @class(['sms-workspace-card', 'mt-3' => $isLecturer])>
         <div class="sms-section-heading">
             <div>
                 <h2>Bảng điều khiển</h2>
             </div>
             <span class="sms-current-role">{{ $role->label() }}</span>
         </div>
-        @if ($user->isAdmin() || $user->isLecturer())
+        @if ($user->isAdmin() || $isLecturer)
             @php($actions = $user->isAdmin() ? $adminActions : $lecturerActions)
             @php($gridClass = $user->isAdmin() ? 'sms-admin-action-grid' : 'sms-lecturer-action-grid')
             @php($cardClass = $user->isAdmin() ? 'sms-admin-action-card' : 'sms-lecturer-action-card')
@@ -94,7 +108,7 @@
             <div class="{{ $gridClass }}">
                 @foreach ($actions as $action)
                     @php($routeAvailable = Route::has($action['route']))
-                    <article class="{{ $cardClass }} {{ $routeAvailable ? 'is-available' : '' }}">
+                    <article @class([$cardClass, 'is-available' => $routeAvailable, 'position-relative' => $isLecturer])>
                         <span class="{{ $iconClass }} sms-action-icon-{{ $action['color'] }}" aria-hidden="true">
                             <svg viewBox="0 0 24 24" focusable="false">
                                 @switch($action['icon'])
@@ -141,10 +155,10 @@
                                 @endswitch
                             </svg>
                         </span>
-                        <div class="{{ $user->isLecturer() ? 'sms-lecturer-action-content' : '' }}">
+                        <div class="{{ $isLecturer ? 'sms-lecturer-action-content' : '' }}">
                             <h3>
                                 @if ($routeAvailable)
-                                    <a href="{{ route($action['route']) }}">{{ $action['title'] }}</a>
+                                    <a @class(['stretched-link' => $isLecturer]) href="{{ route($action['route']) }}">{{ $action['title'] }}</a>
                                 @else
                                     <span aria-disabled="true">{{ $action['title'] }}</span>
                                 @endif

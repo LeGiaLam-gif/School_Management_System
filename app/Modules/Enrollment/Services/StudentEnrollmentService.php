@@ -2,7 +2,6 @@
 
 namespace App\Modules\Enrollment\Services;
 
-use App\Modules\Academic\Models\Course;
 use App\Modules\Academic\Models\Semester;
 use App\Modules\Enrollment\Models\Enrollment;
 use App\Modules\Identity\Models\Lecturer;
@@ -194,8 +193,8 @@ class StudentEnrollmentService
             'semester' => (object) [
                 'name' => $semester->name,
                 'code' => $semester->code,
-                'registration_open_at' => $this->formatDateTime($semester->registration_open_at) ?? '01/09/2026 00:00',
-                'registration_close_at' => $this->formatDateTime($semester->registration_close_at) ?? '30/11/2026 23:59',
+                'registration_open_at' => $this->formatDateTime($semester->registration_open_at, 'H:i d/m/Y') ?? '00:00 01/09/2026',
+                'registration_close_at' => $this->formatDateTime($semester->registration_close_at, 'H:i d/m/Y') ?? '23:59 30/11/2026',
                 'drop_deadline' => $this->formatDateTime($semester->drop_deadline, 'd/m/Y') ?? '15/12/2026',
                 'min_credits' => $semester->min_credits ?: 14,
                 'max_credits' => $semester->max_credits ?: 24,
@@ -218,9 +217,9 @@ class StudentEnrollmentService
         return (object) [
             'id' => (string) $section->id,
             'code' => $section->code,
-            'course_code' => $course instanceof Course ? $course->code : '',
-            'course_name' => $course instanceof Course ? $course->name : '',
-            'credits' => $course instanceof Course ? $course->credits : 0,
+            'course_code' => $course->code,
+            'course_name' => $course->name,
+            'credits' => $course->credits,
             'lecturer_name' => $lecturer instanceof Lecturer ? $lecturer->user->name : 'Chưa phân công',
             'schedule_text' => $this->formatScheduleText($section),
             'room_name' => $this->formatRoomText($section),
@@ -294,8 +293,8 @@ class StudentEnrollmentService
         $semester = (object) [
             'name' => 'Học kỳ 1 năm học 2026 - 2027',
             'code' => 'HK1-2026',
-            'registration_open_at' => '01/11/2026 08:00',
-            'registration_close_at' => '30/11/2026 17:00',
+            'registration_open_at' => '08:00 01/11/2026',
+            'registration_close_at' => '17:00 30/11/2026',
             'drop_deadline' => '05/12/2026',
             'min_credits' => 14,
             'max_credits' => 24,

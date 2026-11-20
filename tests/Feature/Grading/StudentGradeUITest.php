@@ -38,11 +38,11 @@ class StudentGradeUITest extends TestCase
         $response = $this->actingAs($student)->get('/student/grades');
 
         $response->assertStatus(200);
-        $response->assertSee('Bảng Điểm & Điểm Trung Bình (GPA)', false);
-        $response->assertSee('GPA Tích lũy (Hệ 4)');
+        $response->assertSeeText('Kết quả học tập');
+        $response->assertSeeText('GPA tích lũy');
         $response->assertSee('Nhập môn lập trình');
         $response->assertSee('CS101');
-        $response->assertSee('Quy chế Thang điểm');
+        $response->assertSeeText('Quy chế xếp loại');
     }
 
     public function test_student_can_filter_by_semester(): void

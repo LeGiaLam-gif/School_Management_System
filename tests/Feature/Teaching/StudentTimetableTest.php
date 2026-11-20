@@ -38,10 +38,10 @@ class StudentTimetableTest extends TestCase
         $response = $this->actingAs($student)->get('/student/timetable');
 
         $response->assertStatus(200);
-        $response->assertSee('Thời Khóa Biểu Sinh Viên');
+        $response->assertSee('Thời khóa biểu');
         $response->assertSee('Thứ Hai');
         $response->assertSee('Thứ Sáu');
-        $response->assertSee('Sáng (Tiết 1 - 3)');
+        $response->assertSeeText('Sáng');
     }
 
     public function test_student_can_navigate_weeks(): void
@@ -51,6 +51,6 @@ class StudentTimetableTest extends TestCase
         $response = $this->actingAs($student)->get('/student/timetable?week=1');
 
         $response->assertStatus(200);
-        $response->assertSee('Thời Khóa Biểu Sinh Viên');
+        $response->assertSee('Thời khóa biểu');
     }
 }

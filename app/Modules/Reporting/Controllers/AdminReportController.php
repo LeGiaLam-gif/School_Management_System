@@ -107,12 +107,7 @@ class AdminReportController extends Controller
                             $adminClass = $student->administrativeClass;
                             $programName = ($adminClass && $adminClass->program) ? $adminClass->program->name : '';
                             $adminClassCode = $adminClass ? $adminClass->code : '';
-                            $userStatus = $student->user->status instanceof UserStatus ? $student->user->status->label() : '';
-
-                            $adminClass = $student->administrativeClass;
-                            $programName = ($adminClass && $adminClass->program) ? $adminClass->program->name : '';
-                            $adminClassCode = $adminClass ? $adminClass->code : '';
-                            $userStatus = $student->user->status instanceof \App\Shared\Enums\UserStatus ? $student->user->status->label() : '';
+                            $userStatus = $student->user->isActive() ? 'Hoạt động' : 'Đã khóa';
 
                             fputcsv($handle, [
                                 $student->user->code ?? '',
@@ -129,7 +124,7 @@ class AdminReportController extends Controller
                 ClassSection::with(['course', 'semester', 'lecturer.user'])
                     ->chunk(200, function ($sections) use ($handle) {
                         /** @var Collection<int, ClassSection> $sections */
-                        /** @var \Illuminate\Database\Eloquent\Collection<int, ClassSection> $sections */
+                        /** @var Collection<int, ClassSection> $sections */
                         foreach ($sections as $sec) {
                             $statusVal = is_object($sec->status) ? $sec->status->value : $sec->status;
                             $lecturer = $sec->lecturer;
