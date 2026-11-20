@@ -2,7 +2,6 @@
 
 namespace App\Modules\Teaching\Services;
 
-use App\Modules\Academic\Models\Course;
 use App\Modules\Enrollment\Models\Enrollment;
 use App\Modules\Identity\Models\Lecturer;
 use App\Modules\Identity\Models\User;
@@ -116,9 +115,9 @@ class StudentTimetableService
                             }
 
                             $course = $sec->course;
-                            $courseCode = $course instanceof Course ? $course->code : '';
-                            $courseName = $course instanceof Course ? $course->name : '';
-                            $credits = $course instanceof Course ? $course->credits : 0;
+                            $courseCode = $course->code;
+                            $courseName = $course->name;
+                            $credits = $course->credits;
 
                             $lecturer = $sec->lecturer;
                             $lecturerName = $lecturer instanceof Lecturer ? $lecturer->user->name : 'Chưa phân công';

@@ -2,7 +2,6 @@
 
 namespace App\Modules\Attendance\Services;
 
-use App\Modules\Academic\Models\Course;
 use App\Modules\Attendance\Models\AttendanceRecord;
 use App\Modules\Enrollment\Models\Enrollment;
 use App\Modules\Identity\Models\Lecturer;
@@ -233,9 +232,9 @@ class StudentAttendanceService
 
             $courses->push((object) [
                 'class_section_code' => $sec->code,
-                'course_code' => $course instanceof Course ? $course->code : '',
-                'course_name' => $course instanceof Course ? $course->name : '',
-                'credits' => $course instanceof Course ? $course->credits : 0,
+                'course_code' => $course->code,
+                'course_name' => $course->name,
+                'credits' => $course->credits,
                 'lecturer_name' => $lecturer instanceof Lecturer ? $lecturer->user->name : 'Chưa phân công',
                 'held_sessions' => $heldSessions,
                 'total_sessions' => 15,
