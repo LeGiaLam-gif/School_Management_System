@@ -429,16 +429,16 @@ body.sms-body {
     background-color: var(--sms-shell-surface);
 }
 
-.sms-student-profile-page .sms-lecturer-password-card .card-header {
+.sms-student-profile-page .sms-password-card .card-header {
     background: linear-gradient(100deg, #d8f4e7, #eefaf5);
     border-bottom-color: #c4e4d7;
 }
 
-.sms-lecturer-password-card .form-label {
+.sms-password-card .form-label {
     margin-bottom: 0.25rem;
 }
 
-.sms-lecturer-password-card .form-control:not(.is-invalid) {
+.sms-password-card .form-control:not(.is-invalid) {
     border-color: #cce4dc;
 }
 
@@ -1051,17 +1051,17 @@ body.sms-body {
     background: #eaf2f8;
 }
 
-.sms-lecturer-action-icon.sms-action-icon-rose {
+:is(.sms-admin-action-icon, .sms-lecturer-action-icon).sms-action-icon-rose {
     color: #ac4d4d;
     background: #fbeaea;
 }
 
-.sms-lecturer-action-icon.sms-action-icon-gold {
+:is(.sms-admin-action-icon, .sms-lecturer-action-icon).sms-action-icon-gold {
     color: #876214;
     background: #fff4d2;
 }
 
-.sms-lecturer-action-icon.sms-action-icon-pink {
+:is(.sms-admin-action-icon, .sms-lecturer-action-icon).sms-action-icon-pink {
     color: #a34580;
     background: #fae9f4;
 }

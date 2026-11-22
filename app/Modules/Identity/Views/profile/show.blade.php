@@ -5,12 +5,13 @@
 @section('content')
     <div class="sms-profile-page sms-student-profile-page">
         @php($isLecturer = $user->isLecturer())
-        <h1 class="{{ $isLecturer ? 'visually-hidden' : 'h3 sms-profile-title' }}">Hồ sơ cá nhân</h1>
+        @php($isAdmin = $user->isAdmin())
+        <h1 class="{{ ($isLecturer || $isAdmin) ? 'visually-hidden' : 'h3 sms-profile-title' }}">Hồ sơ cá nhân</h1>
 
         <div class="row g-4">
             <div class="col-lg-4">
-                <section class="card sms-profile-summary">
-                    <div class="card-body p-4 text-center">
+                <section @class(['card sms-profile-summary', 'h-100' => $isAdmin])>
+                    <div @class(['card-body text-center', 'p-3' => $isAdmin, 'p-4' => ! $isAdmin])>
                         <div class="mb-3">
                             <div class="sms-student-avatar">
                                 <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" fill="currentColor" viewBox="0 0 16 16" aria-hidden="true">
@@ -41,7 +42,7 @@
                 </section>
             </div>
 
-            <div class="col-lg-8">
+            <div @class(['col-lg-8', 'd-lg-flex flex-lg-column' => $isAdmin])>
                 @if ($user->student)
                     <section class="card mb-4">
                         <div class="card-header">Thông tin sinh viên</div>
@@ -117,8 +118,8 @@
 
                 @endif
 
-                @if ($user->isAdmin() || $user->isLecturer())
-                    <section class="card mb-4">
+                @if ($isAdmin || $isLecturer)
+                    <section @class(['card', 'flex-lg-grow-1' => $isAdmin, 'mb-4' => ! $isAdmin])>
                         <div class="card-header d-flex align-items-center gap-2">
                             <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="currentColor" viewBox="0 0 16 16" aria-hidden="true">
                                 <path d="M3.654 1.328a.678.678 0 0 0-1.015-.063L1.605 2.3c-.483.484-.661 1.169-.45 1.77a17.6 17.6 0 0 0 4.168 6.608 17.6 17.6 0 0 0 6.608 4.168c.601.211 1.286.033 1.77-.45l1.034-1.034a.678.678 0 0 0-.063-1.015l-2.307-1.794a.68.68 0 0 0-.58-.122l-2.19.547a1.75 1.75 0 0 1-1.657-.459L5.482 8.062a1.75 1.75 0 0 1-.46-1.657l.548-2.19a.68.68 0 0 0-.122-.58zM1.884.511a1.745 1.745 0 0 1 2.612.163L6.29 2.98c.329.423.445.974.315 1.494l-.547 2.19a.68.68 0 0 0 .178.643l2.457 2.457a.68.68 0 0 0 .644.178l2.189-.547a1.75 1.75 0 0 1 1.494.315l2.306 1.794c.829.645.905 1.87.163 2.611l-1.034 1.034c-.74.74-1.846 1.065-2.877.702a18.6 18.6 0 0 1-7.01-4.42 18.6 18.6 0 0 1-4.42-7.009c-.362-1.03-.037-2.137.703-2.877z"/>
@@ -139,8 +140,8 @@
                                         @enderror
                                     </div>
                                     <div class="col-md-6">
-                                        <label class="form-label small fw-semibold text-muted">{{ $isLecturer ? 'Email' : 'Email (Cố định)' }}</label>
-                                        <input type="email" class="form-control bg-light" value="{{ $user->email }}" disabled readonly>
+                                        <label for="profile_email" class="form-label small fw-semibold text-muted">Email</label>
+                                        <input id="profile_email" type="email" class="form-control bg-light" value="{{ $user->email }}" disabled readonly>
                                     </div>
                                     <div class="col-12">
                                         <label for="profile_address" class="form-label small fw-semibold">Địa chỉ thường trú / liên hệ</label>
@@ -152,15 +153,23 @@
                                 </div>
 
                                 <div class="d-flex justify-content-end">
-                                    <button type="submit" class="btn btn-primary {{ $isLecturer ? 'px-2' : 'px-4' }}">Lưu thông tin liên hệ</button>
+                                    <button type="submit" class="btn btn-primary px-2">Lưu thông tin liên hệ</button>
                                 </div>
                             </form>
                         </div>
                     </section>
                 @endif
 
-                @include('identity::partials.change-password', ['showPasswordColumns' => $isLecturer])
+                @unless ($isAdmin)
+                    @include('identity::partials.change-password', ['showPasswordColumns' => $isLecturer])
+                @endunless
             </div>
+
+            @if ($isAdmin)
+                <div class="col-lg-8 offset-lg-4">
+                    @include('identity::partials.change-password', ['showPasswordColumns' => true, 'compactPasswordButton' => true])
+                </div>
+            @endif
         </div>
     </div>
 @endsection
