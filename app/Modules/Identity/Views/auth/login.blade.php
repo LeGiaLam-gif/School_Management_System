@@ -56,6 +56,17 @@
         z-index: 0;
     }
 
+    body:has(.login-card--feature) {
+        background:
+            radial-gradient(ellipse at top left, #f3ebdc 0%, transparent 55%),
+            linear-gradient(135deg, #e8eef2 0%, #d9e3ea 100%);
+    }
+
+    body:has(.login-card--feature)::before,
+    body:has(.login-card--feature)::after {
+        content: none;
+    }
+
     /* Main Modal Card */
     .login-card {
         width: 100%;
@@ -68,6 +79,40 @@
         overflow: hidden;
         position: relative;
         z-index: 1;
+    }
+
+    .login-card--feature {
+        width: min(1280px, calc(100vw - 64px));
+        max-width: none;
+        min-height: 0;
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) minmax(340px, 37%);
+        grid-template-areas: "news form";
+        align-items: stretch;
+        gap: clamp(20px, 3vw, 36px);
+        background: transparent;
+        border-radius: 0;
+        box-shadow: none;
+        overflow: visible;
+    }
+
+    .login-card--feature > .form-side,
+    .login-card--feature > .art-side {
+        border-radius: 24px;
+        box-shadow: 0 16px 36px rgba(31, 39, 76, 0.2);
+    }
+
+    .login-card--feature > .form-side {
+        grid-area: form;
+        width: 100%;
+        min-width: 0;
+        min-height: 480px;
+    }
+
+    .login-card--feature > .art-side {
+        grid-area: news;
+        min-width: 0;
+        padding: 0;
     }
 
     /* Left Form Side (White) */
@@ -358,6 +403,8 @@
     .fluid-background {
         position: absolute;
         inset: 0;
+        transform: scale(1.1);
+        z-index: 1;
         background:
             radial-gradient(circle at 75% 25%, #fedba2 0%, rgba(254, 219, 162, 0.9) 18%, rgba(254, 219, 162, 0) 45%),
             radial-gradient(circle at 35% 15%, #fbe7b8 0%, rgba(251, 231, 184, 0.8) 22%, rgba(251, 231, 184, 0) 50%),
@@ -366,112 +413,93 @@
             radial-gradient(circle at 55% 50%, #15295c 0%, #142756 35%, #0f1f45 70%),
             linear-gradient(135deg, #2b619e 0%, #1c3d70 50%, #0d1e44 100%);
         filter: blur(16px);
-        transform: scale(1.1);
-        z-index: 1;
     }
 
     /* Ambient Silk Wave Overlays */
     .silk-wave {
         position: absolute;
         inset: -20px;
+        z-index: 2;
         background:
             radial-gradient(ellipse at 40% 30%, rgba(254, 225, 170, 0.65) 0%, transparent 40%),
             radial-gradient(ellipse at 70% 40%, rgba(254, 215, 150, 0.5) 0%, transparent 45%),
             radial-gradient(ellipse at 50% 80%, rgba(13, 30, 68, 0.9) 0%, transparent 60%);
         filter: blur(28px);
-        z-index: 2;
     }
 
-    /* Header Nav Scrollable Bar */
-    .art-nav-wrapper {
+    .art-news {
         position: relative;
         z-index: 3;
-        display: flex;
-        align-items: center;
-        gap: 12px;
-        width: 100%;
-        background: rgba(18, 32, 72, 0.45);
-        backdrop-filter: blur(12px);
-        -webkit-backdrop-filter: blur(12px);
-        padding: 8px 14px 6px;
-        border-radius: 16px;
-        border: 1px solid rgba(255, 255, 255, 0.15);
-        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+        flex: 1;
+        background: #f3f8f7;
+        color: #18324b;
     }
 
-    .art-nav-scroll {
+    .art-news-header {
         display: flex;
         align-items: center;
         gap: 10px;
-        overflow-x: auto;
-        overflow-y: hidden;
-        white-space: nowrap;
-        padding-bottom: 6px;
-        flex: 1;
-        scroll-behavior: smooth;
-        -webkit-overflow-scrolling: touch;
+        padding: 15px 16px 12px;
+        border-bottom: 1px solid #dce9e7;
     }
 
-    /* Tinh chỉnh thanh cuộn thanh mảnh dạ quang */
-    .art-nav-scroll::-webkit-scrollbar {
-        height: 3px;
-    }
-
-    .art-nav-scroll::-webkit-scrollbar-track {
-        background: rgba(255, 255, 255, 0.08);
+    .art-news-icon {
+        display: grid;
+        place-items: center;
+        flex: 0 0 36px;
+        height: 36px;
         border-radius: 10px;
+        background: #e0f0ed;
+        color: #176d70;
     }
 
-    .art-nav-scroll::-webkit-scrollbar-thumb {
-        background: #00b4d8;
-        border-radius: 10px;
-        box-shadow: 0 0 8px rgba(0, 180, 216, 0.8);
-    }
-
-    .art-nav-scroll a {
-        color: #ffffff;
-        font-size: 0.68rem;
+    .art-news-header h2 {
+        margin: 0;
+        color: #176d70;
+        font-size: clamp(1.05rem, 1.9vw, 1.22rem);
         font-weight: 800;
-        letter-spacing: 0.6px;
+        letter-spacing: 0.02em;
         text-transform: uppercase;
-        text-decoration: none;
-        padding: 6px 14px;
-        border-radius: 8px;
-        transition: all 0.25s ease;
-        flex-shrink: 0;
-        text-shadow: 0 1px 3px rgba(0, 0, 0, 0.6);
-        background: rgba(255, 255, 255, 0.06);
     }
 
-    .art-nav-scroll a:hover {
-        color: #ffffff;
-        background: rgba(255, 255, 255, 0.22);
-        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+    .art-news-item {
+        display: grid;
+        grid-template-columns: 36px minmax(0, 1fr);
+        align-items: start;
+        gap: 12px;
+        margin: 12px;
+        padding: 12px;
+        border: 1px solid #e1eae9;
+        border-radius: 13px;
+        background: #fff;
     }
 
-    .nav-tab-active {
-        background: #ffffff !important;
-        color: #1a2a5e !important;
-        font-weight: 800 !important;
-        text-shadow: none !important;
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25) !important;
+    .art-news-item--pinned {
+        border-color: #dac49a;
+        background: #fffbf2;
     }
 
-    .menu-bars {
-        display: flex;
-        flex-direction: column;
-        gap: 3.5px;
-        cursor: pointer;
-        padding: 6px;
-        flex-shrink: 0;
+    .art-news-item--pinned .art-news-icon {
+        background: #f4e7cc;
+        color: #735222;
     }
 
-    .menu-bars span {
-        display: block;
-        width: 17px;
-        height: 2px;
-        background-color: #ffffff;
-        border-radius: 2px;
+    .art-news-item h3 {
+        margin: 0 0 5px;
+        font-size: 1rem;
+        font-weight: 800;
+    }
+
+    .art-news-item p {
+        margin: 0;
+        font-size: 0.85rem;
+        line-height: 1.5;
+    }
+
+    .art-news-item .art-news-scope {
+        margin-bottom: 5px;
+        color: #176d70;
+        font-weight: 700;
     }
 
     /* Welcome Hero Text */
@@ -512,6 +540,17 @@
             border-radius: 28px;
         }
 
+        .login-card--feature {
+            width: min(440px, calc(100vw - 32px));
+            grid-template-columns: minmax(0, 1fr);
+            grid-template-areas: "form" "news";
+            gap: 16px;
+        }
+
+        .login-card--feature > .form-side {
+            min-height: 0;
+        }
+
         .form-side {
             width: 100%;
             padding: 34px 28px;
@@ -538,11 +577,12 @@
             font-size: 0.85rem;
             line-height: 1.5;
             text-wrap: pretty;
-
+        }
     }
+
 </style>
 
-<div class="login-card">
+<div class="login-card{{ ($authMode ?? 'login') === 'login' ? ' login-card--feature' : '' }}">
     <!-- Left: Form side (White) -->
     <div class="form-side">
         <!-- Top Brand / Logo -->
@@ -720,31 +760,52 @@
 
     <!-- Right: Fluid Liquid Gradient Artwork (Blue & Cream) -->
     <div class="art-side">
-        <div class="fluid-background"></div>
-        <div class="silk-wave"></div>
+        @if (($authMode ?? 'login') === 'login')
+            <section class="art-news" aria-labelledby="art-news-title">
+                <header class="art-news-header">
+                    <span class="art-news-icon" aria-hidden="true">
+                        <svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" focusable="false">
+                            <path d="m3 10 13-5v14L3 14v-4Zm4 6 2 5h3l-2-4m9-5h3m-3-4 2-2m-2 10 2 2" />
+                        </svg>
+                    </span>
+                    <h2 id="art-news-title">Tin tức &amp; Thông báo</h2>
+                </header>
 
-        <!-- Top Navigation (Academic Scrollable Tabs) -->
-        <div class="art-nav-wrapper">
-            <nav class="art-nav-scroll">
-                <a href="#">THÔNG BÁO</a>
-                <a href="#" class="nav-tab-active">ĐÀO TẠO</a>
-                <a href="#">HƯỚNG DẪN</a>
-                <a href="#">QUY TRÌNH - QUY ĐỊNH</a>
-            </nav>
-            <div class="menu-bars">
-                <span></span>
-                <span></span>
-                <span></span>
+                @foreach ([
+                    ['Cổng thông tin đào tạo', null, 'Dành cho sinh viên, giảng viên và quản trị viên của Hexa Tech Academy. Sử dụng tài khoản do nhà trường cấp để đăng nhập.'],
+                    ['Chào mừng học kỳ mới', 'Toàn trường', 'Sinh viên đăng ký học phần trước hạn chót theo kế hoạch của phòng đào tạo.'],
+                    ['Kiểm tra thời khóa biểu trước khi đến lớp', 'Nhắc sinh viên', 'Đăng nhập bằng tài khoản sinh viên và mở mục “Thời khóa biểu” để xem lịch học theo tuần.'],
+                    ['Sử dụng email đã đăng ký để đặt lại mật khẩu', 'Hỗ trợ tài khoản', 'Chọn “Quên mật khẩu?” dưới nút đăng nhập và nhập email đã đăng ký.'],
+                ] as [$title, $label, $body])
+                    <article @class(['art-news-item', 'art-news-item--pinned' => $loop->first])>
+                        <span class="art-news-icon" aria-hidden="true">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" focusable="false">
+                                @if ($loop->first)
+                                    <path d="M16 3 8 11l-4 1 8 8 1-4 8-8-5-5ZM8 16l-5 5" />
+                                @else
+                                    <path d="M6 3h8l4 4v14H6zM14 3v5h4M9 12h6m-6 4h6" />
+                                @endif
+                            </svg>
+                        </span>
+                        <div>
+                            <h3>{{ $title }}</h3>
+                            @if ($label)
+                                <p class="art-news-scope">{{ $label }}</p>
+                            @endif
+                            <p>{{ $body }}</p>
+                        </div>
+                    </article>
+                @endforeach
+            </section>
+        @else
+            <div class="fluid-background"></div>
+            <div class="silk-wave"></div>
+            <div class="art-content">
+                <h1>Cổng thông tin đào tạo</h1>
+                <p>Dành cho sinh viên, giảng viên và quản trị viên của Hexa Tech Academy</p>
+                <p>Sử dụng tài khoản do nhà trường cấp để đăng nhập</p>
             </div>
-        </div>
-
-        <!-- Bottom Right Welcome Hero -->
-        <div class="art-content">
-            <h1>Cổng thông tin đào tạo</h1>
-            <p>Dành cho sinh viên, giảng viên và quản trị viên của Hexa Tech Academy</p>
-            <p>Sử dụng tài khoản do nhà trường cấp để đăng nhập</p>
-            </div>
-        </div>
+        @endif
     </div>
 </div>
 <script>
