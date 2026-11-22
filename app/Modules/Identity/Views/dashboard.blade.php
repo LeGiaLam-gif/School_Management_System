@@ -38,7 +38,7 @@
                     <span class="sms-role-pill">{{ $role->label() }}</span>
                     <span @class([
                         'sms-role-pill',
-                        'text-bg-success' => $user->isActive(),
+                        'text-bg-success border-white' => $user->isActive(),
                         'text-bg-secondary' => !$user->isActive(),
                     ])>{{ $user->isActive() ? 'Đang hoạt động' : $user->status->label() }}</span>
                 </div>
@@ -93,7 +93,7 @@
     </section>
     @endunless
 
-    <section @class(['sms-workspace-card', 'mt-3' => $isLecturer])>
+    <section @class(['sms-workspace-card', 'sms-lecturer-workspace mt-3' => $isLecturer])>
         <div class="sms-section-heading">
             <div>
                 <h2>Bảng điều khiển</h2>
