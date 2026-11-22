@@ -186,6 +186,31 @@ body.sms-body {
     color: #c47b45;
 }
 
+.sms-sidebar-chevron {
+    width: 15px;
+    height: 15px;
+    flex: 0 0 15px;
+    fill: none;
+    color: var(--sms-teal);
+    stroke: currentColor;
+    stroke-width: 2;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    transition: transform 200ms ease-in-out;
+}
+
+.sms-sidebar-link:hover .sms-sidebar-chevron {
+    color: var(--sms-teal-dark);
+}
+
+.sms-sidebar-chevron.is-open {
+    transform: rotate(180deg);
+}
+
+.sms-sidebar-link.active .sms-sidebar-chevron {
+    color: #c47b45;
+}
+
 .sms-sidebar-link-disabled {
     color: #9aa6a1;
     cursor: not-allowed;
