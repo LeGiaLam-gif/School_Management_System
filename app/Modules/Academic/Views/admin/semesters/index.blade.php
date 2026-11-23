@@ -259,7 +259,7 @@
         </div>
 
         @if ($semesters->hasPages())
-            <div class="p-3 border-top d-flex justify-content-center">
+            <div class="p-3 border-top bg-light">
                 {{ $semesters->links() }}
             </div>
         @endif

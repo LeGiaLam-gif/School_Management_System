@@ -295,7 +295,7 @@
         </div>
 
         @if ($classSections->hasPages())
-            <div class="p-3 border-top d-flex justify-content-center">
+            <div class="p-3 border-top bg-light">
                 {{ $classSections->links() }}
             </div>
         @endif
