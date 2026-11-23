@@ -25,6 +25,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
  * @property string|null $description
  * @property bool $is_active
  * @property-read Department|null $department
+ * @property-read Collection<int, Program> $programs
  * @property-read Collection<int, Course> $prerequisites
  * @property-read Collection<int, Course> $requiredBy
  */
@@ -62,6 +63,18 @@ class Course extends Model
     public function classSections(): HasMany
     {
         return $this->hasMany(ClassSection::class);
+    }
+
+    /**
+     * Cac nganh dao tao co chua hoc phan nay trong khung chuong trinh.
+     *
+     * @return BelongsToMany<Program, $this>
+     */
+    public function programs(): BelongsToMany
+    {
+        return $this->belongsToMany(Program::class, 'program_courses')
+            ->withPivot(['suggested_semester_no', 'type'])
+            ->withTimestamps();
     }
 
     /**

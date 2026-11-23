@@ -6,6 +6,7 @@ use App\Modules\Academic\Models\AcademicWarning;
 use App\Modules\Academic\Models\AdministrativeClass;
 use App\Modules\Academic\Models\Program;
 use App\Modules\Enrollment\Models\Enrollment;
+use App\Modules\Grading\Models\FinalResult;
 use App\Modules\Identity\Database\Factories\StudentFactory;
 use App\Shared\Enums\Gender;
 use App\Shared\Enums\StudentStatus;
@@ -14,6 +15,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasManyThrough;
 use Illuminate\Support\Carbon;
 
 /**
@@ -32,6 +34,7 @@ use Illuminate\Support\Carbon;
  * @property-read Program|null $program
  * @property-read AdministrativeClass|null $administrativeClass
  * @property-read Collection<int, Enrollment> $enrollments
+ * @property-read Collection<int, FinalResult> $finalResults
  * @property-read Collection<int, AcademicWarning> $academicWarnings
  */
 class Student extends Model
@@ -80,6 +83,12 @@ class Student extends Model
     public function enrollments(): HasMany
     {
         return $this->hasMany(Enrollment::class);
+    }
+
+    /** @return HasManyThrough<FinalResult, Enrollment, $this> */
+    public function finalResults(): HasManyThrough
+    {
+        return $this->hasManyThrough(FinalResult::class, Enrollment::class);
     }
 
     /** @return HasMany<AcademicWarning, $this> */

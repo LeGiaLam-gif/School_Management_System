@@ -5,10 +5,12 @@ namespace App\Modules\Identity\Models;
 use App\Modules\Announcement\Models\Announcement;
 use App\Modules\Identity\Database\Factories\UserFactory;
 use App\Modules\Identity\Notifications\ResetPasswordNotification;
+use App\Shared\Audit\AuditLog;
 use App\Shared\Enums\RoleName;
 use App\Shared\Enums\UserStatus;
 use App\Shared\Traits\Auditable;
 use Carbon\CarbonInterface;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
@@ -31,6 +33,8 @@ use Spatie\Permission\Traits\HasRoles;
  * @property CarbonInterface|null $last_login_at
  * @property-read Student|null $student
  * @property-read Lecturer|null $lecturer
+ * @property-read Collection<int, Announcement> $announcements
+ * @property-read Collection<int, AuditLog> $auditLogs
  */
 class User extends Authenticatable
 {
@@ -94,6 +98,12 @@ class User extends Authenticatable
     public function announcements(): HasMany
     {
         return $this->hasMany(Announcement::class, 'author_id');
+    }
+
+    /** @return HasMany<AuditLog, $this> */
+    public function auditLogs(): HasMany
+    {
+        return $this->hasMany(AuditLog::class, 'user_id');
     }
 
     public function sendPasswordResetNotification($token): void
