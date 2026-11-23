@@ -1742,7 +1742,7 @@ body.sms-body {
 .hta-btn-outline {
     background: transparent;
     border: 1.8px solid var(--hta-navy-accent);
-    color: var(--hta-navy-accent) !important;
+    color: var(--hta-navy-accent);
     font-weight: 700;
     font-size: 0.85rem;
     border-radius: 50px;
