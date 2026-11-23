@@ -70,16 +70,17 @@
             Hồ sơ cá nhân
         </a>
         @foreach ($navigation as $item)
-            @php($routeAvailable = Route::has($item['route']))
-            @if ($user->isAdmin() && $item['route'] === 'admin.users.index')
-                @php
-                    $userSubmenuActive = request()->routeIs(
-                        'admin.students.*',
-                        'admin.lecturers.*',
-                        'admin.administrative-classes.*',
-                        'admin.users.*'
-                    );
-                @endphp
+            @php
+                $routeAvailable = Route::has($item['route']);
+                $isAdminUsers = $user->isAdmin() && $item['route'] === 'admin.users.index';
+                $userSubmenuActive = $isAdminUsers && request()->routeIs(
+                    'admin.students.*',
+                    'admin.lecturers.*',
+                    'admin.administrative-classes.*',
+                    'admin.users.*'
+                );
+            @endphp
+            @if ($isAdminUsers)
                 <div x-data="{ userMenuOpen: {{ $userSubmenuActive ? 'true' : 'false' }} }" class="d-flex flex-column">
                     <a
                         class="sms-sidebar-link justify-content-between {{ request()->routeIs($item['active']) ? 'active' : '' }}"
@@ -97,7 +98,7 @@
                         </span>
                         <svg
                             class="sms-sidebar-chevron ms-auto"
-                            style="width: 15px; height: 15px; flex-shrink: 0; transition: transform 0.2s ease-in-out;"
+                            style="width: 15px; height: 15px; flex-shrink: 0; transition: transform 0.25s ease-in-out;"
                             :class="{ 'is-open': userMenuOpen }"
                             :style="userMenuOpen ? 'transform: rotate(180deg);' : 'transform: rotate(0deg);'"
                             viewBox="0 0 24 24"
@@ -115,34 +116,36 @@
 
                     <div
                         x-show="userMenuOpen"
-                        x-transition.opacity.duration.200ms
-                        class="ps-3 ms-2 my-1 border-start d-flex flex-column gap-1"
-                        style="border-color: rgba(39, 56, 115, 0.2) !important; {{ $userSubmenuActive ? '' : 'display: none;' }}"
+                        x-transition.opacity.duration.150ms
+                        style="{{ $userSubmenuActive ? '' : 'display: none;' }}"
+                        :aria-hidden="(!userMenuOpen).toString()"
                     >
-                        <a
-                            class="sms-sidebar-link py-1 px-2 {{ request()->routeIs('admin.students.*') ? 'active' : '' }}"
-                            href="{{ route('admin.students.index') }}"
-                            style="min-height: 32px; font-size: 12px;"
-                        >
-                            <svg class="sms-sidebar-icon" style="width: 14px; height: 14px;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></svg>
-                            Sinh viên
-                        </a>
-                        <a
-                            class="sms-sidebar-link py-1 px-2 {{ request()->routeIs('admin.lecturers.*') ? 'active' : '' }}"
-                            href="{{ route('admin.lecturers.index') }}"
-                            style="min-height: 32px; font-size: 12px;"
-                        >
-                            <svg class="sms-sidebar-icon" style="width: 14px; height: 14px;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="9" cy="8" r="3"/><path d="M3 20a6 6 0 0 1 12 0M16 5a3 3 0 0 1 0 6M18 14a5 5 0 0 1 3 4v2"/></svg>
-                            Giảng viên
-                        </a>
-                        <a
-                            class="sms-sidebar-link py-1 px-2 {{ request()->routeIs('admin.administrative-classes.*') ? 'active' : '' }}"
-                            href="{{ route('admin.administrative-classes.index') }}"
-                            style="min-height: 32px; font-size: 12px;"
-                        >
-                            <svg class="sms-sidebar-icon" style="width: 14px; height: 14px;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>
-                            Lớp hành chính
-                        </a>
+                        <div class="ps-3 ms-2 my-1 border-start d-flex flex-column gap-1" style="border-color: rgba(39, 56, 115, 0.2) !important;">
+                            <a
+                                class="sms-sidebar-link py-1 px-2 {{ request()->routeIs('admin.students.*') ? 'active' : '' }}"
+                                href="{{ route('admin.students.index') }}"
+                                style="min-height: 32px; font-size: 12px;"
+                            >
+                                <svg class="sms-sidebar-icon" style="width: 14px; height: 14px;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></svg>
+                                Sinh viên
+                            </a>
+                            <a
+                                class="sms-sidebar-link py-1 px-2 {{ request()->routeIs('admin.lecturers.*') ? 'active' : '' }}"
+                                href="{{ route('admin.lecturers.index') }}"
+                                style="min-height: 32px; font-size: 12px;"
+                            >
+                                <svg class="sms-sidebar-icon" style="width: 14px; height: 14px;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="9" cy="8" r="3"/><path d="M3 20a6 6 0 0 1 12 0M16 5a3 3 0 0 1 0 6M18 14a5 5 0 0 1 3 4v2"/></svg>
+                                Giảng viên
+                            </a>
+                            <a
+                                class="sms-sidebar-link py-1 px-2 {{ request()->routeIs('admin.administrative-classes.*') ? 'active' : '' }}"
+                                href="{{ route('admin.administrative-classes.index') }}"
+                                style="min-height: 32px; font-size: 12px;"
+                            >
+                                <svg class="sms-sidebar-icon" style="width: 14px; height: 14px;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>
+                                Lớp hành chính
+                            </a>
+                        </div>
                     </div>
                 </div>
             @else

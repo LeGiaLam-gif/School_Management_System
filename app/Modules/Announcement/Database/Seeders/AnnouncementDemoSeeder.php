@@ -17,6 +17,7 @@ class AnnouncementDemoSeeder extends Seeder
     {
         $admin = User::where('email', 'admin@example.com')->firstOrFail();
 
+        /** @var \App\Modules\Teaching\Models\ClassSection $section */
         foreach (ClassSection::with(['course', 'lecturer'])->orderBy('id')->get() as $section) {
             Announcement::firstOrCreate(
                 ['class_section_id' => $section->id, 'title' => 'Thông báo lớp '.$section->course->name],
