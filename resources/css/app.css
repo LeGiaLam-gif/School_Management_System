@@ -186,31 +186,6 @@ body.sms-body {
     color: #c47b45;
 }
 
-.sms-sidebar-chevron {
-    width: 15px;
-    height: 15px;
-    flex: 0 0 15px;
-    fill: none;
-    color: var(--sms-teal);
-    stroke: currentColor;
-    stroke-width: 2;
-    stroke-linecap: round;
-    stroke-linejoin: round;
-    transition: transform 200ms ease-in-out;
-}
-
-.sms-sidebar-link:hover .sms-sidebar-chevron {
-    color: var(--sms-teal-dark);
-}
-
-.sms-sidebar-chevron.is-open {
-    transform: rotate(180deg);
-}
-
-.sms-sidebar-link.active .sms-sidebar-chevron {
-    color: #c47b45;
-}
-
 .sms-sidebar-link-disabled {
     color: #9aa6a1;
     cursor: not-allowed;
@@ -2128,70 +2103,4 @@ body.sms-body {
         grid-template-columns: repeat(4, minmax(0, 1fr));
     }
 }
-
-/* ==========================================================================
-   Pagination Styling (Bootstrap 5 Alignment & SVG Safety)
-   ========================================================================== */
-.pagination {
-    margin-bottom: 0;
-    gap: 3px;
-    align-items: center;
-}
-
-/* Guard against oversized SVGs in any pagination component or fallback view */
-.pagination svg,
-nav[role="navigation"] svg {
-    width: 1em !important;
-    height: 1em !important;
-    max-width: 16px !important;
-    max-height: 16px !important;
-    display: inline-block;
-    vertical-align: middle;
-}
-
-/* Ensure pagination container and nav take full horizontal width */
-.border-top nav,
-nav[role="navigation"] {
-    width: 100%;
-}
-
-.page-item .page-link {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    min-width: 32px;
-    height: 32px;
-    padding: 0.25rem 0.6rem;
-    font-size: 0.85rem;
-    font-weight: 500;
-    color: var(--sms-teal-dark, #21866e);
-    border-color: #d1e0d4;
-    border-radius: 6px;
-    transition: all 0.15s ease-in-out;
-}
-
-.page-item.active .page-link {
-    background-color: var(--sms-teal, #378b78);
-    border-color: var(--sms-teal, #378b78);
-    color: #fff;
-    font-weight: 600;
-}
-
-.page-item.disabled .page-link {
-    color: #9ca3af;
-    border-color: #e5e7eb;
-    background-color: transparent;
-}
-
-.page-item .page-link:hover:not(.disabled) {
-    background-color: #e8f8ef;
-    border-color: #70cbae;
-    color: var(--sms-teal-dark, #21866e);
-}
-
-nav p.small.text-muted {
-    margin-bottom: 0;
-    font-size: 0.875rem;
-}
-
 
