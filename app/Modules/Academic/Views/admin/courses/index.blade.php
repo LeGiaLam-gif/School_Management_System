@@ -260,7 +260,7 @@
         </div>
 
         @if ($courses->hasPages())
-            <div class="p-3 border-top d-flex justify-content-center">
+            <div class="p-3 border-top bg-light">
                 {{ $courses->links() }}
             </div>
         @endif

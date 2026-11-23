@@ -301,7 +301,7 @@
         </div>
 
         @if ($users->hasPages())
-            <div class="p-3 border-top d-flex justify-content-center">
+            <div class="p-3 border-top bg-light">
                 {{ $users->links() }}
             </div>
         @endif
