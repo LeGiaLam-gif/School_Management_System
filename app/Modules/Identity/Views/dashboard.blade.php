@@ -5,14 +5,25 @@
 @section('content')
     @php($user = auth()->user())
     @php($isLecturer = $user->isLecturer())
+    @php($adminIconColors = [
+        'teal' => ['#25847d', '#dff3ef'],
+        'rose' => ['#bf5362', '#fbe6ea'],
+        'orange' => ['#bd6b2f', '#fcebdc'],
+        'violet' => ['#7962b7', '#efe8fb'],
+        'green' => ['#48843f', '#e7f3df'],
+        'gold' => ['#9b750e', '#fff2c9'],
+        'pink' => ['#a95090', '#f8e4f4'],
+        'blue' => ['#4079af', '#e2eefc'],
+    ])
     @php($adminActions = [
-        ['route' => 'admin.users.index', 'title' => 'Quản lý người dùng', 'icon' => 'users', 'color' => 'teal'],
+        ['route' => 'profile.show', 'title' => 'Hồ sơ cá nhân', 'icon' => 'user', 'color' => 'teal'],
+        ['route' => 'admin.users.index', 'title' => 'Quản lý người dùng', 'icon' => 'users', 'color' => 'rose'],
         ['route' => 'admin.departments.index', 'title' => 'Quản lý khoa', 'icon' => 'building', 'color' => 'orange'],
         ['route' => 'admin.programs.index', 'title' => 'Chương trình đào tạo', 'icon' => 'organization', 'color' => 'violet'],
         ['route' => 'admin.courses.index', 'title' => 'Quản lý học phần', 'icon' => 'book', 'color' => 'green'],
-        ['route' => 'admin.semesters.index', 'title' => 'Quản lý học kỳ', 'icon' => 'calendar', 'color' => 'orange'],
-        ['route' => 'admin.class-sections.index', 'title' => 'Lớp học phần', 'icon' => 'layers', 'color' => 'teal'],
-        ['route' => 'admin.reports.index', 'title' => 'Thống kê & báo cáo', 'icon' => 'chart', 'color' => 'violet'],
+        ['route' => 'admin.semesters.index', 'title' => 'Quản lý học kỳ', 'icon' => 'calendar', 'color' => 'gold'],
+        ['route' => 'admin.class-sections.index', 'title' => 'Lớp học phần', 'icon' => 'layers', 'color' => 'pink'],
+        ['route' => 'admin.reports.index', 'title' => 'Thống kê & báo cáo', 'icon' => 'chart', 'color' => 'blue'],
     ])
     @php($lecturerActions = [
         ['route' => 'profile.show', 'title' => 'Hồ sơ cá nhân', 'icon' => 'user', 'color' => 'teal'],
@@ -33,12 +44,12 @@
                 Không gian làm việc dành cho {{ mb_strtolower($role->label()) }},
                 tập trung các hoạt động học vụ trên cùng một nền tảng{{ $isLecturer ? '' : '.' }}
             </p>
-            @if ($isLecturer)
+            @if ($isLecturer || $user->isAdmin())
                 <div class="d-flex flex-wrap align-items-center gap-2">
                     <span class="sms-role-pill">{{ $role->label() }}</span>
                     <span @class([
                         'sms-role-pill',
-                        'text-bg-success' => $user->isActive(),
+                        'text-bg-success border-white' => $user->isActive(),
                         'text-bg-secondary' => !$user->isActive(),
                     ])>{{ $user->isActive() ? 'Đang hoạt động' : $user->status->label() }}</span>
                 </div>
@@ -60,7 +71,7 @@
         </div>
     </section>
 
-    @unless ($isLecturer)
+    @unless ($isLecturer || $user->isAdmin())
     <section class="sms-summary-grid" aria-label="Thông tin tài khoản">
         <article class="sms-summary-card">
             <span class="sms-summary-icon sms-icon-teal" aria-hidden="true">
@@ -93,7 +104,7 @@
     </section>
     @endunless
 
-    <section @class(['sms-workspace-card', 'mt-3' => $isLecturer])>
+    <section @class(['sms-workspace-card', 'mt-3' => $isLecturer || $user->isAdmin(), 'sms-lecturer-workspace' => $isLecturer])>
         <div class="sms-section-heading">
             <div>
                 <h2>Bảng điều khiển</h2>
@@ -108,8 +119,11 @@
             <div class="{{ $gridClass }}">
                 @foreach ($actions as $action)
                     @php($routeAvailable = Route::has($action['route']))
-                    <article @class([$cardClass, 'is-available' => $routeAvailable, 'position-relative' => $isLecturer])>
-                        <span class="{{ $iconClass }} sms-action-icon-{{ $action['color'] }}" aria-hidden="true">
+                    <article @class([$cardClass, 'position-relative', 'is-available' => $routeAvailable])>
+                        <span class="{{ $iconClass }} sms-action-icon-{{ $action['color'] }}" aria-hidden="true"
+                            @if ($user->isAdmin())
+                                style="color: {{ $adminIconColors[$action['color']][0] }}; background-color: {{ $adminIconColors[$action['color']][1] }};"
+                            @endif>
                             <svg viewBox="0 0 24 24" focusable="false">
                                 @switch($action['icon'])
                                     @case('user')
@@ -158,7 +172,7 @@
                         <div class="{{ $isLecturer ? 'sms-lecturer-action-content' : '' }}">
                             <h3>
                                 @if ($routeAvailable)
-                                    <a @class(['stretched-link' => $isLecturer]) href="{{ route($action['route']) }}">{{ $action['title'] }}</a>
+                                    <a class="stretched-link" href="{{ route($action['route']) }}">{{ $action['title'] }}</a>
                                 @else
                                     <span aria-disabled="true">{{ $action['title'] }}</span>
                                 @endif

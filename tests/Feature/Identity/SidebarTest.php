@@ -54,8 +54,12 @@ class SidebarTest extends TestCase
             ->get(route('admin.home'))
             ->assertOk()
             ->assertSee('Bảng điều khiển')
-            ->assertSee('class="sms-admin-action-grid"', false)
-            ->assertSee('Quản lý người dùng')
+            ->assertSeeInOrder([
+                'class="sms-admin-action-grid"',
+                'href="'.route('profile.show').'"',
+                'Hồ sơ cá nhân',
+                'Quản lý người dùng',
+            ], false)
             ->assertSee('Quản lý khoa')
             ->assertSee('Chương trình đào tạo')
             ->assertSee('Quản lý học phần')
@@ -64,7 +68,7 @@ class SidebarTest extends TestCase
             ->assertSee('Thống kê &amp; báo cáo', false)
             ->assertDontSee('href="#"', false);
 
-        $this->assertSame(7, substr_count($response->getContent(), 'class="sms-admin-action-card'));
+        $this->assertSame(8, substr_count($response->getContent(), 'class="sms-admin-action-card'));
         $this->assertSame(0, substr_count($response->getContent(), 'aria-disabled="true"'));
 
         preg_match('/<nav class="sms-sidebar-nav".*?<\/nav>/s', $response->getContent(), $matches);
