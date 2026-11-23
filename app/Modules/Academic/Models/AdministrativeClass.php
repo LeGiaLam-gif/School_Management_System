@@ -2,6 +2,7 @@
 
 namespace App\Modules\Academic\Models;
 
+use App\Modules\Academic\Database\Factories\AdministrativeClassFactory;
 use App\Modules\Identity\Models\Lecturer;
 use App\Modules\Identity\Models\Student;
 use Illuminate\Database\Eloquent\Collection;
@@ -32,6 +33,11 @@ class AdministrativeClass extends Model
         'academic_year',
         'advisor_lecturer_id',
     ];
+
+    protected static function newFactory(): AdministrativeClassFactory
+    {
+        return AdministrativeClassFactory::new();
+    }
 
     protected function casts(): array
     {

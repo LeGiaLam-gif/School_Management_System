@@ -6,11 +6,13 @@ use App\Modules\Academic\Database\Factories\SemesterFactory;
 use App\Modules\Teaching\Models\ClassSection;
 use Carbon\CarbonInterface;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
 /**
+ * @property int $id
  * @property string $code
  * @property string $name
  * @property string $academic_year
@@ -22,6 +24,8 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
  * @property int $min_credits
  * @property int $max_credits
  * @property bool $is_current
+ * @property-read Collection<int, ClassSection> $classSections
+ * @property-read Collection<int, AcademicWarning> $academicWarnings
  */
 class Semester extends Model
 {
@@ -52,9 +56,16 @@ class Semester extends Model
         ];
     }
 
+    /** @return HasMany<ClassSection, $this> */
     public function classSections(): HasMany
     {
         return $this->hasMany(ClassSection::class);
+    }
+
+    /** @return HasMany<AcademicWarning, $this> */
+    public function academicWarnings(): HasMany
+    {
+        return $this->hasMany(AcademicWarning::class);
     }
 
     public function scopeCurrent(Builder $query): Builder
