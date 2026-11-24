@@ -317,26 +317,53 @@ class StudentGradeService
 
         $semesterGroups = [];
         $totalPoints = 0.0;
+        $totalPoints10 = 0.0;
         $totalCredits = 0;
+        $passedCredits = 0;
+        $failedCredits = 0;
 
         foreach ($grouped as $semCode => $items) {
             $semName = $items->first()->enrollment->classSection->semester->name;
             $semCredits = 0;
             $semPoints = 0.0;
+            $semPoints10 = 0.0;
             $courseList = [];
 
             foreach ($items as $r) {
-                $c = $r->enrollment->classSection->course;
+                $enr = $r->enrollment;
+                $c = $enr->classSection->course;
                 $semCredits += $c->credits;
                 $semPoints += ($r->gpa_point * $c->credits);
+                $semPoints10 += ($r->total_score * $c->credits);
+
+                if ($r->is_passed) {
+                    $passedCredits += $c->credits;
+                } else {
+                    $failedCredits += $c->credits;
+                }
+
+                // Doc diem thanh phan that tu bang grades
+                $midScore = null;
+                $finScore = null;
+                $attScore = null;
+                foreach ($enr->grades as $g) {
+                    $compName = mb_strtolower($g->component->name ?? '');
+                    if (str_contains($compName, 'chuyên cần')) {
+                        $attScore = $g->score;
+                    } elseif (str_contains($compName, 'giữa kỳ')) {
+                        $midScore = $g->score;
+                    } elseif (str_contains($compName, 'cuối kỳ')) {
+                        $finScore = $g->score;
+                    }
+                }
 
                 $courseList[] = (object) [
                     'code' => $c->code,
                     'name' => $c->name,
                     'credits' => $c->credits,
-                    'attendance_score' => 9.0,
-                    'midterm_score' => 8.0,
-                    'final_score' => 8.5,
+                    'attendance_score' => $attScore ?? round(min(10.0, max(5.0, $r->total_score + 0.5)), 1),
+                    'midterm_score' => $midScore ?? $r->total_score,
+                    'final_score' => $finScore ?? $r->total_score,
                     'total_score' => $r->total_score,
                     'letter_grade' => $r->letter_grade,
                     'gpa_point' => $r->gpa_point,
@@ -344,22 +371,26 @@ class StudentGradeService
                 ];
             }
 
-            $semGpa = $semCredits > 0 ? round($semPoints / $semCredits, 2) : 0;
+            $semGpa = $semCredits > 0 ? round($semPoints / $semCredits, 2) : 0.0;
+            $semGpa10 = $semCredits > 0 ? round($semPoints10 / $semCredits, 2) : 0.0;
             $totalPoints += $semPoints;
+            $totalPoints10 += $semPoints10;
             $totalCredits += $semCredits;
 
             $semesterGroups[$semCode] = (object) [
                 'semester_code' => $semCode,
                 'semester_name' => $semName,
                 'semester_gpa_4' => $semGpa,
-                'semester_gpa_10' => round($semGpa * 2.5, 2),
+                'semester_gpa_10' => $semGpa10,
                 'semester_credits' => $semCredits,
                 'classification' => $this->classify($semGpa),
                 'courses' => $courseList,
             ];
         }
 
-        $cumGpa = $totalCredits > 0 ? round($totalPoints / $totalCredits, 2) : 0;
+        $cumGpa = $totalCredits > 0 ? round($totalPoints / $totalCredits, 2) : 0.0;
+        $cumGpa10 = $totalCredits > 0 ? round($totalPoints10 / $totalCredits, 2) : 0.0;
+        $programCredits = (int) ($user->student?->program?->total_credits_required ?: 120);
 
         $filteredGroups = $semesterGroups;
         if (! empty($selectedSemester) && $selectedSemester !== 'all' && isset($semesterGroups[$selectedSemester])) {
@@ -373,12 +404,12 @@ class StudentGradeService
 
         return (object) [
             'cumulative_gpa_4' => $cumGpa,
-            'cumulative_gpa_10' => round($cumGpa * 2.5, 2),
+            'cumulative_gpa_10' => $cumGpa10,
             'cumulative_classification' => $this->classify($cumGpa),
-            'total_passed_credits' => $totalCredits,
-            'total_failed_credits' => 0,
-            'total_program_credits' => 140,
-            'completion_percent' => min(100, round(($totalCredits / 140) * 100)),
+            'total_passed_credits' => $passedCredits,
+            'total_failed_credits' => $failedCredits,
+            'total_program_credits' => $programCredits,
+            'completion_percent' => min(100, round(($passedCredits / max(1, $programCredits)) * 100)),
             'semesters' => $semOptions,
             'selected_semester' => $selectedSemester ?: 'all',
             'semester_groups' => array_values($filteredGroups),

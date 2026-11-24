@@ -8,14 +8,23 @@ use App\Modules\Academic\Models\Department;
 use App\Modules\Academic\Models\Program;
 use App\Modules\Academic\Models\Room;
 use App\Modules\Academic\Models\Semester;
+use App\Modules\Announcement\Models\Announcement;
+use App\Modules\Attendance\Models\AttendanceRecord;
 use App\Modules\Enrollment\Models\Enrollment;
+use App\Modules\Grading\Models\FinalResult;
+use App\Modules\Grading\Models\Grade;
+use App\Modules\Grading\Models\GradeComponent;
+use App\Modules\Grading\Support\GradeCalculator;
 use App\Modules\Identity\Models\Lecturer;
 use App\Modules\Identity\Models\Student;
 use App\Modules\Identity\Models\User;
 use App\Modules\Teaching\Models\ClassSchedule;
 use App\Modules\Teaching\Models\ClassSection;
 use App\Modules\Teaching\Models\ClassSession;
+use App\Shared\Enums\AnnouncementScope;
+use App\Shared\Enums\AttendanceStatus;
 use App\Shared\Enums\ClassSectionStatus;
+use App\Shared\Enums\CourseType;
 use App\Shared\Enums\EnrollmentStatus;
 use App\Shared\Enums\Gender;
 use App\Shared\Enums\RoleName;
@@ -162,6 +171,64 @@ class LargeScaleDemoSeeder extends Seeder
             );
         }
 
+        // Gắn môn học vào Khung chương trình (program_courses) cho 3 ngành
+        $allCoursesByCode = Course::all()->keyBy('code');
+        $programCoursePlans = [
+            $ktpm->id => [
+                ['IT101', 1, CourseType::Required->value],
+                ['GE101', 1, CourseType::Required->value],
+                ['GE102', 1, CourseType::Required->value],
+                ['IT102', 2, CourseType::Required->value],
+                ['IT201', 2, CourseType::Required->value],
+                ['IT202', 3, CourseType::Required->value],
+                ['IT305', 3, CourseType::Required->value],
+                ['IT301', 4, CourseType::Elective->value],
+                ['IT302', 4, CourseType::Required->value],
+                ['IT303', 5, CourseType::Required->value],
+                ['IT304', 5, CourseType::Elective->value],
+            ],
+            $httt->id => [
+                ['IT101', 1, CourseType::Required->value],
+                ['GE101', 1, CourseType::Required->value],
+                ['IT102', 2, CourseType::Required->value],
+                ['IT201', 2, CourseType::Required->value],
+                ['BA201', 2, CourseType::Elective->value],
+                ['IT202', 3, CourseType::Required->value],
+                ['IT301', 3, CourseType::Required->value],
+                ['IT305', 4, CourseType::Required->value],
+                ['IT302', 4, CourseType::Elective->value],
+                ['IT303', 5, CourseType::Required->value],
+            ],
+            $qtkd->id => [
+                ['GE101', 1, CourseType::Required->value],
+                ['GE102', 1, CourseType::Required->value],
+                ['BA201', 2, CourseType::Required->value],
+                ['BA202', 2, CourseType::Required->value],
+                ['IT101', 3, CourseType::Elective->value],
+                ['IT301', 3, CourseType::Required->value],
+                ['BA301', 4, CourseType::Required->value],
+            ],
+        ];
+
+        foreach ($programCoursePlans as $progId => $planItems) {
+            /** @var Program|null $progModel */
+            $progModel = Program::find($progId);
+            if (! $progModel) {
+                continue;
+            }
+            $syncData = [];
+            foreach ($planItems as [$cCode, $semNo, $cType]) {
+                $cModel = $allCoursesByCode->get($cCode);
+                if ($cModel) {
+                    $syncData[$cModel->id] = [
+                        'suggested_semester_no' => $semNo,
+                        'type' => $cType,
+                    ];
+                }
+            }
+            $progModel->courses()->syncWithoutDetaching($syncData);
+        }
+
         for ($r = 1; $r <= 10; $r++) {
             $building = ($r <= 5) ? 'A' : 'B';
             Room::firstOrCreate(
@@ -183,6 +250,8 @@ class LargeScaleDemoSeeder extends Seeder
         // 5. Mở 30 Lớp học phần (kết hợp với 10 lớp hành chính = đủ 40 lớp)
         $this->command->info('-> Đang tạo 30 Lớp học phần mở trong kỳ...');
         $sections = [];
+        $oldSections = [];
+        $currentSections = [];
         for ($s = 1; $s <= 30; $s++) {
             $targetCourse = $allCourses[$s % $allCourses->count()];
             $targetSemester = ($s <= 10) ? $oldSemester : $currentSemester;
@@ -197,14 +266,25 @@ class LargeScaleDemoSeeder extends Seeder
                 ],
                 [
                     'lecturer_id' => $assignedLecturer->id,
-                    'capacity' => 50,
+                    'capacity' => 60,
                     'status' => $targetSemester->is_current ? ClassSectionStatus::Open : ClassSectionStatus::GradesPublished,
                 ]
             );
 
-            // Xếp lịch học
+            // Cấu hình đầu điểm thành phần cho lớp học phần (Giữa kỳ 40%, Cuối kỳ 60%)
+            GradeComponent::firstOrCreate(
+                ['class_section_id' => $section->id, 'name' => 'Giữa kỳ'],
+                ['weight' => 40, 'max_score' => 10, 'sort_order' => 1]
+            );
+            GradeComponent::firstOrCreate(
+                ['class_section_id' => $section->id, 'name' => 'Cuối kỳ'],
+                ['weight' => 60, 'max_score' => 10, 'sort_order' => 2]
+            );
+
+            // Xếp lịch học (phủ đều Thứ 2 -> Thứ 7, ca Sáng & Chiều)
             $dayOfWeek = ($s % 6) + 1; // 1 đến 6 (Thứ 2 đến Thứ 7)
-            $startPeriod = ($s % 2 === 0) ? 1 : 4;
+            $startPeriods = [1, 4, 7, 10];
+            $startPeriod = $startPeriods[$s % count($startPeriods)];
             $endPeriod = $startPeriod + 2;
             $targetRoom = $allRooms[$s % $allRooms->count()];
 
@@ -222,17 +302,24 @@ class LargeScaleDemoSeeder extends Seeder
                 ]
             );
 
-            // Sinh 2 buổi học mẫu
-            $startDate = Carbon::parse($targetSemester->start_date);
-            foreach ([1, 2] as $sessionNo) {
+            // Sinh 3 buổi học mẫu để đồng bộ thống kê chuyên cần
+            $dates = $targetSemester->is_current
+                ? [now()->subDays(14), now()->subDays(7), now()]
+                : [
+                    Carbon::parse($targetSemester->start_date),
+                    Carbon::parse($targetSemester->start_date)->addDays(7),
+                    Carbon::parse($targetSemester->start_date)->addDays(14),
+                ];
+
+            foreach ($dates as $idx => $sessionDate) {
                 ClassSession::firstOrCreate(
                     [
                         'class_section_id' => $section->id,
-                        'session_no' => $sessionNo,
+                        'session_no' => $idx + 1,
                     ],
                     [
                         'class_schedule_id' => $schedule->id,
-                        'session_date' => $startDate->copy()->addDays($sessionNo * 7)->toDateString(),
+                        'session_date' => $sessionDate->toDateString(),
                         'start_period' => $startPeriod,
                         'end_period' => $endPeriod,
                         'room_id' => $targetRoom->id,
@@ -241,11 +328,33 @@ class LargeScaleDemoSeeder extends Seeder
                 );
             }
 
+            // Tạo thông báo lớp học phần gắn với Giảng viên phụ trách
+            if ($assignedLecturer->user_id) {
+                Announcement::firstOrCreate(
+                    [
+                        'class_section_id' => $section->id,
+                        'title' => "[{$section->code}] Thông báo kế hoạch học tập môn {$targetCourse->name}",
+                    ],
+                    [
+                        'author_id' => $assignedLecturer->user_id,
+                        'scope' => AnnouncementScope::ClassSection,
+                        'body' => "Giảng viên {$assignedLecturer->user->name} thông báo đề cương, tài liệu và lịch kiểm tra lớp {$section->code} ({$targetCourse->name}).",
+                        'is_pinned' => ($s % 5 === 0),
+                        'published_at' => now()->subDays($s % 10),
+                    ]
+                );
+            }
+
             $sections[] = $section;
+            if ($targetSemester->is_current) {
+                $currentSections[] = $section;
+            } else {
+                $oldSections[] = $section;
+            }
         }
         $this->command->info('✓ Đã có 30 Lớp học phần + 10 Lớp hành chính = Tổng cộng 40 Lớp.');
 
-        // 6. Sinh đủ 300 Sinh viên (SV00001 - SV00300)
+        // 6. Sinh đủ 300 Sinh viên (SV00001 - SV00300) kèm đăng ký học phần đa dạng
         $this->command->info('-> Đang kiểm tra và sinh đủ 300 Sinh viên...');
         $genders = [Gender::Male, Gender::Female];
 
@@ -293,23 +402,75 @@ class LargeScaleDemoSeeder extends Seeder
                     ]
                 );
 
-                // Cho mỗi sinh viên đăng ký 2-3 lớp học phần
-                $secIndex1 = $st % count($sections);
-                $secIndex2 = ($st + 5) % count($sections);
+                // Cập nhật thông tin SĐT, địa chỉ, giới tính cho 12 SV đầu nếu còn thiếu
+                if ($student->phone === null || $student->address === null || $student->gender === null) {
+                    $student->update([
+                        'gender' => $student->gender ?? $genders[$st % 2],
+                        'phone' => $student->phone ?? sprintf('09%08d', 70000000 + $st),
+                        'address' => $student->address ?? ('Số '.$st.' Đường Võ Văn Ngân, TP. Thủ Đức, TP.HCM'),
+                    ]);
+                }
 
-                foreach ([$sections[$secIndex1], $sections[$secIndex2]] as $sec) {
-                    /** @var Semester $secSemester */
-                    $secSemester = Semester::find($sec->semester_id);
+                // Phân bổ học kỳ cũ (2025-1): mỗi SV tích lũy từ 3 đến 5 môn khác nhau
+                $numOldCourses = 2 + ($st % 4); // 2, 3, 4 hoặc 5 môn kỳ cũ
+                $enrolledOldCourseIds = Enrollment::where('student_id', $student->id)
+                    ->whereHas('classSection', fn ($q) => $q->where('semester_id', $oldSemester->id))
+                    ->with('classSection')
+                    ->get()
+                    ->pluck('classSection.course_id')
+                    ->all();
+
+                for ($k = 0; $k < $numOldCourses; $k++) {
+                    $oldSec = $oldSections[($st * 3 + $k * 2) % count($oldSections)];
+                    if (in_array($oldSec->course_id, $enrolledOldCourseIds, true)) {
+                        continue;
+                    }
+                    if (Enrollment::where('class_section_id', $oldSec->id)->count() >= $oldSec->capacity) {
+                        continue;
+                    }
+
                     Enrollment::firstOrCreate(
                         [
                             'student_id' => $student->id,
-                            'class_section_id' => $sec->id,
+                            'class_section_id' => $oldSec->id,
                         ],
                         [
-                            'status' => $secSemester->is_current ? EnrollmentStatus::Registered : EnrollmentStatus::Completed,
-                            'registered_at' => $secSemester->start_date,
+                            'status' => EnrollmentStatus::Completed,
+                            'registered_at' => $oldSemester->start_date,
                         ]
                     );
+                    $enrolledOldCourseIds[] = $oldSec->course_id;
+                }
+
+                // Phân bổ học kỳ hiện tại (2026-1): mỗi SV đăng ký từ 2 đến 4 lớp học phần khác nhau
+                $numCurrentCourses = 2 + ($st % 3); // 2, 3 hoặc 4 môn kỳ hiện tại
+                $enrolledCurCourseIds = Enrollment::where('student_id', $student->id)
+                    ->whereHas('classSection', fn ($q) => $q->where('semester_id', $currentSemester->id))
+                    ->with('classSection')
+                    ->get()
+                    ->pluck('classSection.course_id')
+                    ->all();
+
+                for ($m = 0; $m < $numCurrentCourses; $m++) {
+                    $curSec = $currentSections[($st * 5 + $m * 3) % count($currentSections)];
+                    if (in_array($curSec->course_id, $enrolledCurCourseIds, true)) {
+                        continue;
+                    }
+                    if (Enrollment::where('class_section_id', $curSec->id)->count() >= $curSec->capacity) {
+                        continue;
+                    }
+
+                    Enrollment::firstOrCreate(
+                        [
+                            'student_id' => $student->id,
+                            'class_section_id' => $curSec->id,
+                        ],
+                        [
+                            'status' => EnrollmentStatus::Registered,
+                            'registered_at' => $currentSemester->start_date,
+                        ]
+                    );
+                    $enrolledCurCourseIds[] = $curSec->course_id;
                 }
             }
             DB::commit();
@@ -318,10 +479,135 @@ class LargeScaleDemoSeeder extends Seeder
             throw $e;
         }
 
-        // Cập nhật lại số lượng sinh viên đăng ký (enrolled_count) trên các lớp học phần
-        foreach ($sections as $sec) {
-            $count = Enrollment::where('class_section_id', $sec->id)->active()->count();
-            $sec->update(['enrolled_count' => $count]);
+        // 7. Sinh dữ liệu Điểm danh (AttendanceRecord) và Điểm số (Grade & FinalResult) cho tất cả các lớp
+        $this->command->info('-> Đang đồng bộ Điểm danh và Điểm tổng kết (GPA) cho toàn bộ Sinh viên...');
+        $calculator = app(GradeCalculator::class);
+        $allSystemSections = ClassSection::with(['semester', 'lecturer', 'sessions', 'gradeComponents'])->get();
+
+        DB::beginTransaction();
+        try {
+            foreach ($allSystemSections as $secIdx => $sec) {
+                $secEnrollments = Enrollment::where('class_section_id', $sec->id)->orderBy('id')->get();
+                $sec->update(['enrolled_count' => $secEnrollments->whereIn('status', [EnrollmentStatus::Registered, EnrollmentStatus::Completed])->count()]);
+
+                // 7.1. Sinh điểm danh đa dạng theo từng sinh viên cho mọi buổi học đã diễn ra
+                foreach ($sec->sessions as $session) {
+                    if (! $session instanceof ClassSession) {
+                        continue;
+                    }
+                    foreach ($secEnrollments as $eIdx => $enr) {
+                        $seedVal = ($enr->student_id * 7 + $session->session_no * 13 + $sec->id * 5) % 20;
+                        // Phân hóa tỷ lệ chuyên cần theo từng sinh viên
+                        $studentMod = $enr->student_id % 7;
+                        if ($studentMod === 0) {
+                            // Sinh viên chăm chỉ 100%
+                            $attStatus = AttendanceStatus::Present;
+                        } elseif ($studentMod <= 2) {
+                            // Sinh viên thỉnh thoảng đi muộn hoặc phép
+                            $attStatus = $seedVal === 0 ? AttendanceStatus::Late : ($seedVal === 1 ? AttendanceStatus::Excused : AttendanceStatus::Present);
+                        } elseif ($studentMod <= 4) {
+                            // Sinh viên vắng 1 buổi
+                            $attStatus = ($session->session_no === 2 && ($enr->student_id + $sec->id) % 2 === 0)
+                                ? AttendanceStatus::Absent
+                                : ($seedVal < 2 ? AttendanceStatus::Late : AttendanceStatus::Present);
+                        } else {
+                            // Sinh viên vắng nhiều hơn để có mức chuyên cần 66.7% - 88.9%
+                            $attStatus = ($session->session_no !== 1 && ($enr->student_id + $sec->id + $session->session_no) % 3 === 0)
+                                ? AttendanceStatus::Absent
+                                : AttendanceStatus::Present;
+                        }
+
+                        AttendanceRecord::firstOrCreate(
+                            [
+                                'class_session_id' => $session->id,
+                                'enrollment_id' => $enr->id,
+                            ],
+                            [
+                                'status' => $attStatus,
+                                'marked_by' => $sec->lecturer?->user_id,
+                                'marked_at' => $session->session_date,
+                            ]
+                        );
+                    }
+                }
+
+                // 7.2. Sinh điểm thành phần & tổng kết cho các lớp đã công bố điểm (Học kỳ cũ)
+                if ($sec->status !== ClassSectionStatus::GradesPublished) {
+                    continue;
+                }
+
+                $midComp = $sec->gradeComponents->firstWhere('name', 'Giữa kỳ');
+                $finComp = $sec->gradeComponents->firstWhere('name', 'Cuối kỳ');
+                if (! $midComp instanceof GradeComponent || ! $finComp instanceof GradeComponent) {
+                    continue;
+                }
+
+                // Bảng phân hóa năng lực học tập theo từng sinh viên để mỗi SV có GPA khác hẳn nhau
+                $studentBands = [
+                    1 => 5.0,  // SV1: Cảnh báo học vụ / Trung bình yếu
+                    2 => 5.4,  // SV2: Cảnh báo học vụ / Trung bình
+                    3 => 5.8,  // SV3: Trung bình
+                    4 => 5.2,  // SV4: Cảnh báo lần 2
+                    5 => 8.6,  // SV5 (Phạm Gia Hân): Giỏi
+                    6 => 7.4,  // SV6 (Hoàng Đức Khang): Khá
+                    7 => 9.2,  // SV7 (Vũ Thu Lan): Xuất sắc
+                    8 => 6.6,  // SV8 (Đặng Minh Nhật): Trung bình khá
+                    9 => 8.1,  // SV9 (Bùi Thanh Phương): Khá giỏi
+                    10 => 7.8, // SV10 (Ngô Anh Quân): Khá
+                    11 => 9.4, // SV11 (Đỗ Khánh Linh): Xuất sắc
+                    12 => 6.2, // SV12 (Dương Tuấn Kiệt): Trung bình
+                ];
+
+                foreach ($secEnrollments as $enr) {
+                    $stId = $enr->student_id;
+                    $baseScore = $studentBands[$stId] ?? (5.2 + (($stId * 17) % 43) / 10.0);
+                    $courseVariance = ((($stId * 3 + $sec->course_id * 7) % 15) - 7) / 10.0;
+
+                    $midScore = max(3.5, min(10.0, round($baseScore + $courseVariance, 1)));
+                    $finScore = max(3.5, min(10.0, round($baseScore - ($courseVariance * 0.6), 1)));
+
+                    Grade::firstOrCreate(
+                        ['enrollment_id' => $enr->id, 'grade_component_id' => $midComp->id],
+                        [
+                            'score' => $midScore,
+                            'graded_by' => $sec->lecturer?->user_id,
+                            'graded_at' => $sec->semester->end_date,
+                        ]
+                    );
+
+                    Grade::firstOrCreate(
+                        ['enrollment_id' => $enr->id, 'grade_component_id' => $finComp->id],
+                        [
+                            'score' => $finScore,
+                            'graded_by' => $sec->lecturer?->user_id,
+                            'graded_at' => $sec->semester->end_date,
+                        ]
+                    );
+
+                    $total = $calculator->weightedTotal([
+                        ['score' => $midScore, 'max' => 10, 'weight' => 40],
+                        ['score' => $finScore, 'max' => 10, 'weight' => 60],
+                    ]);
+
+                    if ($total !== null) {
+                        FinalResult::firstOrCreate(
+                            ['enrollment_id' => $enr->id],
+                            [
+                                'total_score' => $total,
+                                'letter_grade' => $calculator->toLetter($total),
+                                'gpa_point' => $calculator->toGpa4($total),
+                                'is_passed' => $calculator->isPassed($total),
+                                'published_at' => $sec->semester->end_date,
+                                'locked_at' => $sec->semester->end_date,
+                            ]
+                        );
+                    }
+                }
+            }
+            DB::commit();
+        } catch (\Throwable $e) {
+            DB::rollBack();
+            throw $e;
         }
 
         $totalLecturers = Lecturer::count();
