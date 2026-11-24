@@ -40,9 +40,26 @@ class GradingDemoSeeder extends Seeder
 
             $enrollments = Enrollment::where('class_section_id', $section->id)->orderBy('id')->get();
 
+            $profiles = [
+                0 => ['mid' => 9.5, 'fin' => 9.0],
+                1 => ['mid' => 8.5, 'fin' => 8.0],
+                2 => ['mid' => 7.5, 'fin' => 7.0],
+                3 => ['mid' => 6.0, 'fin' => 5.5],
+                4 => ['mid' => 9.0, 'fin' => 8.5],
+                5 => ['mid' => 8.0, 'fin' => 7.5],
+                6 => ['mid' => 7.0, 'fin' => 6.5],
+                7 => ['mid' => 5.5, 'fin' => 5.0],
+                8 => ['mid' => 8.5, 'fin' => 9.0],
+                9 => ['mid' => 6.5, 'fin' => 7.0],
+                10 => ['mid' => 9.5, 'fin' => 9.5],
+                11 => ['mid' => 4.5, 'fin' => 5.0],
+            ];
+
             foreach ($enrollments as $s => $enrollment) {
-                $mid = round(5 + (($s * 7 + $i * 3) % 50) / 10, 1);
-                $fin = round(5 + (($s * 11 + $i * 5) % 50) / 10, 1);
+                $profile = $profiles[$s % count($profiles)];
+                $offset = ($i % 2 === 0) ? 0.0 : -0.5;
+                $mid = max(4.0, min(10.0, round($profile['mid'] + $offset, 1)));
+                $fin = max(4.0, min(10.0, round($profile['fin'] - $offset, 1)));
 
                 Grade::firstOrCreate(
                     ['enrollment_id' => $enrollment->id, 'grade_component_id' => $midterm->id],
