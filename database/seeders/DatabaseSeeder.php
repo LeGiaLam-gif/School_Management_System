@@ -19,11 +19,11 @@ class DatabaseSeeder extends Seeder
             SuperAdminSeeder::class,
         ]);
 
-        if (app()->environment(['local', 'testing', 'demo'])) {
+        if (app()->environment(['local', 'testing', 'demo', 'production'])) {
             $this->call(DemoDataSeeder::class);
         }
 
-        if (app()->environment(['local', 'demo'])) {
+        if (app()->environment(['local', 'demo', 'production'])) {
             $this->call(LargeScaleDemoSeeder::class);
         }
     }
