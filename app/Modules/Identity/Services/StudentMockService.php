@@ -2,9 +2,22 @@
 
 namespace App\Modules\Identity\Services;
 
+use App\Modules\Academic\Models\Room;
+use App\Modules\Announcement\Models\Announcement;
+use App\Modules\Enrollment\Models\Enrollment;
+use App\Modules\Grading\Models\FinalResult;
+use App\Modules\Identity\Models\Lecturer;
 use App\Modules\Identity\Models\Student;
 use App\Modules\Identity\Models\User;
+use App\Modules\Teaching\Models\ClassSchedule;
+use App\Modules\Teaching\Models\ClassSection;
+use App\Shared\Enums\AnnouncementScope;
+use App\Shared\Enums\AttendanceStatus;
+use App\Shared\Enums\EnrollmentStatus;
+use App\Shared\Enums\SessionStatus;
 use App\Shared\Enums\StudentStatus;
+use Carbon\CarbonInterface;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Facades\Hash;
 use Throwable;
 
@@ -161,45 +174,128 @@ class StudentMockService
                         'records' => $warnings,
                     ];
 
-                    $totalCreditsRequired = (int) ($student->program->total_credits_required ?? 140);
-                    $earnedCredits = 52; // Tich luy tu final_results neu co
-                    $enrolledCredits = 15;
-                    $remainingCredits = max(0, $totalCreditsRequired - $earnedCredits);
-                    $progressPercentage = $totalCreditsRequired > 0
-                        ? round(($earnedCredits / $totalCreditsRequired) * 100, 1)
-                        : 0.0;
+                    $totalCreditsRequired = (int) ($student->program->total_credits_required ?? 120);
 
-                    return (object) [
-                        'progress' => (object) [
-                            'total_credits_required' => $totalCreditsRequired,
-                            'earned_credits' => $earnedCredits,
-                            'enrolled_credits' => $enrolledCredits,
-                            'remaining_credits' => $remainingCredits,
-                            'progress_percentage' => $progressPercentage,
-                            'passed_courses_count' => 17,
-                            'enrolled_courses_count' => 5,
-                        ],
-                        'gpa' => (object) [
-                            'gpa_4' => 3.48,
-                            'gpa_10' => 8.35,
-                            'classification' => 'Giỏi',
-                            'academic_standing' => 'Tích cực',
-                        ],
-                        'warning' => $warningInfo,
-                        'attendance' => (object) [
-                            'overall_rate' => 95.9,
-                            'total_sessions' => 49,
-                            'present_count' => 47,
-                            'late_count' => 1,
-                            'excused_count' => 1,
-                            'unexcused_count' => 0,
-                            'absence_risk' => 'low',
-                            'status_label' => 'Đạt chuẩn chuyên cần',
-                            'status_badge' => 'bg-success',
-                        ],
-                        'today_schedules' => $this->getMockTodaySchedules(),
-                        'recent_announcements' => $this->getMockRecentAnnouncements(),
-                    ];
+                    // 1.1. Tinh tin chi tich luy va GPA that tu bang final_results (dong bo voi StudentGradeService)
+                    $publishedResults = FinalResult::with(['enrollment.classSection.course'])
+                        ->published()
+                        ->whereHas('enrollment', fn ($q) => $q->where('student_id', $student->id))
+                        ->get();
+
+                    $activeEnrollments = Enrollment::with([
+                        'classSection.course',
+                        'classSection.lecturer.user',
+                        'classSection.schedules.room',
+                        'classSection.sessions',
+                        'attendanceRecords',
+                    ])
+                        ->where('student_id', $student->id)
+                        ->where('status', EnrollmentStatus::Registered)
+                        ->get();
+
+                    if ($publishedResults->isNotEmpty() || $activeEnrollments->isNotEmpty()) {
+                        $earnedCredits = 0;
+                        $passedCoursesCount = 0;
+                        $totalWeightedGpa4 = 0.0;
+                        $totalWeightedGpa10 = 0.0;
+                        $totalGradedCredits = 0;
+
+                        foreach ($publishedResults as $res) {
+                            $enr = $res->enrollment;
+                            if (! $enr instanceof Enrollment) {
+                                continue;
+                            }
+                            $sec = $enr->classSection;
+                            if (! $sec instanceof ClassSection) {
+                                continue;
+                            }
+                            $course = $sec->course;
+                            $credits = $course->credits;
+                            $totalGradedCredits += $credits;
+                            $totalWeightedGpa4 += ($res->gpa_point * $credits);
+                            $totalWeightedGpa10 += ($res->total_score * $credits);
+
+                            if ($res->is_passed) {
+                                $earnedCredits += $credits;
+                                $passedCoursesCount++;
+                            }
+                        }
+
+                        $gpa4 = $totalGradedCredits > 0 ? round($totalWeightedGpa4 / $totalGradedCredits, 2) : 0.0;
+                        $gpa10 = $totalGradedCredits > 0 ? round($totalWeightedGpa10 / $totalGradedCredits, 2) : 0.0;
+                        $classification = match (true) {
+                            $gpa4 >= 3.6 => 'Xuất sắc',
+                            $gpa4 >= 3.2 => 'Giỏi',
+                            $gpa4 >= 2.5 => 'Khá',
+                            $gpa4 >= 2.0 => 'Trung bình',
+                            default => 'Yếu',
+                        };
+
+                        $enrolledCredits = 0;
+                        $totalHeldSessions = 0;
+                        $presentCount = 0;
+                        $lateCount = 0;
+                        $excusedCount = 0;
+                        $absentCount = 0;
+
+                        foreach ($activeEnrollments as $enr) {
+                            $sec = $enr->classSection;
+                            if (! $sec instanceof ClassSection) {
+                                continue;
+                            }
+                            $enrolledCredits += $sec->course->credits;
+                            $totalHeldSessions += $sec->sessions->where('status', SessionStatus::Held)->count();
+
+                            $records = $enr->attendanceRecords;
+                            $presentCount += $records->where('status', AttendanceStatus::Present)->count();
+                            $lateCount += $records->where('status', AttendanceStatus::Late)->count();
+                            $excusedCount += $records->where('status', AttendanceStatus::Excused)->count();
+                            $absentCount += $records->where('status', AttendanceStatus::Absent)->count();
+                        }
+
+                        $remainingCredits = max(0, $totalCreditsRequired - $earnedCredits);
+                        $progressPercentage = $totalCreditsRequired > 0
+                            ? round(($earnedCredits / $totalCreditsRequired) * 100, 1)
+                            : 0.0;
+
+                        // Ty le chuyen can = 100% - ty le vang (dong bo voi StudentAttendanceService)
+                        $absenceRate = $totalHeldSessions > 0
+                            ? round(($absentCount / $totalHeldSessions) * 100, 1)
+                            : 0.0;
+                        $attendanceRate = round(max(0.0, 100.0 - $absenceRate), 1);
+
+                        return (object) [
+                            'progress' => (object) [
+                                'total_credits_required' => $totalCreditsRequired,
+                                'earned_credits' => $earnedCredits,
+                                'enrolled_credits' => $enrolledCredits,
+                                'remaining_credits' => $remainingCredits,
+                                'progress_percentage' => $progressPercentage,
+                                'passed_courses_count' => $passedCoursesCount,
+                                'enrolled_courses_count' => $activeEnrollments->count(),
+                            ],
+                            'gpa' => (object) [
+                                'gpa_4' => $gpa4,
+                                'gpa_10' => $gpa10,
+                                'classification' => $classification,
+                                'academic_standing' => $hasWarning ? 'Cảnh báo' : 'Tích cực',
+                            ],
+                            'warning' => $warningInfo,
+                            'attendance' => (object) [
+                                'overall_rate' => $attendanceRate,
+                                'total_sessions' => $totalHeldSessions,
+                                'present_count' => $presentCount,
+                                'late_count' => $lateCount,
+                                'excused_count' => $excusedCount,
+                                'unexcused_count' => $absentCount,
+                                'absence_risk' => $absenceRate >= 20.0 ? 'high' : ($absenceRate >= 10.0 ? 'medium' : 'low'),
+                                'status_label' => $absenceRate >= 20.0 ? 'Cấm thi (Vắng >= 20%)' : 'Đạt chuẩn chuyên cần',
+                                'status_badge' => $absenceRate >= 20.0 ? 'bg-danger' : 'bg-success',
+                            ],
+                            'today_schedules' => $this->buildDbSchedules($activeEnrollments),
+                            'recent_announcements' => $this->buildDbRecentAnnouncements($student),
+                        ];
+                    }
                 }
             } catch (Throwable) {
                 // DB chua san sang -> Fallback mock
@@ -245,6 +341,140 @@ class StudentMockService
             'today_schedules' => $this->getMockTodaySchedules(),
             'recent_announcements' => $this->getMockRecentAnnouncements(),
         ];
+    }
+
+    /**
+     * Lay lich hoc that tu cac lop hoc phan sinh vien dang dang ky (dong bo 100% voi Thoi khoa bieu).
+     *
+     * @param  Collection<int, Enrollment>  $activeEnrollments
+     * @return list<object>
+     */
+    private function buildDbSchedules(Collection $activeEnrollments): array
+    {
+        $todayIso = (int) now()->dayOfWeekIso;
+        $todayItems = [];
+        $upcomingItems = [];
+
+        $dayNames = [
+            1 => 'Thứ 2',
+            2 => 'Thứ 3',
+            3 => 'Thứ 4',
+            4 => 'Thứ 5',
+            5 => 'Thứ 6',
+            6 => 'Thứ 7',
+            7 => 'CN',
+        ];
+
+        $startTimes = [
+            1 => '07:00', 2 => '07:55', 3 => '08:50',
+            4 => '09:50', 5 => '10:45', 6 => '11:40',
+            7 => '13:00', 8 => '13:55', 9 => '14:50',
+            10 => '15:50', 11 => '16:45', 12 => '17:40',
+        ];
+
+        $endTimes = [
+            1 => '07:50', 2 => '08:45', 3 => '09:40',
+            4 => '10:40', 5 => '11:35', 6 => '12:30',
+            7 => '13:50', 8 => '14:45', 9 => '15:40',
+            10 => '16:40', 11 => '17:35', 12 => '18:30',
+        ];
+
+        foreach ($activeEnrollments as $enr) {
+            $sec = $enr->classSection;
+            if (! $sec instanceof ClassSection) {
+                continue;
+            }
+
+            $course = $sec->course;
+            $lecturer = $sec->lecturer;
+            $lecturerTitle = $lecturer instanceof Lecturer && $lecturer->academic_title ? ($lecturer->academic_title.'. ') : '';
+            $lecturerName = $lecturer instanceof Lecturer ? ($lecturerTitle.$lecturer->user->name) : 'Chưa phân công';
+
+            foreach ($sec->schedules as $sch) {
+                if (! $sch instanceof ClassSchedule) {
+                    continue;
+                }
+
+                $dayNum = (int) $sch->day_of_week;
+                $startP = (int) $sch->start_period;
+                $endP = (int) $sch->end_period;
+                $shift = $startP <= 6 ? 'Sáng' : 'Chiều';
+                $timeRange = ($startTimes[$startP] ?? '07:00').' - '.($endTimes[$endP] ?? '11:35');
+                $room = $sch->room;
+                $roomCode = $room instanceof Room ? ('Phòng '.$room->code) : 'Phòng học';
+                $dayLabel = $dayNames[$dayNum] ?? 'Trong tuần';
+
+                $item = (object) [
+                    'course_code' => $course->code,
+                    'course_name' => $course->name,
+                    'shift' => $dayNum === $todayIso ? $shift : "{$dayLabel} · {$shift}",
+                    'periods' => "Tiết {$startP} - {$endP} ({$timeRange})",
+                    'room' => $roomCode,
+                    'lecturer' => $lecturerName,
+                    'status' => $dayNum === $todayIso ? 'Hôm nay' : $dayLabel,
+                    'sort_key' => (($dayNum - $todayIso + 7) % 7) * 100 + $startP,
+                ];
+
+                if ($dayNum === $todayIso) {
+                    $todayItems[] = $item;
+                } else {
+                    $upcomingItems[] = $item;
+                }
+            }
+        }
+
+        usort($todayItems, fn (object $a, object $b): int => $a->sort_key <=> $b->sort_key);
+        usort($upcomingItems, fn (object $a, object $b): int => $a->sort_key <=> $b->sort_key);
+
+        if ($todayItems !== []) {
+            return $todayItems;
+        }
+
+        return array_slice($upcomingItems, 0, 3);
+    }
+
+    /**
+     * Lay thong bao that tu bang announcements (Toan truong + Lop hoc phan sinh vien dang hoc).
+     *
+     * @return list<object>
+     */
+    private function buildDbRecentAnnouncements(Student $student): array
+    {
+        $enrolledSectionIds = $student->enrollments()
+            ->where('status', EnrollmentStatus::Registered)
+            ->pluck('class_section_id')
+            ->all();
+
+        $announcements = Announcement::published()
+            ->with(['author', 'classSection'])
+            ->where(function ($q) use ($enrolledSectionIds) {
+                $q->where('scope', AnnouncementScope::All->value)
+                    ->orWhere(function ($sub) use ($enrolledSectionIds) {
+                        $sub->where('scope', AnnouncementScope::ClassSection->value)
+                            ->whereIn('class_section_id', $enrolledSectionIds);
+                    });
+            })
+            ->orderByDesc('is_pinned')
+            ->orderByDesc('published_at')
+            ->get();
+
+        return $announcements->map(function (Announcement $a): object {
+            $isAll = $a->scope === AnnouncementScope::All;
+            $secCode = $a->classSection instanceof ClassSection ? $a->classSection->code : '';
+            $pubDate = $a->published_at instanceof CarbonInterface
+                ? $a->published_at->format('d/m/Y')
+                : 'N/A';
+
+            return (object) [
+                'id' => (string) $a->id,
+                'title' => $a->title,
+                'category' => $isAll ? 'Toàn trường' : "Lớp {$secCode}",
+                'badge' => $isAll ? 'bg-primary' : 'bg-info text-dark',
+                'is_pinned' => $a->is_pinned,
+                'published_at' => $pubDate,
+                'author' => $a->author instanceof User ? $a->author->name : 'Phòng Đào tạo',
+            ];
+        })->values()->all();
     }
 
     /**
