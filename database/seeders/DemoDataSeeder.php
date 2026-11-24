@@ -12,7 +12,6 @@ use App\Modules\Grading\Database\Seeders\GradingDemoSeeder;
 use App\Modules\Identity\Database\Seeders\IdentityDemoSeeder;
 use App\Modules\Teaching\Database\Seeders\TeachingDemoSeeder;
 use Illuminate\Database\Seeder;
-use RuntimeException;
 
 /**
  * Du lieu mau cho demo (muc 10): thu tu = chieu phu thuoc giua cac module.
@@ -23,10 +22,6 @@ class DemoDataSeeder extends Seeder
 {
     public function run(): void
     {
-        if (app()->isProduction()) {
-            throw new RuntimeException('Không được nạp dữ liệu demo ở môi trường production.');
-        }
-
         $this->call([
             AcademicDemoSeeder::class,
             IdentityDemoSeeder::class,

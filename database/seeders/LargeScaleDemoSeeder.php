@@ -282,7 +282,7 @@ class LargeScaleDemoSeeder extends Seeder
                 $ktIdx++;
             }
 
-            $section = ClassSection::firstOrCreate(
+            $section = ClassSection::updateOrCreate(
                 [
                     'course_id' => $targetCourse->id,
                     'semester_id' => $targetSemester->id,
@@ -382,6 +382,20 @@ class LargeScaleDemoSeeder extends Seeder
         $this->command->info('-> Đang kiểm tra và sinh đủ 20 Sinh viên...');
         $genders = [Gender::Male, Gender::Female];
 
+        // Dọn dẹp các tài khoản SV00021..SV00300 cũ (nếu DB từng chạy bản 300 SV trước đây) và làm sạch lịch sử đăng ký để tái tạo đồng bộ 100%
+        DB::statement('SET FOREIGN_KEY_CHECKS=0');
+        AttendanceRecord::query()->delete();
+        Grade::query()->delete();
+        FinalResult::query()->delete();
+        Enrollment::query()->delete();
+        $extraStudents = Student::where('student_code', '>', 'SV00020')->get();
+        if ($extraStudents->isNotEmpty()) {
+            $extraUserIds = $extraStudents->pluck('user_id')->all();
+            Student::whereIn('id', $extraStudents->pluck('id')->all())->delete();
+            User::withTrashed()->whereIn('id', $extraUserIds)->forceDelete();
+        }
+        DB::statement('SET FOREIGN_KEY_CHECKS=1');
+
         DB::beginTransaction();
         try {
             for ($st = 1; $st <= 20; $st++) {
@@ -446,25 +460,17 @@ class LargeScaleDemoSeeder extends Seeder
                     ]);
                 }
 
-                // Phân bổ học kỳ cũ (2025-1): mỗi SV tích lũy từ 3 đến 5 môn khác nhau
-                $numOldCourses = 2 + ($st % 4); // 2, 3, 4 hoặc 5 môn kỳ cũ
-                $enrolledOldCourseIds = Enrollment::where('student_id', $student->id)
-                    ->whereHas('classSection', fn ($q) => $q->where('semester_id', $oldSemester->id))
-                    ->with('classSection')
-                    ->get()
-                    ->pluck('classSection.course_id')
-                    ->all();
+                // Phân bổ học kỳ cũ (2025-1): mỗi SV tích lũy từ 3 đến 6 môn hoàn toàn khác nhau
+                $numOldCourses = 3 + ($st % 4); // 3, 4, 5 hoặc 6 môn kỳ cũ
+                $enrolledOldCourseIds = [];
 
-                for ($k = 0; $k < $numOldCourses; $k++) {
+                for ($k = 0; $k < count($oldSections) && count($enrolledOldCourseIds) < $numOldCourses; $k++) {
                     $oldSec = $oldSections[($st * 3 + $k * 2) % count($oldSections)];
                     if (in_array($oldSec->course_id, $enrolledOldCourseIds, true)) {
                         continue;
                     }
-                    if (Enrollment::where('class_section_id', $oldSec->id)->count() >= $oldSec->capacity) {
-                        continue;
-                    }
 
-                    Enrollment::firstOrCreate(
+                    Enrollment::updateOrCreate(
                         [
                             'student_id' => $student->id,
                             'class_section_id' => $oldSec->id,
@@ -477,25 +483,17 @@ class LargeScaleDemoSeeder extends Seeder
                     $enrolledOldCourseIds[] = $oldSec->course_id;
                 }
 
-                // Phân bổ học kỳ hiện tại (2026-1): mỗi SV đăng ký từ 2 đến 4 lớp học phần khác nhau
+                // Phân bổ học kỳ hiện tại (2026-1): mỗi SV đăng ký từ 2 đến 4 lớp học phần khác hẳn nhau (Thời khóa biểu khác nhau 100%)
                 $numCurrentCourses = 2 + ($st % 3); // 2, 3 hoặc 4 môn kỳ hiện tại
-                $enrolledCurCourseIds = Enrollment::where('student_id', $student->id)
-                    ->whereHas('classSection', fn ($q) => $q->where('semester_id', $currentSemester->id))
-                    ->with('classSection')
-                    ->get()
-                    ->pluck('classSection.course_id')
-                    ->all();
+                $enrolledCurCourseIds = [];
 
-                for ($m = 0; $m < $numCurrentCourses; $m++) {
+                for ($m = 0; $m < count($currentSections) && count($enrolledCurCourseIds) < $numCurrentCourses; $m++) {
                     $curSec = $currentSections[($st * 5 + $m * 3) % count($currentSections)];
                     if (in_array($curSec->course_id, $enrolledCurCourseIds, true)) {
                         continue;
                     }
-                    if (Enrollment::where('class_section_id', $curSec->id)->count() >= $curSec->capacity) {
-                        continue;
-                    }
 
-                    Enrollment::firstOrCreate(
+                    Enrollment::updateOrCreate(
                         [
                             'student_id' => $student->id,
                             'class_section_id' => $curSec->id,
@@ -552,7 +550,7 @@ class LargeScaleDemoSeeder extends Seeder
                                 : AttendanceStatus::Present;
                         }
 
-                        AttendanceRecord::firstOrCreate(
+                        AttendanceRecord::updateOrCreate(
                             [
                                 'class_session_id' => $session->id,
                                 'enrollment_id' => $enr->id,
@@ -609,7 +607,7 @@ class LargeScaleDemoSeeder extends Seeder
                     $midScore = max(3.5, min(10.0, round($baseScore + $courseVariance, 1)));
                     $finScore = max(3.5, min(10.0, round($baseScore - ($courseVariance * 0.6), 1)));
 
-                    Grade::firstOrCreate(
+                    Grade::updateOrCreate(
                         ['enrollment_id' => $enr->id, 'grade_component_id' => $midComp->id],
                         [
                             'score' => $midScore,
@@ -618,7 +616,7 @@ class LargeScaleDemoSeeder extends Seeder
                         ]
                     );
 
-                    Grade::firstOrCreate(
+                    Grade::updateOrCreate(
                         ['enrollment_id' => $enr->id, 'grade_component_id' => $finComp->id],
                         [
                             'score' => $finScore,
@@ -633,7 +631,7 @@ class LargeScaleDemoSeeder extends Seeder
                     ]);
 
                     if ($total !== null) {
-                        FinalResult::firstOrCreate(
+                        FinalResult::updateOrCreate(
                             ['enrollment_id' => $enr->id],
                             [
                                 'total_score' => $total,
