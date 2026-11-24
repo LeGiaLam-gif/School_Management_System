@@ -384,17 +384,22 @@ class LargeScaleDemoSeeder extends Seeder
 
         // Dọn dẹp các tài khoản SV00021..SV00300 cũ (nếu DB từng chạy bản 300 SV trước đây) và làm sạch lịch sử đăng ký để tái tạo đồng bộ 100%
         DB::statement('SET FOREIGN_KEY_CHECKS=0');
-        AttendanceRecord::query()->delete();
-        Grade::query()->delete();
-        FinalResult::query()->delete();
-        Enrollment::query()->delete();
-        $extraStudents = Student::where('student_code', '>', 'SV00020')->get();
-        if ($extraStudents->isNotEmpty()) {
-            $extraUserIds = $extraStudents->pluck('user_id')->all();
-            Student::whereIn('id', $extraStudents->pluck('id')->all())->delete();
-            User::withTrashed()->whereIn('id', $extraUserIds)->forceDelete();
+        try {
+            AttendanceRecord::query()->delete();
+            Grade::query()->delete();
+            FinalResult::query()->delete();
+            Enrollment::query()->delete();
+            $extraStudents = Student::where('student_code', '>', 'SV00020')->get();
+            if ($extraStudents->isNotEmpty()) {
+                $extraStudentIds = $extraStudents->pluck('id')->all();
+                $extraUserIds = $extraStudents->pluck('user_id')->all();
+                DB::table('academic_warnings')->whereIn('student_id', $extraStudentIds)->delete();
+                Student::whereIn('id', $extraStudentIds)->delete();
+                User::withTrashed()->whereIn('id', $extraUserIds)->forceDelete();
+            }
+        } finally {
+            DB::statement('SET FOREIGN_KEY_CHECKS=1');
         }
-        DB::statement('SET FOREIGN_KEY_CHECKS=1');
 
         DB::beginTransaction();
         try {
@@ -520,7 +525,7 @@ class LargeScaleDemoSeeder extends Seeder
         DB::beginTransaction();
         try {
             foreach ($allSystemSections as $secIdx => $sec) {
-                $secEnrollments = Enrollment::where('class_section_id', $sec->id)->orderBy('id')->get();
+                $secEnrollments = Enrollment::with('student')->where('class_section_id', $sec->id)->orderBy('id')->get();
                 $sec->update(['enrolled_count' => $secEnrollments->whereIn('status', [EnrollmentStatus::Registered, EnrollmentStatus::Completed])->count()]);
 
                 // 7.1. Sinh điểm danh đa dạng theo từng sinh viên cho mọi buổi học đã diễn ra
@@ -529,9 +534,10 @@ class LargeScaleDemoSeeder extends Seeder
                         continue;
                     }
                     foreach ($secEnrollments as $eIdx => $enr) {
-                        $seedVal = ($enr->student_id * 7 + $session->session_no * 13 + $sec->id * 5) % 20;
+                        $stNum = $this->resolveStudentNumber($enr);
+                        $seedVal = ($stNum * 7 + $session->session_no * 13 + $sec->id * 5) % 20;
                         // Phân hóa tỷ lệ chuyên cần theo từng sinh viên
-                        $studentMod = $enr->student_id % 7;
+                        $studentMod = $stNum % 7;
                         if ($studentMod === 0) {
                             // Sinh viên chăm chỉ 100%
                             $attStatus = AttendanceStatus::Present;
@@ -540,12 +546,12 @@ class LargeScaleDemoSeeder extends Seeder
                             $attStatus = $seedVal === 0 ? AttendanceStatus::Late : ($seedVal === 1 ? AttendanceStatus::Excused : AttendanceStatus::Present);
                         } elseif ($studentMod <= 4) {
                             // Sinh viên vắng 1 buổi
-                            $attStatus = ($session->session_no === 2 && ($enr->student_id + $sec->id) % 2 === 0)
+                            $attStatus = ($session->session_no === 2 && ($stNum + $sec->id) % 2 === 0)
                                 ? AttendanceStatus::Absent
                                 : ($seedVal < 2 ? AttendanceStatus::Late : AttendanceStatus::Present);
                         } else {
                             // Sinh viên vắng nhiều hơn để có mức chuyên cần 66.7% - 88.9%
-                            $attStatus = ($session->session_no !== 1 && ($enr->student_id + $sec->id + $session->session_no) % 3 === 0)
+                            $attStatus = ($session->session_no !== 1 && ($stNum + $sec->id + $session->session_no) % 3 === 0)
                                 ? AttendanceStatus::Absent
                                 : AttendanceStatus::Present;
                         }
@@ -600,9 +606,9 @@ class LargeScaleDemoSeeder extends Seeder
                 ];
 
                 foreach ($secEnrollments as $enr) {
-                    $stId = $enr->student_id;
-                    $baseScore = $studentBands[$stId] ?? (5.2 + (($stId * 17) % 43) / 10.0);
-                    $courseVariance = ((($stId * 3 + $sec->course_id * 7) % 15) - 7) / 10.0;
+                    $stNum = $this->resolveStudentNumber($enr);
+                    $baseScore = $studentBands[$stNum] ?? (5.2 + (($stNum * 17) % 43) / 10.0);
+                    $courseVariance = ((($stNum * 3 + $sec->course_id * 7) % 15) - 7) / 10.0;
 
                     $midScore = max(3.5, min(10.0, round($baseScore + $courseVariance, 1)));
                     $finScore = max(3.5, min(10.0, round($baseScore - ($courseVariance * 0.6), 1)));
@@ -664,5 +670,19 @@ class LargeScaleDemoSeeder extends Seeder
         $this->command->info("- Sinh viên: {$totalStudents} SV (sv1@example.com -> sv{$totalStudents}@)");
         $this->command->info('- Mật khẩu đăng nhập chung: "password"');
         $this->command->info('====================================================');
+    }
+
+    /**
+     * Lấy số thứ tự sinh viên từ student_code (SV00001 -> 1) để đồng bộ GPA/chuyên cần bất kể AUTO_INCREMENT trên TiDB.
+     */
+    private function resolveStudentNumber(Enrollment $enrollment): int
+    {
+        $student = $enrollment->student;
+        $code = $student instanceof Student ? $student->student_code : null;
+        if (is_string($code) && preg_match('/^SV(\d+)$/', $code, $matches) === 1) {
+            return (int) $matches[1];
+        }
+
+        return $enrollment->student_id;
     }
 }
