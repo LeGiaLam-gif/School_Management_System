@@ -43,6 +43,6 @@ RUN mkdir -p storage/framework/cache/data storage/framework/sessions \
     && chown -R www-data:www-data storage bootstrap/cache \
     && printf "opcache.validate_timestamps=0\n" > /usr/local/etc/php/conf.d/zz-opcache-prod.ini
 
-ENV APP_ENV=production APP_DEBUG=false PORT=10000
+ENV APP_ENV=production APP_DEBUG=false PORT=10000 RUN_MIGRATIONS=true
 EXPOSE 10000
 CMD ["/usr/local/bin/render-start.sh"]
