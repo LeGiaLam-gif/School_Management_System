@@ -344,7 +344,7 @@ class StudentMockService
     }
 
     /**
-     * Lay lich hoc that tu cac lop hoc phan sinh vien dang dang ky (dong bo 100% voi Thoi khoa bieu).
+     * Lay lich hoc TRONG NGAY HOM NAY tu cac lop hoc phan sinh vien dang dang ky (dong bo 100% voi cot Hom nay trong Thoi khoa bieu).
      *
      * @param  Collection<int, Enrollment>  $activeEnrollments
      * @return list<object>
@@ -353,17 +353,6 @@ class StudentMockService
     {
         $todayIso = (int) now()->dayOfWeekIso;
         $todayItems = [];
-        $upcomingItems = [];
-
-        $dayNames = [
-            1 => 'Thứ 2',
-            2 => 'Thứ 3',
-            3 => 'Thứ 4',
-            4 => 'Thứ 5',
-            5 => 'Thứ 6',
-            6 => 'Thứ 7',
-            7 => 'CN',
-        ];
 
         $startTimes = [
             1 => '07:00', 2 => '07:55', 3 => '08:50',
@@ -396,41 +385,33 @@ class StudentMockService
                 }
 
                 $dayNum = (int) $sch->day_of_week;
+                if ($dayNum !== $todayIso) {
+                    continue;
+                }
+
                 $startP = (int) $sch->start_period;
                 $endP = (int) $sch->end_period;
                 $shift = $startP <= 6 ? 'Sáng' : 'Chiều';
                 $timeRange = ($startTimes[$startP] ?? '07:00').' - '.($endTimes[$endP] ?? '11:35');
                 $room = $sch->room;
                 $roomCode = $room instanceof Room ? ('Phòng '.$room->code) : 'Phòng học';
-                $dayLabel = $dayNames[$dayNum] ?? 'Trong tuần';
 
-                $item = (object) [
+                $todayItems[] = (object) [
                     'course_code' => $course->code,
                     'course_name' => $course->name,
-                    'shift' => $dayNum === $todayIso ? $shift : "{$dayLabel} · {$shift}",
+                    'shift' => $shift,
                     'periods' => "Tiết {$startP} - {$endP} ({$timeRange})",
                     'room' => $roomCode,
                     'lecturer' => $lecturerName,
-                    'status' => $dayNum === $todayIso ? 'Hôm nay' : $dayLabel,
-                    'sort_key' => (($dayNum - $todayIso + 7) % 7) * 100 + $startP,
+                    'status' => 'Hôm nay',
+                    'sort_key' => $startP,
                 ];
-
-                if ($dayNum === $todayIso) {
-                    $todayItems[] = $item;
-                } else {
-                    $upcomingItems[] = $item;
-                }
             }
         }
 
         usort($todayItems, fn (object $a, object $b): int => $a->sort_key <=> $b->sort_key);
-        usort($upcomingItems, fn (object $a, object $b): int => $a->sort_key <=> $b->sort_key);
 
-        if ($todayItems !== []) {
-            return $todayItems;
-        }
-
-        return array_slice($upcomingItems, 0, 3);
+        return $todayItems;
     }
 
     /**
