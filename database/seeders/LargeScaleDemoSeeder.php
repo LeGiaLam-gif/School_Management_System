@@ -95,7 +95,7 @@ class LargeScaleDemoSeeder extends Seeder
                 $user->assignRole(RoleName::Lecturer->value);
             }
 
-            Lecturer::firstOrCreate(
+            $lecturer = Lecturer::firstOrCreate(
                 ['user_id' => $user->id],
                 [
                     'lecturer_code' => $code,
@@ -103,38 +103,54 @@ class LargeScaleDemoSeeder extends Seeder
                     'academic_title' => $lecturerHocVi[$i % count($lecturerHocVi)],
                     'phone' => sprintf('09%08d', 80000000 + $i),
                     'office' => 'P.'.(100 + $i),
+                    'address' => 'Số '.($i * 15).' Đường Kha Vạn Cân, TP. Thủ Đức, TP.HCM',
                 ]
             );
+
+            // Bổ sung đầy đủ SĐT, phòng làm việc, địa chỉ cho các GV đầu nếu còn thiếu
+            if ($lecturer->phone === null || $lecturer->office === null || $lecturer->address === null) {
+                $lecturer->update([
+                    'phone' => $lecturer->phone ?? sprintf('09%08d', 80000000 + $i),
+                    'office' => $lecturer->office ?? ('P.'.(100 + $i)),
+                    'address' => $lecturer->address ?? ('Số '.($i * 15).' Đường Kha Vạn Cân, TP. Thủ Đức, TP.HCM'),
+                ]);
+            }
         }
         $allLecturers = Lecturer::orderBy('id')->get();
+        $cnttLecturers = $allLecturers->where('department_id', $cntt->id)->values();
+        $ktLecturers = $allLecturers->where('department_id', $kt->id)->values();
         $this->command->info('✓ Đã có đủ '.$allLecturers->count().' Giảng viên.');
 
         // 3. Tạo 10 Lớp hành chính cho các khóa 2021, 2022, 2023, 2024
         $this->command->info('-> Đang kiểm tra và tạo 10 Lớp hành chính...');
         $adminClassData = [
-            ['code' => '21DTH01', 'name' => 'Kỹ thuật phần mềm 2021 - Lớp 01', 'program' => $ktpm, 'year' => 2021, 'adv' => 0],
-            ['code' => '22DTH01', 'name' => 'Kỹ thuật phần mềm 2022 - Lớp 01', 'program' => $ktpm, 'year' => 2022, 'adv' => 1],
-            ['code' => '22DTH02', 'name' => 'Kỹ thuật phần mềm 2022 - Lớp 02', 'program' => $ktpm, 'year' => 2022, 'adv' => 2],
-            ['code' => '23DTH01', 'name' => 'Kỹ thuật phần mềm 2023 - Lớp 01', 'program' => $ktpm, 'year' => 2023, 'adv' => 3],
-            ['code' => '23DTH02', 'name' => 'Kỹ thuật phần mềm 2023 - Lớp 02', 'program' => $ktpm, 'year' => 2023, 'adv' => 4],
-            ['code' => '24DTH01', 'name' => 'Kỹ thuật phần mềm 2024 - Lớp 01', 'program' => $ktpm, 'year' => 2024, 'adv' => 5],
-            ['code' => '22DHT01', 'name' => 'Hệ thống thông tin 2022 - Lớp 01', 'program' => $httt, 'year' => 2022, 'adv' => 6],
-            ['code' => '23DHT01', 'name' => 'Hệ thống thông tin 2023 - Lớp 01', 'program' => $httt, 'year' => 2023, 'adv' => 7],
-            ['code' => '22DQT01', 'name' => 'Quản trị kinh doanh 2022 - Lớp 01', 'program' => $qtkd, 'year' => 2022, 'adv' => 8],
-            ['code' => '23DQT01', 'name' => 'Quản trị kinh doanh 2023 - Lớp 01', 'program' => $qtkd, 'year' => 2023, 'adv' => 9],
+            ['code' => '21DTH01', 'name' => 'Kỹ thuật phần mềm 2021 - Lớp 01', 'program' => $ktpm, 'year' => 2021, 'adv' => $cnttLecturers->get(0)],
+            ['code' => '22DTH01', 'name' => 'Kỹ thuật phần mềm 2022 - Lớp 01', 'program' => $ktpm, 'year' => 2022, 'adv' => $cnttLecturers->get(1)],
+            ['code' => '22DTH02', 'name' => 'Kỹ thuật phần mềm 2022 - Lớp 02', 'program' => $ktpm, 'year' => 2022, 'adv' => $cnttLecturers->get(2)],
+            ['code' => '23DTH01', 'name' => 'Kỹ thuật phần mềm 2023 - Lớp 01', 'program' => $ktpm, 'year' => 2023, 'adv' => $cnttLecturers->get(3)],
+            ['code' => '23DTH02', 'name' => 'Kỹ thuật phần mềm 2023 - Lớp 02', 'program' => $ktpm, 'year' => 2023, 'adv' => $cnttLecturers->get(4)],
+            ['code' => '24DTH01', 'name' => 'Kỹ thuật phần mềm 2024 - Lớp 01', 'program' => $ktpm, 'year' => 2024, 'adv' => $cnttLecturers->get(5)],
+            ['code' => '22DHT01', 'name' => 'Hệ thống thông tin 2022 - Lớp 01', 'program' => $httt, 'year' => 2022, 'adv' => $cnttLecturers->get(6)],
+            ['code' => '23DHT01', 'name' => 'Hệ thống thông tin 2023 - Lớp 01', 'program' => $httt, 'year' => 2023, 'adv' => $cnttLecturers->get(7)],
+            ['code' => '22DQT01', 'name' => 'Quản trị kinh doanh 2022 - Lớp 01', 'program' => $qtkd, 'year' => 2022, 'adv' => $ktLecturers->get(0)],
+            ['code' => '23DQT01', 'name' => 'Quản trị kinh doanh 2023 - Lớp 01', 'program' => $qtkd, 'year' => 2023, 'adv' => $ktLecturers->get(1)],
         ];
 
         $adminClasses = [];
         foreach ($adminClassData as $item) {
-            $adminClasses[] = AdministrativeClass::firstOrCreate(
+            $cls = AdministrativeClass::firstOrCreate(
                 ['code' => $item['code']],
                 [
                     'name' => $item['name'],
                     'program_id' => $item['program']->id,
                     'academic_year' => $item['year'],
-                    'advisor_lecturer_id' => $allLecturers->get($item['adv'])?->id,
+                    'advisor_lecturer_id' => $item['adv']?->id,
                 ]
             );
+            if ($cls->advisor_lecturer_id === null && $item['adv'] !== null) {
+                $cls->update(['advisor_lecturer_id' => $item['adv']->id]);
+            }
+            $adminClasses[] = $cls;
         }
         $this->command->info('✓ Đã có 10 Lớp hành chính.');
 
@@ -252,11 +268,19 @@ class LargeScaleDemoSeeder extends Seeder
         $sections = [];
         $oldSections = [];
         $currentSections = [];
+        $cnttIdx = 0;
+        $ktIdx = 0;
         for ($s = 1; $s <= 30; $s++) {
             $targetCourse = $allCourses[$s % $allCourses->count()];
             $targetSemester = ($s <= 10) ? $oldSemester : $currentSemester;
             $secCode = sprintf('%s.%02d', $targetCourse->code, ceil($s / 3));
-            $assignedLecturer = $allLecturers[$s % $allLecturers->count()];
+            if ($targetCourse->department_id === $cntt->id) {
+                $assignedLecturer = $cnttLecturers[$cnttIdx % $cnttLecturers->count()];
+                $cnttIdx++;
+            } else {
+                $assignedLecturer = $ktLecturers[$ktIdx % $ktLecturers->count()];
+                $ktIdx++;
+            }
 
             $section = ClassSection::firstOrCreate(
                 [
@@ -402,9 +426,20 @@ class LargeScaleDemoSeeder extends Seeder
                     ]
                 );
 
-                // Cập nhật thông tin SĐT, địa chỉ, giới tính cho 12 SV đầu nếu còn thiếu
-                if ($student->phone === null || $student->address === null || $student->gender === null) {
+                // Cập nhật thông tin SĐT, địa chỉ, giới tính và Lớp hành chính cho 12 SV đầu nếu còn thiếu
+                $resolvedClassId = $student->class_id;
+                if ($resolvedClassId === null) {
+                    $matchingClass = collect($adminClasses)->first(
+                        fn (AdministrativeClass $c): bool => $c->program_id === $student->program_id && $c->academic_year === $student->cohort_year
+                    ) ?? collect($adminClasses)->first(
+                        fn (AdministrativeClass $c): bool => $c->program_id === $student->program_id
+                    ) ?? $assignedClass;
+                    $resolvedClassId = $matchingClass->id;
+                }
+
+                if ($student->phone === null || $student->address === null || $student->gender === null || $student->class_id === null) {
                     $student->update([
+                        'class_id' => $resolvedClassId,
                         'gender' => $student->gender ?? $genders[$st % 2],
                         'phone' => $student->phone ?? sprintf('09%08d', 70000000 + $st),
                         'address' => $student->address ?? ('Số '.$st.' Đường Võ Văn Ngân, TP. Thủ Đức, TP.HCM'),
