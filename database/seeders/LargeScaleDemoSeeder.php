@@ -677,7 +677,8 @@ class LargeScaleDemoSeeder extends Seeder
      */
     private function resolveStudentNumber(Enrollment $enrollment): int
     {
-        $code = $enrollment->student?->student_code;
+        $student = $enrollment->student;
+        $code = $student instanceof Student ? $student->student_code : null;
         if (is_string($code) && preg_match('/^SV(\d+)$/', $code, $matches) === 1) {
             return (int) $matches[1];
         }
