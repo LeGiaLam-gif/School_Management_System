@@ -39,10 +39,10 @@ use Illuminate\Support\Facades\Hash;
 use Spatie\Permission\Models\Role;
 
 /**
- * Seeder sinh dữ liệu lớn phục vụ kiểm thử chịu tải và chức năng:
+ * Seeder sinh dữ liệu phục vụ kiểm thử và demo:
  * - 20 Giảng viên (GV001 - GV020)
  * - 40 Lớp (bao gồm 10 Lớp hành chính & 30 Lớp học phần phân bổ theo môn, phòng, giảng viên)
- * - 300 Sinh viên (SV00001 - SV00300) phân bổ đều theo Lớp hành chính, có đăng ký học phần.
+ * - 20 Sinh viên (SV00001 - SV00020) phân bổ đều theo Lớp hành chính, có đăng ký học phần, điểm danh và GPA riêng biệt.
  *
  * Idempotent: chạy lại nhiều lần không sinh bản ghi trùng lặp.
  */
@@ -50,7 +50,7 @@ class LargeScaleDemoSeeder extends Seeder
 {
     public function run(): void
     {
-        $this->command->info('=== BẮT ĐẦU NẠP DỮ LIỆU LỚN (20 GV, 40 LỚP, 300 SV) ===');
+        $this->command->info('=== BẮT ĐẦU NẠP DỮ LIỆU DEMO (20 GV, 40 LỚP, 20 SV) ===');
 
         Role::findOrCreate(RoleName::Lecturer->value, 'web');
         Role::findOrCreate(RoleName::Student->value, 'web');
@@ -354,13 +354,13 @@ class LargeScaleDemoSeeder extends Seeder
         }
         $this->command->info('✓ Đã có 30 Lớp học phần + 10 Lớp hành chính = Tổng cộng 40 Lớp.');
 
-        // 6. Sinh đủ 300 Sinh viên (SV00001 - SV00300) kèm đăng ký học phần đa dạng
-        $this->command->info('-> Đang kiểm tra và sinh đủ 300 Sinh viên...');
+        // 6. Sinh đủ 20 Sinh viên (SV00001 - SV00020) kèm đăng ký học phần đa dạng
+        $this->command->info('-> Đang kiểm tra và sinh đủ 20 Sinh viên...');
         $genders = [Gender::Male, Gender::Female];
 
         DB::beginTransaction();
         try {
-            for ($st = 1; $st <= 300; $st++) {
+            for ($st = 1; $st <= 20; $st++) {
                 $code = sprintf('SV%05d', $st);
                 $email = "sv{$st}@example.com";
                 $fn = $firstNames[($st * 2) % count($firstNames)];
@@ -542,7 +542,7 @@ class LargeScaleDemoSeeder extends Seeder
                     continue;
                 }
 
-                // Bảng phân hóa năng lực học tập theo từng sinh viên để mỗi SV có GPA khác hẳn nhau
+                // Bảng phân hóa năng lực học tập theo từng sinh viên (SV1 -> SV20) để mỗi SV có GPA khác hẳn nhau
                 $studentBands = [
                     1 => 5.0,  // SV1: Cảnh báo học vụ / Trung bình yếu
                     2 => 5.4,  // SV2: Cảnh báo học vụ / Trung bình
@@ -556,6 +556,14 @@ class LargeScaleDemoSeeder extends Seeder
                     10 => 7.8, // SV10 (Ngô Anh Quân): Khá
                     11 => 9.4, // SV11 (Đỗ Khánh Linh): Xuất sắc
                     12 => 6.2, // SV12 (Dương Tuấn Kiệt): Trung bình
+                    13 => 6.8, // SV13: Khá
+                    14 => 7.6, // SV14: Khá
+                    15 => 8.8, // SV15: Giỏi
+                    16 => 5.9, // SV16: Trung bình
+                    17 => 8.3, // SV17: Giỏi
+                    18 => 7.1, // SV18: Khá
+                    19 => 9.1, // SV19: Xuất sắc
+                    20 => 6.4, // SV20: Trung bình khá
                 ];
 
                 foreach ($secEnrollments as $enr) {
